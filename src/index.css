@@ -75,7 +75,7 @@ h1, h2, h3, .font-display {
 }
 
 .btn-bento {
-  @apply bg-brand-lime text-brand-blue border-4 border-brand-blue px-6 py-3 font-display text-2xl uppercase tracking-tighter shadow-[6px_6px_0px_var(--color-brand-blue)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_var(--color-brand-blue)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none;
+  @apply bg-brand-lime text-brand-blue border-4 border-brand-blue px-4 py-2 sm:px-6 sm:py-3 font-display text-lg sm:text-2xl uppercase tracking-tighter shadow-[6px_6px_0px_var(--color-brand-blue)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_var(--color-brand-blue)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none;
 }
 
 .text-stroke-blue {

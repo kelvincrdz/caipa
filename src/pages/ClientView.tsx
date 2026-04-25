@@ -311,10 +311,10 @@ export default function ClientView() {
   if (barStatus === "pending") {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-brand-cream text-center p-8 gap-8">
-        <div className="card-bento bg-white p-12 max-w-md">
-          <Clock size={80} className="mx-auto text-yellow-500 mb-6" />
-          <h1 className="font-display text-5xl text-brand-blue leading-none mb-4">EM ANÁLISE</h1>
-          <p className="font-body text-xl font-black uppercase italic opacity-60">
+        <div className="card-bento bg-white p-6 sm:p-12 max-w-md">
+          <Clock className="mx-auto text-yellow-500 mb-6 w-14 h-14 sm:w-20 sm:h-20" />
+          <h1 className="font-display text-3xl sm:text-5xl text-brand-blue leading-none mb-4">EM ANÁLISE</h1>
+          <p className="font-body text-base sm:text-xl font-black uppercase italic opacity-60">
             Este bar ainda não foi aprovado pela equipe Tocaí. Volte em breve!
           </p>
         </div>
@@ -504,9 +504,9 @@ export default function ClientView() {
                 ? "border-brand-lime bg-brand-lime text-brand-blue shadow-[6px_6px_0px_var(--color-brand-blue)]"
                 : "border-brand-blue bg-brand-blue text-brand-lime shadow-[6px_6px_0px_var(--color-brand-lime)]",
             )}>
-              <span className="text-3xl">{notifToast === "playing" ? "🎶" : "⚡"}</span>
+              <span className="text-xl sm:text-3xl">{notifToast === "playing" ? "🎶" : "⚡"}</span>
               <div className="flex-1">
-                <p className="font-display text-2xl uppercase leading-none">
+                <p className="font-display text-sm sm:text-2xl uppercase leading-none">
                   {notifToast === "playing" ? "Tocando agora!" : "Sua música é a próxima!"}
                 </p>
                 <p className="font-body text-xs font-bold uppercase opacity-70 mt-0.5">
@@ -529,10 +529,10 @@ export default function ClientView() {
         className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 border-b-8 border-brand-blue pb-6"
       >
         <div>
-          <h1 className="text-7xl lg:text-8xl font-display uppercase tracking-tighter leading-none text-brand-blue">
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-display uppercase tracking-tighter leading-none text-brand-blue">
             TOCA<span className="text-brand-lime text-stroke-blue">Í</span>
           </h1>
-          <p className="text-xl font-body font-bold italic uppercase opacity-70">
+          <p className="text-sm sm:text-xl font-body font-bold italic uppercase opacity-70">
             tocai.com/{slug}
           </p>
         </div>
@@ -550,7 +550,7 @@ export default function ClientView() {
           <div className={cn("px-4 py-1 border-4 border-brand-blue inline-block mb-2 shadow-[4px_4px_0px_var(--color-brand-blue)]", themeAccent.badge)}>
             <span className="text-sm font-bold uppercase tracking-widest text-brand-blue">Tema da Noite</span>
           </div>
-          <h2 className={cn("text-4xl lg:text-5xl font-display uppercase tracking-tight leading-none", themeAccent.title)}>
+          <h2 className={cn("text-2xl sm:text-4xl lg:text-5xl font-display uppercase tracking-tight leading-none", themeAccent.title)}>
             {session.theme}
           </h2>
         </motion.div>
@@ -570,9 +570,9 @@ export default function ClientView() {
             >
               <div className="card-bento p-6 lg:p-10 min-h-full">
                 <div className="mb-8 flex items-center justify-between border-b-4 border-brand-blue pb-4">
-                  <h4 className="font-display text-4xl lg:text-5xl uppercase tracking-tighter">O QUE VAMOS OUVIR?</h4>
+                  <h4 className="font-display text-2xl sm:text-4xl lg:text-5xl uppercase tracking-tighter">O QUE VAMOS OUVIR?</h4>
                   <button onClick={() => { setShowSearch(false); previewAudioRef.current?.pause(); previewAudioRef.current = null; setPreviewPlayingId(null); }} className="text-brand-blue hover:rotate-90 transition-transform p-1">
-                    <X size={40} strokeWidth={3} />
+                    <X size={28} strokeWidth={3} />
                   </button>
                 </div>
 
@@ -701,7 +701,7 @@ export default function ClientView() {
                         </div>
 
                         <div className="flex-1 overflow-hidden">
-                          <h5 className="truncate font-display text-2xl uppercase leading-none">{item.title}</h5>
+                          <h5 className="truncate font-display text-xl uppercase leading-none">{item.title}</h5>
                           <p className="font-body text-sm font-bold uppercase opacity-60 italic">{item.artist}</p>
                         </div>
                         <button
@@ -736,8 +736,8 @@ export default function ClientView() {
               exit={{ opacity: 0 }}
               className="fixed inset-0 z-[110] flex items-center justify-center bg-brand-blue/80 p-6 backdrop-blur-sm"
             >
-              <div className="card-bento w-full max-w-sm bg-white p-8">
-                <h3 className="text-4xl font-display text-brand-blue mb-1 leading-none">DEDICAR?</h3>
+              <div className="card-bento w-full max-w-sm bg-white p-5 sm:p-8">
+                <h3 className="text-2xl sm:text-4xl font-display text-brand-blue mb-1 leading-none">DEDICAR?</h3>
                 <p className="font-body text-sm font-bold uppercase italic opacity-60 mb-1">
                   {pendingTrack.title} · {pendingTrack.artist}
                 </p>
@@ -749,7 +749,7 @@ export default function ClientView() {
                   value={dedText}
                   onChange={e => setDedText(e.target.value)}
                   onKeyDown={e => e.key === "Enter" && doRequest(pendingTrack, dedText)}
-                  className="w-full border-4 border-brand-blue p-3 font-display text-xl uppercase focus:outline-none mb-4"
+                  className="w-full border-4 border-brand-blue p-3 font-display text-base sm:text-xl uppercase focus:outline-none mb-4"
                 />
                 <div className="flex gap-3">
                   <button
@@ -779,12 +779,12 @@ export default function ClientView() {
               exit={{ opacity: 0 }}
               className="fixed inset-0 z-[100] flex items-center justify-center bg-brand-blue/90 p-6 backdrop-blur-md"
             >
-              <div className="card-bento max-w-sm bg-white p-10 text-center shadow-[12px_12px_0px_var(--color-brand-lime)]">
-                <div className="mb-6 flex justify-center text-brand-lime">
-                  <Sparkles size={80} strokeWidth={3} className="drop-shadow-[4px_4px_0px_var(--color-brand-blue)]" />
+              <div className="card-bento max-w-sm bg-white p-6 sm:p-10 text-center shadow-[12px_12px_0px_var(--color-brand-lime)]">
+                <div className="mb-4 sm:mb-6 flex justify-center text-brand-lime">
+                  <Sparkles strokeWidth={3} className="drop-shadow-[4px_4px_0px_var(--color-brand-blue)] w-14 h-14 sm:w-20 sm:h-20" />
                 </div>
-                <h3 className="text-5xl font-display leading-none mb-2">PEDIDO ENVIADO!</h3>
-                <p className="mb-8 font-body text-2xl font-black uppercase leading-tight italic opacity-60">
+                <h3 className="text-3xl sm:text-5xl font-display leading-none mb-2">PEDIDO ENVIADO!</h3>
+                <p className="mb-6 sm:mb-8 font-body text-base sm:text-2xl font-black uppercase leading-tight italic opacity-60">
                   Sua música já está na fila.
                 </p>
 
@@ -804,7 +804,7 @@ export default function ClientView() {
                   </div>
                 )}
 
-                <button onClick={() => setShowSuccess(false)} className="btn-bento w-full text-3xl">FECHAR</button>
+                <button onClick={() => setShowSuccess(false)} className="btn-bento w-full text-xl sm:text-3xl">FECHAR</button>
               </div>
             </motion.div>
           )}
@@ -818,13 +818,13 @@ export default function ClientView() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="md:col-span-7 md:row-span-4 card-bento bg-brand-blue text-brand-cream p-6 lg:p-10 flex flex-col relative overflow-hidden group"
         >
-          <div className="absolute top-0 right-0 bg-brand-lime text-brand-blue font-display px-6 py-2 text-2xl lg:text-3xl tracking-tighter shadow-[-4px_4px_0px_var(--color-brand-blue)] z-10">
+          <div className="absolute top-0 right-0 bg-brand-lime text-brand-blue font-display px-3 py-1 sm:px-6 sm:py-2 text-base sm:text-2xl lg:text-3xl tracking-tighter shadow-[-4px_4px_0px_var(--color-brand-blue)] z-10">
             NO AR AGORA
           </div>
 
           {nowPlaying ? (
             <div className="flex flex-col lg:flex-row gap-8 items-center h-full">
-              <div className="relative w-48 h-48 lg:w-64 lg:h-64 flex-shrink-0 animate-float">
+              <div className="relative w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 flex-shrink-0 animate-float">
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
@@ -835,7 +835,7 @@ export default function ClientView() {
                     <img src={nowPlaying.thumbnail_url} alt={nowPlaying.title} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full bg-black flex items-center justify-center">
-                      <Music size={80} className="text-brand-lime opacity-40" />
+                      <Music className="text-brand-lime opacity-40 w-10 h-10 sm:w-16 sm:h-16 lg:w-20 lg:h-20" />
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-tr from-brand-blue/40 to-transparent" />
@@ -843,10 +843,10 @@ export default function ClientView() {
               </div>
 
               <div className="flex flex-col justify-center text-center lg:text-left flex-1 min-w-0">
-                <h3 className="text-4xl lg:text-6xl font-display leading-none mb-2 uppercase italic tracking-tighter truncate">
+                <h3 className="text-2xl sm:text-4xl lg:text-6xl font-display leading-none mb-2 uppercase italic tracking-tighter truncate">
                   {nowPlaying.title}
                 </h3>
-                <p className="text-xl lg:text-2xl font-body font-bold text-brand-lime mb-2 uppercase tracking-widest leading-none">
+                <p className="text-sm sm:text-xl lg:text-2xl font-body font-bold text-brand-lime mb-2 uppercase tracking-widest leading-none">
                   {nowPlaying.artist}
                 </p>
                 {(nowPlaying.tags ?? []).length > 0 && (
@@ -902,7 +902,7 @@ export default function ClientView() {
                   </div>
                   <div className="text-left">
                     <p className="text-[10px] uppercase font-bold opacity-70 tracking-widest">Requisitado por</p>
-                    <p className="text-lg lg:text-xl font-display uppercase tracking-tight leading-none">
+                    <p className="text-base sm:text-lg lg:text-xl font-display uppercase tracking-tight leading-none">
                       @{nowPlaying.client_name}
                     </p>
                   </div>
@@ -911,9 +911,9 @@ export default function ClientView() {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center gap-6 opacity-40">
-              <Music size={80} className="text-brand-lime" />
-              <p className="font-display text-4xl uppercase">FILA VAZIA</p>
-              <p className="font-body text-xl font-bold uppercase italic">Faça o primeiro pedido!</p>
+              <Music className="text-brand-lime w-12 h-12 sm:w-20 sm:h-20" />
+              <p className="font-display text-2xl sm:text-4xl uppercase">FILA VAZIA</p>
+              <p className="font-body text-base sm:text-xl font-bold uppercase italic">Faça o primeiro pedido!</p>
             </div>
           )}
 
@@ -975,11 +975,11 @@ export default function ClientView() {
                     )}
                   >
                     <div className="flex items-center gap-4">
-                      <span className={cn("font-display text-4xl lg:text-5xl leading-none opacity-40", themeAccent.title)}>
+                      <span className={cn("font-display text-2xl sm:text-4xl lg:text-5xl leading-none opacity-40", themeAccent.title)}>
                         {(idx + 2).toString().padStart(2, "0")}
                       </span>
                       <div className="flex-grow min-w-0">
-                        <p className="font-display text-2xl lg:text-3xl leading-none uppercase truncate tracking-tighter">
+                        <p className="font-display text-lg sm:text-2xl lg:text-3xl leading-none uppercase truncate tracking-tighter">
                           {item.title}
                         </p>
                         <div className="flex items-center gap-2 mt-1 flex-wrap">
@@ -1004,7 +1004,7 @@ export default function ClientView() {
                           onClick={() => handleVote(item.id)}
                           className="group flex flex-col items-center transition-all active:scale-125"
                         >
-                          <span className={cn("font-display text-2xl lg:text-3xl leading-none transition-colors duration-300", votedItems.has(item.id) ? "text-green-500" : "text-brand-blue")}>
+                          <span className={cn("font-display text-lg sm:text-2xl lg:text-3xl leading-none transition-colors duration-300", votedItems.has(item.id) ? "text-green-500" : "text-brand-blue")}>
                             +{item.score}
                           </span>
                           <AnimatePresence mode="wait" initial={false}>
@@ -1143,7 +1143,7 @@ export default function ClientView() {
           <div className="mt-4">
             {session.queue_locked ? (
               <div className="border-4 border-red-600 bg-red-50 p-4 text-center">
-                <p className="font-display text-2xl uppercase text-red-700">🔒 Fila Fechada</p>
+                <p className="font-display text-xl sm:text-2xl uppercase text-red-700">🔒 Fila Fechada</p>
                 <p className="font-body text-xs font-bold uppercase text-red-600/70 mt-1">O admin pausou os pedidos temporariamente</p>
               </div>
             ) : (
@@ -1151,7 +1151,7 @@ export default function ClientView() {
                 <input
                   type="text"
                   placeholder="QUER OUVIR O QUÊ?"
-                  className="w-full border-4 border-brand-blue bg-brand-cream px-6 py-4 font-display text-2xl lg:text-3xl uppercase tracking-tighter placeholder:text-brand-blue/30 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-lime/30"
+                  className="w-full border-4 border-brand-blue bg-brand-cream px-4 py-3 sm:px-6 sm:py-4 font-display text-lg sm:text-2xl lg:text-3xl uppercase tracking-tighter placeholder:text-brand-blue/30 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-lime/30"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   onKeyDown={e => e.key === "Enter" && handleSearch()}
@@ -1161,8 +1161,8 @@ export default function ClientView() {
                   className="absolute right-4 bg-brand-blue p-2 text-brand-lime shadow-[2px_2px_0px_var(--color-brand-lime)] hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-0 active:translate-y-0 transition-all"
                 >
                   {isSearching
-                    ? <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-lime border-t-transparent" />
-                    : <Search size={28} strokeWidth={3} />
+                    ? <div className="h-5 w-5 sm:h-8 sm:w-8 animate-spin rounded-full border-4 border-brand-lime border-t-transparent" />
+                    : <Search size={22} strokeWidth={3} />
                   }
                 </button>
               </div>
@@ -1186,7 +1186,7 @@ export default function ClientView() {
             </span>
           </div>
           <div>
-            <p className="text-4xl lg:text-5xl font-display uppercase italic text-brand-blue leading-none tracking-tight">
+            <p className="text-2xl sm:text-4xl lg:text-5xl font-display uppercase italic text-brand-blue leading-none tracking-tight">
               {clientName || "VISITANTE"}
             </p>
             <p className="text-sm font-body font-bold text-brand-blue opacity-60">
@@ -1233,10 +1233,10 @@ export default function ClientView() {
         >
           <p className="text-xs font-bold uppercase mb-2 opacity-60 tracking-widest">TEMPO ESTIMADO</p>
           <div className="flex items-baseline gap-1">
-            <p className="text-7xl lg:text-8xl font-display tracking-tighter text-brand-blue leading-none">
+            <p className="text-4xl sm:text-6xl lg:text-8xl font-display tracking-tighter text-brand-blue leading-none">
               {waitMinutes}
             </p>
-            <span className="text-3xl font-display text-brand-blue">MIN</span>
+            <span className="text-lg sm:text-2xl lg:text-3xl font-display text-brand-blue">MIN</span>
           </div>
           <p className="text-[10px] font-bold uppercase mt-3 bg-brand-blue text-brand-lime px-4 py-1 italic tracking-widest">
             {upNext.length === 0 ? "Fila livre!" : upNext.length <= 3 ? "Fila andando rápido" : "Fila movimentada"}
@@ -1296,10 +1296,10 @@ export default function ClientView() {
                 setShowIdentify(false);
                 if (Notification.permission === "default") Notification.requestPermission();
               }}
-              className="card-bento w-full max-w-sm p-8 bg-white"
+              className="card-bento w-full max-w-sm p-5 sm:p-8 bg-white"
             >
-              <h3 className="mb-2 text-4xl font-display text-brand-blue">CADÊ O PAGODE?</h3>
-              <p className="mb-6 font-body text-lg font-bold uppercase leading-tight italic text-brand-blue/60">
+              <h3 className="mb-2 text-2xl sm:text-4xl font-display text-brand-blue">CADÊ O PAGODE?</h3>
+              <p className="mb-6 font-body text-sm sm:text-lg font-bold uppercase leading-tight italic text-brand-blue/60">
                 Antes de pedir, como devemos te chamar na fila?
               </p>
               <div className="space-y-4">
@@ -1310,7 +1310,7 @@ export default function ClientView() {
                     required
                     type="text"
                     placeholder="EX: KELVIN DO SAMBA"
-                    className="w-full border-2 border-brand-blue p-3 font-display text-2xl uppercase focus:outline-none"
+                    className="w-full border-2 border-brand-blue p-3 font-display text-xl sm:text-2xl uppercase focus:outline-none"
                   />
                 </div>
                 <div className="flex flex-col gap-1">
@@ -1320,10 +1320,10 @@ export default function ClientView() {
                     required
                     type="tel"
                     placeholder="(00) 00000-0000"
-                    className="w-full border-2 border-brand-blue p-3 font-display text-2xl focus:outline-none"
+                    className="w-full border-2 border-brand-blue p-3 font-display text-xl sm:text-2xl focus:outline-none"
                   />
                 </div>
-                <button type="submit" className="btn-bento w-full text-2xl mt-4 uppercase">
+                <button type="submit" className="btn-bento w-full text-xl sm:text-2xl mt-4 uppercase">
                   ENTRAR NO FLOW
                 </button>
               </div>
@@ -1340,13 +1340,14 @@ function TabBtn({ active, onClick, children }: { active: boolean; onClick: () =>
     <button
       onClick={onClick}
       className={cn(
-        "flex-1 py-1.5 font-display text-lg uppercase tracking-tight border-4 transition-all",
+        "flex-1 py-1.5 font-display text-sm sm:text-base uppercase tracking-tight border-4 transition-all",
         active
           ? "border-brand-blue bg-brand-lime text-brand-blue shadow-[3px_3px_0px_var(--color-brand-blue)] translate-x-[-1px] translate-y-[-1px]"
           : "border-transparent text-brand-blue/50 hover:text-brand-blue",
       )}
     >
       {children}
+
     </button>
   );
 }
