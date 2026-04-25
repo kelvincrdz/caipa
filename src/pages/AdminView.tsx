@@ -3,8 +3,9 @@ import { useParams } from "react-router-dom";
 import { motion } from "motion/react";
 import {
   Power, Settings, List, Trash2, ShieldAlert, ArrowUpCircle,
-  Play, Music, SkipForward, Pause, Wifi, WifiOff, LogIn, LogOut, Lock, ShieldCheck, Tag,
+  Play, Music, SkipForward, Pause, Wifi, WifiOff, LogIn, LogOut, Lock, ShieldCheck, Tag, Share2, Copy, CheckCheck,
 } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { tagMatchesTheme } from "../hooks/useQueue";
 
 const GENRE_TAGS = [
@@ -66,7 +67,8 @@ export default function AdminView() {
 
   // --- Main admin state ---
   const [isActive, setIsActive] = useState(true);
-  const [activeTab, setActiveTab] = useState<"queue" | "settings">("queue");
+  const [activeTab, setActiveTab] = useState<"queue" | "settings" | "share">("queue");
+  const [copied, setCopied] = useState(false);
   const [loggedIn, setLoggedIn] = useState(isAdminLoggedIn());
 
   const { queue, veto, vote, removeItem, jumpToTop, advanceQueue } = useQueue(slug);
@@ -193,6 +195,7 @@ export default function AdminView() {
         <div className="flex w-full justify-around gap-2 lg:flex-col lg:justify-start">
           <NavBtn active={activeTab === "queue"} icon={<List />} label="FILA" onClick={() => setActiveTab("queue")} />
           <NavBtn active={activeTab === "settings"} icon={<Settings />} label="CONFIG" onClick={() => setActiveTab("settings")} />
+          <NavBtn active={activeTab === "share"} icon={<Share2 />} label="LINK" onClick={() => setActiveTab("share")} />
 
           <div className="hidden lg:mt-auto lg:block space-y-3">
             {loggedIn ? (
@@ -384,6 +387,55 @@ export default function AdminView() {
             </div>
           </motion.div>
         )}
+
+        {activeTab === "share" && (() => {
+          const clientUrl = `${window.location.origin}/${slug}`;
+          const handleCopy = () => {
+            navigator.clipboard.writeText(clientUrl);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+          };
+          return (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 max-w-xl">
+              <div className="card-bento p-8">
+                <h3 className="mb-2 text-4xl font-display leading-none tracking-tighter border-b-4 border-brand-blue pb-2 inline-block">
+                  LINK DO BAR
+                </h3>
+                <p className="mb-6 font-body text-xs font-bold uppercase opacity-50 italic">
+                  Compartilhe com seus clientes para eles pedirem músicas
+                </p>
+
+                <div className="border-4 border-brand-blue bg-brand-cream/40 p-4 flex items-center gap-3 mb-4">
+                  <span className="flex-1 font-body text-base font-bold break-all select-all">{clientUrl}</span>
+                  <button
+                    onClick={handleCopy}
+                    className={cn(
+                      "flex-shrink-0 flex items-center gap-2 border-4 px-4 py-3 font-display text-lg uppercase transition-all",
+                      copied
+                        ? "border-green-500 bg-green-500 text-white"
+                        : "border-brand-blue bg-white text-brand-blue hover:bg-brand-blue hover:text-white"
+                    )}
+                  >
+                    {copied ? <><CheckCheck size={18} /> COPIADO</> : <><Copy size={18} /> COPIAR</>}
+                  </button>
+                </div>
+
+                <div className="flex justify-center p-6 border-4 border-brand-blue bg-white">
+                  <QRCodeSVG
+                    value={clientUrl}
+                    size={240}
+                    bgColor="#ffffff"
+                    fgColor="#0a1628"
+                    level="H"
+                  />
+                </div>
+                <p className="mt-4 font-body text-xs font-bold uppercase opacity-50 text-center">
+                  Aponte a câmera do celular para o QR Code
+                </p>
+              </div>
+            </motion.div>
+          );
+        })()}
 
         {activeTab === "settings" && (
           <div className="space-y-8 max-w-3xl">
