@@ -6,6 +6,8 @@ export interface SessionConfig {
   request_cooldown_minutes: number;
   spotify_token?: string;
   spotify_device_name?: string;
+  queue_locked?: boolean;
+  enable_dedications?: boolean;
 }
 
 export const DEFAULT_CONFIG: SessionConfig = {
@@ -14,4 +16,6 @@ export const DEFAULT_CONFIG: SessionConfig = {
   blocked_keywords: [],
   max_initial_requests: 5,
   request_cooldown_minutes: 3,
+  queue_locked: false,
+  enable_dedications: false,
 };

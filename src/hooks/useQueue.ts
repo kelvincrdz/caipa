@@ -4,7 +4,7 @@ import { QueueItem } from '../types';
 import { SessionConfig } from '../lib/sessionConfig';
 
 function normalizeTag(s: string): string {
-  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 }
 
 export function tagMatchesTheme(tags: string[], theme: string): boolean {
@@ -70,7 +70,13 @@ export function useQueue(barSlug: string | undefined) {
     return () => { supabase.removeChannel(channel); };
   }, [barSlug]);
 
-  const addMusic = async (music: any, clientId: string, clientName: string, session: SessionConfig) => {
+  const addMusic = async (
+    music: any,
+    clientId: string,
+    clientName: string,
+    session: SessionConfig,
+    dedicationTo?: string,
+  ) => {
     const artistsBlocked = session.blocked_artists ?? [];
     const keywordsBlocked = session.blocked_keywords ?? [];
 
@@ -79,6 +85,8 @@ export function useQueue(barSlug: string | undefined) {
       keywordsBlocked.some(k => music.title.toLowerCase().includes(k.toLowerCase()));
 
     if (isBlocked) throw new Error('Música ou artista bloqueado nesta sessão!');
+
+    if (session.queue_locked) throw new Error('A fila está fechada no momento. Aguarde o admin reabrir.');
 
     const tags: string[] = music.tags ?? [];
     const score = tagMatchesTheme(tags, session.theme ?? '') ? 1 : 0;
@@ -98,6 +106,8 @@ export function useQueue(barSlug: string | undefined) {
         tags,
         score,
         status: 'pending',
+        dedication_to: dedicationTo || null,
+        reactions: { fire: 0, heart: 0 },
       })
       .select()
       .single();
@@ -112,12 +122,44 @@ export function useQueue(barSlug: string | undefined) {
     await supabase.from('queue_items').update({ score: item.score + 1 }).eq('id', itemId);
   };
 
-  const veto = async (itemId: string) => {
-    await supabase.from('queue_items').update({ score: -999 }).eq('id', itemId);
+  const superVote = async (itemId: string) => {
+    const item = queue.find(i => i.id === itemId);
+    if (!item) return;
+    await supabase.from('queue_items').update({ score: item.score + 3 }).eq('id', itemId);
   };
 
-  const removeItem = async (itemId: string) => {
+  const reactToItem = async (itemId: string, reactions: { fire: number; heart: number }) => {
+    await supabase.from('queue_items').update({ reactions }).eq('id', itemId);
+  };
+
+  const veto = async (itemId: string, reason?: string) => {
+    const item = queue.find(i => i.id === itemId);
+    await supabase.from('queue_items').update({ score: -999 }).eq('id', itemId);
+    if (barSlug) {
+      await supabase.from('moderation_logs').insert({
+        bar_slug: barSlug,
+        action: 'veto',
+        item_title: item?.title ?? null,
+        item_artist: item?.artist ?? null,
+        client_name: item?.client_name ?? null,
+        reason: reason || null,
+      });
+    }
+  };
+
+  const removeItem = async (itemId: string, reason?: string) => {
+    const item = queue.find(i => i.id === itemId);
     await supabase.from('queue_items').delete().eq('id', itemId);
+    if (barSlug) {
+      await supabase.from('moderation_logs').insert({
+        bar_slug: barSlug,
+        action: 'remove',
+        item_title: item?.title ?? null,
+        item_artist: item?.artist ?? null,
+        client_name: item?.client_name ?? null,
+        reason: reason || null,
+      });
+    }
   };
 
   const jumpToTop = async (itemId: string) => {
@@ -130,5 +172,5 @@ export function useQueue(barSlug: string | undefined) {
     await supabase.from('queue_items').delete().eq('id', queue[0].id);
   };
 
-  return { queue, loading, addMusic, vote, veto, removeItem, jumpToTop, advanceQueue };
+  return { queue, loading, addMusic, vote, superVote, reactToItem, veto, removeItem, jumpToTop, advanceQueue };
 }

@@ -5,6 +5,19 @@ export interface Bar {
   description: string;
   theme?: string;
   owner_id?: string;
+  theme_primary?: string;
+  theme_accent?: string;
+}
+
+export interface ModerationLog {
+  id: string;
+  bar_slug: string;
+  action: 'veto' | 'remove';
+  item_title?: string;
+  item_artist?: string;
+  client_name?: string;
+  reason?: string;
+  logged_at: string;
 }
 
 export interface Session {
@@ -33,6 +46,8 @@ export interface QueueItem {
   preview_url?: string;
   external_urls?: any;
   tags?: string[];
+  dedication_to?: string;
+  reactions?: { fire: number; heart: number };
 }
 
 export interface MusicTrack {

@@ -57,5 +57,5 @@ export function usePlayer(previewUrl: string | undefined | null, onEnded: () => 
     }
   };
 
-  return { isPlaying, progress, autoplayBlocked, togglePlay };
+  return { isPlaying, progress, autoplayBlocked, togglePlay, audioRef };
 }

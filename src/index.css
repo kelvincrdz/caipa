@@ -90,3 +90,59 @@ h1, h2, h3, .font-display {
 .queue-scroll::-webkit-scrollbar { width: 4px; }
 .queue-scroll::-webkit-scrollbar-track { background: transparent; }
 .queue-scroll::-webkit-scrollbar-thumb { background: var(--color-brand-blue); border-radius: 2px; }
+
+/* Marquee ticker */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  display: inline-block;
+}
+.marquee-content {
+  display: inline-block;
+  animation: marquee 40s linear infinite;
+}
+
+/* ── Party Mode ─────────────────────────────────────────────────────────────── */
+.party-mode {
+  --color-brand-blue: #000000;
+  --color-brand-lime: #39ff14;
+  --color-brand-cream: #0a0a0a;
+}
+
+@keyframes neon-glow {
+  0%, 100% { text-shadow: 0 0 4px #39ff14, 0 0 16px #39ff14; }
+  50%       { text-shadow: 0 0 16px #39ff14, 0 0 48px #39ff14, 0 0 80px #39ff14; }
+}
+
+@keyframes neon-border {
+  0%, 100% { box-shadow: 0 0 4px #39ff14, inset 0 0 4px #39ff14; }
+  50%       { box-shadow: 0 0 20px #39ff14, 0 0 40px #39ff14, inset 0 0 10px #39ff14; }
+}
+
+@keyframes color-cycle {
+  0%   { color: #39ff14; }
+  25%  { color: #ff0090; }
+  50%  { color: #00eeff; }
+  75%  { color: #ffdd00; }
+  100% { color: #39ff14; }
+}
+
+.party-mode .neon-text  { animation: neon-glow   1.6s ease-in-out infinite; }
+.party-mode .neon-border { animation: neon-border 1.6s ease-in-out infinite; }
+.party-mode .color-cycle { animation: color-cycle 3s   linear      infinite; }
+
+@keyframes party-eq-bar {
+  0%, 100% { height: 20%; }
+  25%  { height: 90%; }
+  50%  { height: 50%; }
+  75%  { height: 100%; }
+}
+
+.party-eq-1 { animation: party-eq-bar 0.4s ease-in-out infinite; }
+.party-eq-2 { animation: party-eq-bar 0.5s ease-in-out infinite 0.08s; }
+.party-eq-3 { animation: party-eq-bar 0.35s ease-in-out infinite 0.16s; }
+.party-eq-4 { animation: party-eq-bar 0.55s ease-in-out infinite 0.05s; }
+.party-eq-5 { animation: party-eq-bar 0.42s ease-in-out infinite 0.22s; }
+.party-eq-6 { animation: party-eq-bar 0.48s ease-in-out infinite 0.12s; }

@@ -15,6 +15,8 @@ export function useSession(barSlug: string | undefined) {
       request_cooldown_minutes: d.request_cooldown_minutes ?? 3,
       spotify_token: d.spotify_token ?? undefined,
       spotify_device_name: d.spotify_device_name ?? undefined,
+      queue_locked: d.queue_locked ?? false,
+      enable_dedications: d.enable_dedications ?? false,
     };
   }
 
