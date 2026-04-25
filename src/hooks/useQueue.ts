@@ -3,6 +3,19 @@ import { supabase } from '../lib/supabase';
 import { QueueItem } from '../types';
 import { SessionConfig } from '../lib/sessionConfig';
 
+function normalizeTag(s: string): string {
+  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+export function tagMatchesTheme(tags: string[], theme: string): boolean {
+  if (!theme || normalizeTag(theme) === 'livre') return false;
+  const t = normalizeTag(theme);
+  return tags.some(tag => {
+    const nt = normalizeTag(tag);
+    return nt.includes(t) || t.includes(nt);
+  });
+}
+
 function sortAndNormalize(items: QueueItem[]): QueueItem[] {
   return [...items]
     .sort((a, b) => {
@@ -67,15 +80,8 @@ export function useQueue(barSlug: string | undefined) {
 
     if (isBlocked) throw new Error('Música ou artista bloqueado nesta sessão!');
 
-    let score = 0;
-    const theme = session.theme?.toLowerCase() || '';
-    if (
-      theme &&
-      theme !== 'livre' &&
-      (music.title.toLowerCase().includes(theme) || music.artist.toLowerCase().includes(theme))
-    ) {
-      score += 3;
-    }
+    const tags: string[] = music.tags ?? [];
+    const score = tagMatchesTheme(tags, session.theme ?? '') ? 1 : 0;
 
     const { data, error } = await supabase
       .from('queue_items')
@@ -89,6 +95,7 @@ export function useQueue(barSlug: string | undefined) {
         spotify_uri: music.spotify_uri ?? null,
         preview_url: music.preview_url ?? null,
         external_urls: music.external_urls ?? null,
+        tags,
         score,
         status: 'pending',
       })

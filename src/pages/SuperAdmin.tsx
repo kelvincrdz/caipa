@@ -244,11 +244,11 @@ function BarCard({
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <h3 className="font-display text-3xl uppercase leading-none truncate">{bar.name}</h3>
-          <p className="font-body text-sm font-bold uppercase opacity-60 italic mt-1">
+          <p className="font-body text-sm font-bold uppercase opacity-60 italic mt-1 truncate">
             /{bar.slug} • {bar.owner_name}
           </p>
-          <p className="font-body text-xs font-bold opacity-40 uppercase mt-1">{bar.owner_email}</p>
-          <p className="font-body text-xs font-bold opacity-30 uppercase mt-1">Cadastrado: {createdAt}</p>
+          <p className="font-body text-xs font-bold opacity-40 uppercase mt-1 truncate">{bar.owner_email}</p>
+          <p className="font-body text-xs font-bold opacity-30 uppercase mt-1 truncate">Cadastrado: {createdAt}</p>
         </div>
 
         {/* QR Code miniatura */}
@@ -258,22 +258,24 @@ function BarCard({
       </div>
 
       {/* Links */}
-      <div className="space-y-2">
+      <div className="space-y-2 overflow-hidden">
         <a
           href={clientUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 font-body text-sm font-bold uppercase text-brand-blue hover:underline"
+          className="flex min-w-0 items-center gap-2 font-body text-sm font-bold uppercase text-brand-blue hover:underline"
         >
-          <ExternalLink size={14} /> {clientUrl}
+          <ExternalLink size={14} className="flex-shrink-0" />
+          <span className="truncate">{clientUrl}</span>
         </a>
         <a
           href={adminUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 font-body text-sm font-bold uppercase text-brand-blue/60 hover:underline"
+          className="flex min-w-0 items-center gap-2 font-body text-sm font-bold uppercase text-brand-blue/60 hover:underline"
         >
-          <ExternalLink size={14} /> {adminUrl}
+          <ExternalLink size={14} className="flex-shrink-0" />
+          <span className="truncate">{adminUrl}</span>
         </a>
       </div>
 

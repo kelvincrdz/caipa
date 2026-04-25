@@ -11,6 +11,8 @@ export function useSession(barSlug: string | undefined) {
       theme: d.theme,
       blocked_artists: d.blocked_artists ?? [],
       blocked_keywords: d.blocked_keywords ?? [],
+      max_initial_requests: d.max_initial_requests ?? 5,
+      request_cooldown_minutes: d.request_cooldown_minutes ?? 3,
       spotify_token: d.spotify_token ?? undefined,
       spotify_device_name: d.spotify_device_name ?? undefined,
     };

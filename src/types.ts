@@ -32,6 +32,7 @@ export interface QueueItem {
   requested_at: any;
   preview_url?: string;
   external_urls?: any;
+  tags?: string[];
 }
 
 export interface MusicTrack {
@@ -42,6 +43,7 @@ export interface MusicTrack {
   thumb: string;
   preview_url?: string;
   external_urls?: any;
+  tags?: string[];
 }
 
 export interface Client {

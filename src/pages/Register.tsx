@@ -13,6 +13,7 @@ const registerSchema = z.object({
   barName: z.string().min(3, "Nome do bar deve ter pelo menos 3 letras"),
   ownerName: z.string().min(2, "Seu nome deve ter pelo menos 2 letras"),
   email: z.string().email("Email inválido"),
+  adminPassword: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
 });
 
 type RegisterForm = z.infer<typeof registerSchema>;
@@ -60,6 +61,7 @@ export default function Register() {
       slug,
       owner_name: data.ownerName,
       owner_email: data.email,
+      admin_password: data.adminPassword,
     });
 
     if (barError) {
@@ -168,6 +170,13 @@ export default function Register() {
             <p className="font-body text-base font-black uppercase opacity-60 italic mb-4">
               Use esta URL para gerenciar a fila, definir o tema da noite e vetar músicas. Não compartilhe!
             </p>
+            <div className="border-4 border-brand-blue bg-white p-4 mb-4 space-y-1">
+              <p className="font-body text-sm font-bold uppercase text-brand-blue/70">Login de acesso:</p>
+              <p className="font-body text-sm font-bold uppercase">
+                <span className="opacity-50">USUÁRIO:</span> <span className="font-display text-lg">{created.slug}</span>
+              </p>
+              <p className="font-body text-sm font-bold uppercase opacity-50">SENHA: a que você acabou de definir</p>
+            </div>
             <div className="flex items-center gap-3 border-4 border-brand-blue p-4 bg-white">
               <p className="font-display text-xl lg:text-2xl text-brand-blue flex-1 truncate tracking-tighter">
                 {adminUrl}
@@ -239,6 +248,14 @@ export default function Register() {
             {...register("email")}
             placeholder="SEU@EMAIL.COM"
             type="email"
+          />
+
+          <FormField
+            label="SENHA DO PAINEL ADMIN"
+            error={errors.adminPassword?.message}
+            {...register("adminPassword")}
+            placeholder="MÍN. 6 CARACTERES"
+            type="password"
           />
 
           {error && (

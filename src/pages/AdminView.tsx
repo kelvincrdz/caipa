@@ -3,17 +3,68 @@ import { useParams } from "react-router-dom";
 import { motion } from "motion/react";
 import {
   Power, Settings, List, Trash2, ShieldAlert, ArrowUpCircle,
-  Play, Music, SkipForward, Pause, Wifi, WifiOff, LogIn, LogOut,
+  Play, Music, SkipForward, Pause, Wifi, WifiOff, LogIn, LogOut, Lock, ShieldCheck, Tag,
 } from "lucide-react";
+import { tagMatchesTheme } from "../hooks/useQueue";
+
+const GENRE_TAGS = [
+  { label: "Livre",      value: "Livre",      cls: "border-brand-blue/40 text-brand-blue/60 bg-white" },
+  { label: "Forró",      value: "Forró",      cls: "border-orange-400 text-orange-700 bg-orange-50" },
+  { label: "Samba",      value: "Samba",      cls: "border-green-500 text-green-700 bg-green-50" },
+  { label: "Pagode",     value: "Pagode",     cls: "border-emerald-500 text-emerald-700 bg-emerald-50" },
+  { label: "MPB",        value: "MPB",        cls: "border-violet-500 text-violet-700 bg-violet-50" },
+  { label: "Axé",        value: "Axé",        cls: "border-yellow-500 text-yellow-700 bg-yellow-50" },
+  { label: "Rock",       value: "Rock",       cls: "border-red-500 text-red-700 bg-red-50" },
+  { label: "Pop",        value: "Pop",        cls: "border-pink-500 text-pink-700 bg-pink-50" },
+  { label: "Funk",       value: "Funk",       cls: "border-fuchsia-500 text-fuchsia-700 bg-fuchsia-50" },
+  { label: "Eletrônica", value: "Eletrônica", cls: "border-blue-500 text-blue-700 bg-blue-50" },
+  { label: "Reggae",     value: "Reggae",     cls: "border-lime-500 text-lime-700 bg-lime-50" },
+  { label: "Bossa Nova", value: "Bossa Nova", cls: "border-amber-500 text-amber-700 bg-amber-50" },
+  { label: "Sertanejo",  value: "Sertanejo",  cls: "border-stone-500 text-stone-700 bg-stone-50" },
+  { label: "Hip-Hop",    value: "Hip-Hop",    cls: "border-indigo-500 text-indigo-700 bg-indigo-50" },
+  { label: "Jazz",       value: "Jazz",       cls: "border-cyan-500 text-cyan-700 bg-cyan-50" },
+];
 import { cn } from "../lib/utils";
 import { useQueue } from "../hooks/useQueue";
 import { useSession } from "../hooks/useSession";
 import { useSpotifyPlayer } from "../hooks/useSpotifyPlayer";
 import { initiateLogin, isAdminLoggedIn, logout, getValidToken } from "../services/spotifyAuth";
 import { play as spotifyPlay, pause as spotifyPause, resume as spotifyResume } from "../services/spotifyPlayback";
+import { supabase } from "../lib/supabase";
 
 export default function AdminView() {
   const { slug } = useParams<{ slug: string }>();
+
+  // --- Bar admin auth ---
+  const [adminAuthed, setAdminAuthed] = useState(() =>
+    sessionStorage.getItem(`caipa_admin_auth_${slug}`) === "true"
+  );
+  const [loginUsername, setLoginUsername] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginError, setLoginError] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
+
+  const handleAdminLogin = async () => {
+    if (!slug) return;
+    setLoginLoading(true);
+    setLoginError(false);
+    const { data } = await supabase
+      .from("bars")
+      .select("admin_password")
+      .eq("slug", slug)
+      .maybeSingle();
+    // Fallback: if no password set in DB, accept the slug as password
+    const storedPwd = data?.admin_password ?? slug;
+    if (loginUsername === slug && loginPassword === storedPwd) {
+      sessionStorage.setItem(`caipa_admin_auth_${slug}`, "true");
+      setAdminAuthed(true);
+    } else {
+      setLoginError(true);
+    }
+    setLoginLoading(false);
+  };
+
+  // --- Main admin state ---
   const [isActive, setIsActive] = useState(true);
   const [activeTab, setActiveTab] = useState<"queue" | "settings">("queue");
   const [loggedIn, setLoggedIn] = useState(isAdminLoggedIn());
@@ -26,13 +77,11 @@ export default function AdminView() {
   const others = queue.slice(1);
   const barName = slug?.toUpperCase().replace("-", " ") || "MEU BAR";
 
-  // Auto-play when top of queue changes
   useEffect(() => {
     if (!isReady || !deviceId || !nowPlaying?.spotify_uri) return;
     spotifyPlay(nowPlaying.spotify_uri, deviceId).catch(console.error);
   }, [nowPlaying?.id, isReady, deviceId]);
 
-  // Sync device name + token to session when SDK is ready
   useEffect(() => {
     if (!isReady || !deviceId || !slug) return;
     getValidToken().then(token => {
@@ -45,7 +94,6 @@ export default function AdminView() {
     });
   }, [isReady, deviceId, slug]);
 
-  // Clear device from session on logout
   function handleLogout() {
     logout();
     setLoggedIn(false);
@@ -65,7 +113,6 @@ export default function AdminView() {
 
   async function handleSkip() {
     await advanceQueue();
-    // next song auto-plays via useEffect above
   }
 
   async function handleTogglePlay() {
@@ -75,7 +122,63 @@ export default function AdminView() {
     } else {
       await spotifyResume(deviceId).catch(console.error);
     }
-    togglePlay(); // optimistic local state via SDK
+    togglePlay();
+  }
+
+  // --- Login gate ---
+  if (!adminAuthed) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-brand-cream p-6">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="card-bento bg-white p-12 w-full max-w-sm text-center"
+        >
+          <div className="mb-6 flex justify-center text-brand-blue">
+            <ShieldCheck size={64} strokeWidth={1.5} />
+          </div>
+          <h1 className="text-5xl font-display text-brand-blue mb-1 leading-none">ADMIN</h1>
+          <p className="font-body text-sm font-bold uppercase opacity-60 mb-2 italic">
+            {slug?.toUpperCase()}
+          </p>
+          <p className="font-body text-xs font-bold uppercase opacity-40 mb-8">
+            Usuário: slug do bar &nbsp;•&nbsp; Senha: definida no cadastro
+          </p>
+          <input
+            type="text"
+            placeholder="USUÁRIO (slug do bar)"
+            value={loginUsername}
+            onChange={e => { setLoginUsername(e.target.value); setLoginError(false); }}
+            onKeyDown={e => e.key === "Enter" && handleAdminLogin()}
+            className="w-full border-4 border-brand-blue p-4 font-display text-xl uppercase focus:outline-none focus:bg-brand-cream/30 mb-3"
+            autoFocus
+            autoComplete="username"
+          />
+          <input
+            type="password"
+            placeholder="SENHA"
+            value={loginPassword}
+            onChange={e => { setLoginPassword(e.target.value); setLoginError(false); }}
+            onKeyDown={e => e.key === "Enter" && handleAdminLogin()}
+            className="w-full border-4 border-brand-blue p-4 font-display text-xl uppercase focus:outline-none focus:bg-brand-cream/30 mb-4"
+            autoComplete="current-password"
+          />
+          {loginError && (
+            <p className="font-body text-sm font-bold uppercase text-red-600 mb-4">
+              Usuário ou senha incorretos.
+            </p>
+          )}
+          <button
+            onClick={handleAdminLogin}
+            disabled={loginLoading}
+            className="btn-bento w-full text-2xl disabled:opacity-50"
+          >
+            <Lock size={18} className="inline mr-2" />
+            {loginLoading ? "VERIFICANDO..." : "ENTRAR"}
+          </button>
+        </motion.div>
+      </div>
+    );
   }
 
   return (
@@ -89,10 +192,9 @@ export default function AdminView() {
 
         <div className="flex w-full justify-around gap-2 lg:flex-col lg:justify-start">
           <NavBtn active={activeTab === "queue"} icon={<List />} label="FILA" onClick={() => setActiveTab("queue")} />
-          <NavBtn active={activeTab === "settings"} icon={<Settings />} label="TEMA" onClick={() => setActiveTab("settings")} />
+          <NavBtn active={activeTab === "settings"} icon={<Settings />} label="CONFIG" onClick={() => setActiveTab("settings")} />
 
           <div className="hidden lg:mt-auto lg:block space-y-3">
-            {/* Spotify Auth */}
             {loggedIn ? (
               <div className="space-y-2">
                 <div className={cn(
@@ -139,7 +241,6 @@ export default function AdminView() {
         <header className="mb-8 flex items-center justify-between border-b-4 border-brand-blue pb-4">
           <h2 className="text-5xl font-display text-brand-blue leading-none">{barName}</h2>
           <div className="flex items-center gap-3">
-            {/* Mobile Spotify status */}
             <div className="lg:hidden">
               {loggedIn ? (
                 <div className={cn(
@@ -218,7 +319,6 @@ export default function AdminView() {
                       {nowPlaying.artist} • @{nowPlaying.client_name}
                     </p>
 
-                    {/* Spotify progress */}
                     {isReady && (
                       <div className="mt-3 h-2 bg-brand-blue/20 w-full">
                         <motion.div
@@ -269,6 +369,7 @@ export default function AdminView() {
                 <AdminQueueItem
                   key={item.id}
                   {...item}
+                  currentTheme={config.theme}
                   onVeto={() => veto(item.id)}
                   onVote={() => vote(item.id, "admin")}
                   onRemove={() => removeItem(item.id)}
@@ -287,19 +388,86 @@ export default function AdminView() {
         {activeTab === "settings" && (
           <div className="space-y-8 max-w-3xl">
             <div className="card-bento p-8">
-              <h3 className="mb-6 text-4xl font-display leading-none tracking-tighter border-b-4 border-brand-blue pb-2 inline-block">
+              <h3 className="mb-2 text-4xl font-display leading-none tracking-tighter border-b-4 border-brand-blue pb-2 inline-block">
                 TEMA DA NOITE
               </h3>
-              <input
-                className="w-full border-4 border-brand-blue p-6 font-display text-4xl uppercase focus:ring-8 focus:ring-brand-lime/30 outline-none bg-brand-cream/50"
-                placeholder="EX: SAMBA E MPB"
-                value={config.theme}
-                onChange={e => updateConfig({ theme: e.target.value })}
-                onBlur={e => updateConfig({ theme: e.target.value })}
-              />
-              <p className="mt-4 font-body text-base font-black uppercase opacity-60 italic">
-                *Músicas do tema ganham +3 pontos automaticamente.
+              <p className="mb-6 font-body text-xs font-bold uppercase opacity-50 italic">
+                Selecione o gênero — músicas com essa tag entram com +1 na fila
               </p>
+              <div className="flex flex-wrap gap-3 mb-6">
+                {GENRE_TAGS.map(genre => {
+                  const isActive = config.theme === genre.value;
+                  return (
+                    <button
+                      key={genre.value}
+                      onClick={() => updateConfig({ theme: genre.value })}
+                      className={cn(
+                        "border-4 px-5 py-2 font-display text-2xl uppercase tracking-tight transition-all",
+                        isActive
+                          ? cn(genre.cls, "shadow-[4px_4px_0px_var(--color-brand-blue)] translate-x-[-2px] translate-y-[-2px] border-opacity-100 font-black")
+                          : cn(genre.cls, "opacity-50 hover:opacity-80"),
+                      )}
+                    >
+                      {isActive && <Tag size={14} className="inline mr-1 mb-0.5" />}
+                      {genre.label}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="border-4 border-brand-blue bg-brand-cream/50 px-6 py-4 flex items-center gap-4">
+                <Tag size={24} className="text-brand-blue flex-shrink-0" />
+                <div>
+                  <p className="font-display text-3xl uppercase leading-none">{config.theme}</p>
+                  <p className="font-body text-xs font-bold uppercase opacity-60 italic mt-1">
+                    {config.theme === "Livre"
+                      ? "Sem tema — todas as músicas entram com score 0"
+                      : `Músicas com tag "${config.theme}" entram com +1 na fila`}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Cooldown settings */}
+            <div className="card-bento p-8 bg-brand-blue/5">
+              <h3 className="mb-6 text-4xl font-display leading-none tracking-tighter border-b-4 border-brand-blue pb-2 inline-block">
+                CONTROLE DE PEDIDOS
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="flex flex-col gap-2">
+                  <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60">
+                    PEDIDOS INICIAIS POR PESSOA
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={20}
+                    className="border-4 border-brand-blue p-4 font-display text-4xl text-center focus:outline-none bg-white"
+                    value={config.max_initial_requests}
+                    onChange={e => updateConfig({ max_initial_requests: Math.max(1, parseInt(e.target.value) || 5) })}
+                    onBlur={e => updateConfig({ max_initial_requests: Math.max(1, parseInt(e.target.value) || 5) })}
+                  />
+                  <p className="font-body text-xs font-bold uppercase opacity-50 italic">
+                    Pedidos sem espera por pessoa (padrão: 5)
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60">
+                    COOLDOWN APÓS O LIMITE (MINUTOS)
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={60}
+                    className="border-4 border-brand-blue p-4 font-display text-4xl text-center focus:outline-none bg-white"
+                    value={config.request_cooldown_minutes}
+                    onChange={e => updateConfig({ request_cooldown_minutes: Math.max(1, parseInt(e.target.value) || 3) })}
+                    onBlur={e => updateConfig({ request_cooldown_minutes: Math.max(1, parseInt(e.target.value) || 3) })}
+                  />
+                  <p className="font-body text-xs font-bold uppercase opacity-50 italic">
+                    Espera entre pedidos extras (padrão: 3)
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="card-bento p-8 bg-red-50/30 border-red-600 shadow-[8px_8px_0px_rgba(220,38,38,1)]">
@@ -380,9 +548,12 @@ function NavBtn({ active, icon, label, onClick }: { active: boolean; icon: React
 }
 
 function AdminQueueItem({
-  title, artist, score, client_name, thumbnail_url,
+  title, artist, score, client_name, thumbnail_url, tags, currentTheme,
   onVeto, onVote, onRemove, onJumpToTop,
 }: any) {
+  const itemTags: string[] = tags ?? [];
+  const isThemeMatch = tagMatchesTheme(itemTags, currentTheme ?? '');
+
   return (
     <motion.div
       className="card-bento flex items-center justify-between p-6 bg-white group transition-shadow duration-200 hover:shadow-[8px_8px_0px_var(--color-brand-lime)]"
@@ -397,13 +568,27 @@ function AdminQueueItem({
             <Music size={24} className="text-brand-blue/40" />
           </div>
         )}
-        <div className="overflow-hidden">
+        <div className="overflow-hidden min-w-0">
           <h5 className="text-3xl font-display leading-none uppercase truncate tracking-tighter">
             {title}
           </h5>
           <p className="font-body text-base font-black uppercase leading-tight truncate italic opacity-60">
             {artist} • @{client_name}
           </p>
+          {itemTags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-1.5">
+              {isThemeMatch && (
+                <span className="bg-brand-lime text-brand-blue border border-brand-blue text-[10px] font-bold uppercase px-2 py-0.5 flex items-center gap-1">
+                  <Tag size={9} /> TEMA
+                </span>
+              )}
+              {itemTags.slice(0, 4).map(tag => (
+                <span key={tag} className="bg-brand-blue/10 text-brand-blue/60 border border-brand-blue/20 text-[10px] font-bold uppercase px-2 py-0.5">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

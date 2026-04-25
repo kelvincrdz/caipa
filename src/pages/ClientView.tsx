@@ -1,28 +1,32 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import {
-  Search, Music, ThumbsUp, Check, X, Sparkles, ExternalLink, Clock, Smartphone,
+  Search, Music, ThumbsUp, Check, X, Sparkles, ExternalLink, Clock, Smartphone, Info, Tag,
 } from "lucide-react";
-import { searchMusic, getSimilarTracks } from "../services/musicService";
-import { useQueue } from "../hooks/useQueue";
+import { searchMusic, getSimilarTracks, getTrackInfo } from "../services/musicService";
+import { useQueue, tagMatchesTheme } from "../hooks/useQueue";
 import { useSession } from "../hooks/useSession";
 import { setSharedToken } from "../services/spotifyAuth";
 import { supabase } from "../lib/supabase";
 import { cn } from "../lib/utils";
 
+function normalizeTag(s: string): string {
+  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
 type ThemeAccent = { title: string; badge: string };
 
 const THEME_ACCENTS: Record<string, ThemeAccent> = {
-  samba:  { title: "text-brand-lime",  badge: "bg-brand-lime"  },
-  mpb:    { title: "text-violet-500",  badge: "bg-violet-400"  },
-  "forró":{ title: "text-orange-500",  badge: "bg-orange-400"  },
-  forro:  { title: "text-orange-500",  badge: "bg-orange-400"  },
-  pagode: { title: "text-green-500",   badge: "bg-green-400"   },
-  axé:    { title: "text-yellow-500",  badge: "bg-yellow-400"  },
-  axe:    { title: "text-yellow-500",  badge: "bg-yellow-400"  },
-  rock:   { title: "text-red-500",     badge: "bg-red-400"     },
-  funk:   { title: "text-pink-500",    badge: "bg-pink-400"    },
+  samba:  { title: "text-green-700",   badge: "bg-brand-lime"  },
+  mpb:    { title: "text-violet-600",  badge: "bg-violet-400"  },
+  "forró":{ title: "text-orange-600",  badge: "bg-orange-400"  },
+  forro:  { title: "text-orange-600",  badge: "bg-orange-400"  },
+  pagode: { title: "text-emerald-700", badge: "bg-green-400"   },
+  axé:    { title: "text-amber-600",   badge: "bg-yellow-400"  },
+  axe:    { title: "text-amber-600",   badge: "bg-yellow-400"  },
+  rock:   { title: "text-red-600",     badge: "bg-red-400"     },
+  funk:   { title: "text-pink-600",    badge: "bg-pink-400"    },
 };
 
 const DEFAULT_ACCENT: ThemeAccent = { title: "text-brand-blue", badge: "bg-brand-lime" };
@@ -30,8 +34,6 @@ const DEFAULT_ACCENT: ThemeAccent = { title: "text-brand-blue", badge: "bg-brand
 function getThemeAccent(theme: string): ThemeAccent {
   return THEME_ACCENTS[theme.toLowerCase()] ?? DEFAULT_ACCENT;
 }
-
-const MAX_REQUESTS = 5;
 
 function getRequestCount(slug: string, phone: string): number {
   const today = new Date().toISOString().split("T")[0];
@@ -42,6 +44,16 @@ function incrementRequestCount(slug: string, phone: string) {
   const today = new Date().toISOString().split("T")[0];
   const key = `caipa_reqs_${slug}_${phone}_${today}`;
   localStorage.setItem(key, String(parseInt(localStorage.getItem(key) || "0") + 1));
+}
+
+function getLastRequestTime(slug: string, phone: string): number {
+  const today = new Date().toISOString().split("T")[0];
+  return parseInt(localStorage.getItem(`caipa_last_req_${slug}_${phone}_${today}`) || "0");
+}
+
+function setLastRequestTime(slug: string, phone: string) {
+  const today = new Date().toISOString().split("T")[0];
+  localStorage.setItem(`caipa_last_req_${slug}_${phone}_${today}`, String(Date.now()));
 }
 
 function getUserBadge(count: number): string {
@@ -66,7 +78,11 @@ export default function ClientView() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [votedItems, setVotedItems] = useState<Set<string>>(new Set());
 
+  const [openTagId, setOpenTagId] = useState<string | null>(null);
+  const [trackTagsCache, setTrackTagsCache] = useState<Record<string, { loading: boolean; tags: string[] }>>({});
+
   const [requestCount, setRequestCount] = useState(0);
+  const [cooldownSecondsLeft, setCooldownSecondsLeft] = useState(0);
 
   const { session } = useSession(barStatus === "approved" ? slug : undefined);
   const { queue, addMusic, vote } = useQueue(barStatus === "approved" ? slug : undefined);
@@ -97,6 +113,24 @@ export default function ClientView() {
   useEffect(() => {
     if (phone && slug) setRequestCount(getRequestCount(slug, phone));
   }, [phone, slug]);
+
+  const maxInitial = session.max_initial_requests ?? 5;
+  const cooldownMs = (session.request_cooldown_minutes ?? 3) * 60 * 1000;
+
+  useEffect(() => {
+    if (!phone || !slug || requestCount < maxInitial) {
+      setCooldownSecondsLeft(0);
+      return;
+    }
+    const tick = () => {
+      const lastTime = getLastRequestTime(slug, phone);
+      const elapsed = lastTime ? Date.now() - lastTime : cooldownMs;
+      setCooldownSecondsLeft(Math.max(0, Math.ceil((cooldownMs - elapsed) / 1000)));
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [requestCount, maxInitial, cooldownMs, phone, slug]);
 
 
   // Loading / not found / pending screens
@@ -132,7 +166,8 @@ export default function ClientView() {
   }
 
   const themeAccent = getThemeAccent(session.theme);
-  const remaining = MAX_REQUESTS - requestCount;
+  const freeLeft = Math.max(0, maxInitial - requestCount);
+  const canRequest = freeLeft > 0 || cooldownSecondsLeft === 0;
   const waitMinutes = Math.round(upNext.length * 3.5);
 
   const handleSearch = async () => {
@@ -142,20 +177,47 @@ export default function ClientView() {
     setSearchResults(results);
     setIsSearching(false);
     setShowSearch(true);
+
+    // carrega tags de todos os resultados em paralelo para exibir badges de TEMA imediatamente
+    results.forEach(async (track: any) => {
+      setTrackTagsCache(prev => {
+        if (prev[track.id]) return prev;
+        return { ...prev, [track.id]: { loading: true, tags: [] } };
+      });
+      const { tags } = await getTrackInfo(track.artist, track.title);
+      setTrackTagsCache(prev => ({ ...prev, [track.id]: { loading: false, tags } }));
+    });
+  };
+
+  const handleAlbumClick = async (e: React.MouseEvent, track: any) => {
+    e.stopPropagation();
+    if (openTagId === track.id) { setOpenTagId(null); return; }
+    setOpenTagId(track.id);
+    if (!trackTagsCache[track.id]) {
+      setTrackTagsCache(prev => ({ ...prev, [track.id]: { loading: true, tags: [] } }));
+      const { tags } = await getTrackInfo(track.artist, track.title);
+      setTrackTagsCache(prev => ({ ...prev, [track.id]: { loading: false, tags } }));
+    }
   };
 
   const handleRequest = async (music: any) => {
-    if (remaining <= 0) {
-      alert(`Você já fez ${MAX_REQUESTS} pedidos hoje. Tente amanhã!`);
+    if (!canRequest) {
+      const mins = Math.floor(cooldownSecondsLeft / 60);
+      const secs = cooldownSecondsLeft % 60;
+      alert(`Aguarde ${mins > 0 ? `${mins}min ` : ""}${secs}s antes do próximo pedido.`);
       return;
     }
     try {
-      await addMusic(music, phone || "anon", clientName || "Cliente", session);
+      const cachedTags = trackTagsCache[music.id];
+      const tags = cachedTags ? cachedTags.tags : (await getTrackInfo(music.artist, music.title)).tags;
+      await addMusic({ ...music, tags }, phone || "anon", clientName || "Cliente", session);
       setShowSearch(false);
       setSearchQuery("");
+      setOpenTagId(null);
       setShowSuccess(true);
       if (phone && slug) {
         incrementRequestCount(slug, phone);
+        setLastRequestTime(slug, phone);
         setRequestCount(c => c + 1);
       }
       const similar = await getSimilarTracks(music.artist, music.title);
@@ -178,9 +240,19 @@ export default function ClientView() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-brand-cream p-4 lg:p-8">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+      className="flex min-h-screen flex-col bg-brand-cream p-4 lg:p-8"
+    >
       {/* Header */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 border-b-8 border-brand-blue pb-6">
+      <motion.header
+        initial={{ y: -24, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 border-b-8 border-brand-blue pb-6"
+      >
         <div>
           <h1 className="text-7xl lg:text-8xl font-display uppercase tracking-tighter leading-none text-brand-blue">
             TOCA<span className="text-brand-lime text-stroke-blue">Í</span>
@@ -189,15 +261,20 @@ export default function ClientView() {
             tocai.com/{slug}
           </p>
         </div>
-        <div className="text-left md:text-right mt-4 md:mt-0">
+        <motion.div
+          initial={{ x: 24, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
+          className="text-left md:text-right mt-4 md:mt-0"
+        >
           <div className={cn("px-4 py-1 border-4 border-brand-blue inline-block mb-2 shadow-[4px_4px_0px_var(--color-brand-blue)]", themeAccent.badge)}>
             <span className="text-sm font-bold uppercase tracking-widest text-brand-blue">Tema da Noite</span>
           </div>
           <h2 className={cn("text-4xl lg:text-5xl font-display uppercase tracking-tight leading-none", themeAccent.title)}>
             {session.theme}
           </h2>
-        </div>
-      </header>
+        </motion.div>
+      </motion.header>
 
       {/* Bento Grid */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 flex-grow relative">
@@ -220,27 +297,118 @@ export default function ClientView() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {searchResults.map((item) => (
-                    <div key={item.id} className="card-bento p-4 flex flex-col gap-4 group">
-                      <img
-                        src={item.thumb}
-                        alt={item.title}
-                        className="w-full aspect-video border-2 border-brand-blue object-cover shadow-[4px_4px_0px_var(--color-brand-blue)] group-hover:translate-x-1 group-hover:translate-y-1 group-hover:shadow-none transition-all"
-                      />
-                      <div className="flex-1 overflow-hidden">
-                        <h5 className="truncate font-display text-2xl uppercase leading-none">{item.title}</h5>
-                        <p className="font-body text-sm font-bold uppercase opacity-60 italic">{item.artist}</p>
-                        {item.preview_url && (
-                          <span className="text-[10px] font-bold uppercase text-green-600 bg-green-50 border border-green-200 px-2 py-0.5 mt-1 inline-block">
-                            ♪ Preview disponível
-                          </span>
+                  {searchResults.map((item) => {
+                    const tagInfo = trackTagsCache[item.id];
+                    const isOpen = openTagId === item.id;
+                    const isThemeActive = !!(session.theme && session.theme !== "Livre");
+                    const isThemeMatch = isThemeActive && tagInfo && !tagInfo.loading
+                      ? tagInfo.tags.some(t =>
+                          normalizeTag(t).includes(normalizeTag(session.theme)) ||
+                          normalizeTag(session.theme).includes(normalizeTag(t))
+                        )
+                      : false;
+                    return (
+                      <div
+                        key={item.id}
+                        className={cn(
+                          "card-bento p-4 flex flex-col gap-4 group transition-all",
+                          isThemeMatch && "ring-4 ring-brand-lime shadow-[0_0_0_4px_var(--color-brand-lime)]",
                         )}
+                      >
+                        {/* Album art with tag overlay */}
+                        <div className="relative w-full aspect-video border-2 border-brand-blue shadow-[4px_4px_0px_var(--color-brand-blue)] group-hover:translate-x-1 group-hover:translate-y-1 group-hover:shadow-none transition-all overflow-hidden">
+                          <img
+                            src={item.thumb}
+                            alt={item.title}
+                            className="w-full h-full object-cover cursor-pointer"
+                            onClick={(e) => handleAlbumClick(e, item)}
+                          />
+
+                          {/* badge de TEMA — aparece após tags carregadas */}
+                          {isThemeMatch && (
+                            <div className="absolute top-0 left-0 right-0 bg-brand-lime text-brand-blue text-[11px] font-black uppercase px-3 py-1 flex items-center justify-center gap-1 shadow-[0_2px_0_var(--color-brand-blue)]">
+                              <Tag size={10} /> TEMA DA NOITE · +1 NA FILA
+                            </div>
+                          )}
+
+                          {/* spinner enquanto carrega tags */}
+                          {tagInfo?.loading && (
+                            <div className="absolute top-2 left-2">
+                              <div className="h-3 w-3 animate-spin rounded-full border-2 border-brand-lime border-t-transparent" />
+                            </div>
+                          )}
+
+                          <button
+                            className="absolute top-2 right-2 bg-brand-blue/80 text-brand-lime p-1 hover:bg-brand-blue transition-colors"
+                            onClick={(e) => handleAlbumClick(e, item)}
+                            title="Ver tags"
+                          >
+                            <Info size={14} />
+                          </button>
+                          <AnimatePresence>
+                            {isOpen && (
+                              <motion.div
+                                initial={{ y: "100%" }}
+                                animate={{ y: 0 }}
+                                exit={{ y: "100%" }}
+                                transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                                className="absolute inset-x-0 bottom-0 bg-brand-blue/95 p-3"
+                              >
+                                {tagInfo?.loading ? (
+                                  <div className="flex items-center gap-2">
+                                    <div className="h-3 w-3 animate-spin rounded-full border-2 border-brand-lime border-t-transparent" />
+                                    <span className="text-[10px] font-bold uppercase text-brand-lime">Buscando tags...</span>
+                                  </div>
+                                ) : (
+                                  <div className="flex flex-wrap gap-1">
+                                    {(tagInfo?.tags.slice(0, 6) ?? []).map(tag => {
+                                      const isTheme = isThemeActive &&
+                                        (normalizeTag(tag).includes(normalizeTag(session.theme)) || normalizeTag(session.theme).includes(normalizeTag(tag)));
+                                      return (
+                                        <span
+                                          key={tag}
+                                          className={cn(
+                                            "text-[10px] font-bold uppercase px-2 py-0.5 border",
+                                            isTheme
+                                              ? "bg-brand-lime text-brand-blue border-brand-lime"
+                                              : "bg-white/10 text-brand-lime/80 border-white/20"
+                                          )}
+                                        >
+                                          {tag}
+                                        </span>
+                                      );
+                                    })}
+                                    {(tagInfo?.tags ?? []).length === 0 && (
+                                      <span className="text-[10px] text-brand-lime/50 uppercase font-bold">Sem tags disponíveis</span>
+                                    )}
+                                  </div>
+                                )}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+
+                        <div className="flex-1 overflow-hidden">
+                          <h5 className="truncate font-display text-2xl uppercase leading-none">{item.title}</h5>
+                          <p className="font-body text-sm font-bold uppercase opacity-60 italic">{item.artist}</p>
+                          {item.preview_url && (
+                            <span className="text-[10px] font-bold uppercase text-green-600 bg-green-50 border border-green-200 px-2 py-0.5 mt-1 inline-block">
+                              ♪ Preview disponível
+                            </span>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => handleRequest(item)}
+                          className={cn(
+                            "btn-bento w-full text-base py-2 flex items-center justify-center gap-2",
+                            isThemeMatch && "bg-brand-lime text-brand-blue border-brand-blue",
+                          )}
+                        >
+                          {isThemeMatch ? <><Tag size={14} /> PEDIR · +1</> : "PEDIR"}
+                        </button>
                       </div>
-                      <button onClick={() => handleRequest(item)} className="btn-bento w-full text-base py-2">
-                        PEDIR
-                      </button>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </motion.div>
@@ -290,6 +458,9 @@ export default function ClientView() {
         {/* NOW PLAYING card */}
         <motion.div
           layout
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
           className="md:col-span-7 md:row-span-4 card-bento bg-brand-blue text-brand-cream p-6 lg:p-10 flex flex-col relative overflow-hidden group"
         >
           <div className="absolute top-0 right-0 bg-brand-lime text-brand-blue font-display px-6 py-2 text-2xl lg:text-3xl tracking-tighter shadow-[-4px_4px_0px_var(--color-brand-blue)] z-10">
@@ -299,7 +470,7 @@ export default function ClientView() {
           {nowPlaying ? (
             <div className="flex flex-col lg:flex-row gap-8 items-center h-full">
               {/* Album Art */}
-              <div className="relative w-48 h-48 lg:w-64 lg:h-64 flex-shrink-0">
+              <div className="relative w-48 h-48 lg:w-64 lg:h-64 flex-shrink-0 animate-float">
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
@@ -325,9 +496,30 @@ export default function ClientView() {
                 <h3 className="text-4xl lg:text-6xl font-display leading-none mb-2 uppercase italic tracking-tighter truncate">
                   {nowPlaying.title}
                 </h3>
-                <p className="text-xl lg:text-2xl font-body font-bold text-brand-lime mb-3 uppercase tracking-widest leading-none">
+                <p className="text-xl lg:text-2xl font-body font-bold text-brand-lime mb-2 uppercase tracking-widest leading-none">
                   {nowPlaying.artist}
                 </p>
+                {(nowPlaying.tags ?? []).length > 0 && (
+                  <div className="flex flex-wrap gap-1 mb-3 justify-center lg:justify-start">
+                    {(nowPlaying.tags ?? []).slice(0, 4).map((tag: string) => {
+                      const isTheme = tagMatchesTheme([tag], session.theme ?? '');
+                      return (
+                        <span
+                          key={tag}
+                          className={cn(
+                            "text-[10px] font-bold uppercase px-2 py-0.5 border flex items-center gap-1",
+                            isTheme
+                              ? "bg-brand-lime text-brand-blue border-brand-lime/80"
+                              : "bg-white/10 text-brand-lime/70 border-brand-lime/20"
+                          )}
+                        >
+                          {isTheme && <Tag size={8} />}
+                          {tag}
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
 
                 {/* Device playing */}
                 {session.spotify_device_name ? (
@@ -390,7 +582,12 @@ export default function ClientView() {
         </motion.div>
 
         {/* Queue Card */}
-        <div className="md:col-span-5 md:row-span-6 card-bento p-6 lg:p-8 flex flex-col bg-white">
+        <motion.div
+          initial={{ opacity: 0, x: 24 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.25 }}
+          className="md:col-span-5 md:row-span-6 card-bento p-6 lg:p-8 flex flex-col bg-white"
+        >
           <h4 className="text-3xl lg:text-4xl font-display uppercase mb-6 border-b-4 border-brand-blue pb-3 flex justify-between items-baseline italic">
             <span>Fila de Espera</span>
             <span className="text-base font-body font-bold opacity-60 tracking-tighter normal-case italic">
@@ -398,7 +595,7 @@ export default function ClientView() {
             </span>
           </h4>
 
-          <div className="flex-grow space-y-4 overflow-y-auto pr-2">
+          <div className="flex-grow space-y-4 overflow-y-auto pr-2 queue-scroll">
             {upNext.length === 0 && (
               <div className="flex flex-col items-center justify-center py-16 opacity-30 text-center gap-3">
                 <Music size={48} />
@@ -411,8 +608,10 @@ export default function ClientView() {
                 key={item.id}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: idx * 0.05, duration: 0.3 }}
+                whileHover={{ x: 2, y: 2, transition: { duration: 0.1 } }}
                 className={cn(
-                  "flex items-center gap-4 p-4 border-4 border-brand-blue shadow-[4px_4px_0px_var(--color-brand-blue)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_var(--color-brand-blue)]",
+                  "flex items-center gap-4 p-4 border-4 border-brand-blue shadow-[4px_4px_0px_var(--color-brand-blue)] transition-shadow",
                   idx === 0 ? "bg-brand-cream" : "bg-white",
                   votedItems.has(item.id) && "bg-green-50",
                 )}
@@ -424,12 +623,17 @@ export default function ClientView() {
                   <p className="font-display text-2xl lg:text-3xl leading-none uppercase truncate tracking-tighter">
                     {item.title}
                   </p>
-                  <div className="flex items-center gap-2 mt-1">
+                  <div className="flex items-center gap-2 mt-1 flex-wrap">
                     <p className="text-[10px] lg:text-xs font-body font-bold uppercase opacity-70 truncate italic">
                       {item.artist}
                     </p>
                     {item.client_id === phone && (
-                      <span className="bg-brand-lime text-[10px] px-1 font-bold border border-brand-blue leading-none">VOCÊ</span>
+                      <span className="bg-brand-lime text-[10px] px-1 font-bold border border-brand-blue leading-none flex-shrink-0">VOCÊ</span>
+                    )}
+                    {tagMatchesTheme(item.tags ?? [], session.theme ?? '') && (
+                      <span className={cn("text-[10px] font-bold uppercase px-1.5 py-0.5 border flex items-center gap-1 flex-shrink-0", themeAccent.badge, "text-brand-blue border-brand-blue/40")}>
+                        <Tag size={8} /> TEMA
+                      </span>
                     )}
                   </div>
                 </div>
@@ -480,10 +684,15 @@ export default function ClientView() {
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Identity Card */}
-        <div className="md:col-span-3 md:row-span-2 card-bento-lime p-5 flex flex-col justify-between group">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+          className="md:col-span-3 md:row-span-2 card-bento-lime p-5 flex flex-col justify-between group"
+        >
           <div className="flex justify-between items-start">
             <span className="text-[10px] font-bold uppercase tracking-widest text-brand-blue/60 group-hover:text-brand-blue transition-colors">
               Sua Identidade
@@ -501,20 +710,34 @@ export default function ClientView() {
             </p>
           </div>
           <div className="flex gap-1 mt-4">
-            {Array.from({ length: 5 }).map((_, i) => (
+            {Array.from({ length: maxInitial }).map((_, i) => (
               <div
                 key={i}
-                className={cn("h-3 w-full", i < (MAX_REQUESTS - remaining) ? "bg-brand-blue" : "bg-brand-blue/20")}
+                className={cn(
+                  "h-3 w-full transition-colors",
+                  i < requestCount
+                    ? cooldownSecondsLeft > 0 ? "bg-yellow-500" : "bg-brand-blue"
+                    : "bg-brand-blue/20"
+                )}
               />
             ))}
           </div>
           <p className="text-[10px] font-bold uppercase text-brand-blue opacity-60 mt-2">
-            {remaining > 0 ? `${remaining} pedido${remaining !== 1 ? "s" : ""} restante${remaining !== 1 ? "s" : ""} hoje` : "Limite diário atingido"}
+            {cooldownSecondsLeft > 0
+              ? `Recarregando em ${Math.floor(cooldownSecondsLeft / 60)}:${String(cooldownSecondsLeft % 60).padStart(2, "0")}`
+              : freeLeft > 0
+                ? `${freeLeft} pedido${freeLeft !== 1 ? "s" : ""} restante${freeLeft !== 1 ? "s" : ""} hoje`
+                : "Pode pedir mais uma!"}
           </p>
-        </div>
+        </motion.div>
 
         {/* Wait Time Card */}
-        <div className="md:col-span-4 md:row-span-2 border-4 border-brand-blue p-6 flex flex-col justify-center items-center text-center bg-brand-cream shadow-[8px_8px_0px_var(--color-brand-blue)]">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4, delay: 0.4 }}
+          className="md:col-span-4 md:row-span-2 border-4 border-brand-blue p-6 flex flex-col justify-center items-center text-center bg-brand-cream shadow-[8px_8px_0px_var(--color-brand-blue)]"
+        >
           <p className="text-xs font-bold uppercase mb-2 opacity-60 tracking-widest">TEMPO ESTIMADO</p>
           <div className="flex items-baseline gap-1">
             <p className="text-7xl lg:text-8xl font-display tracking-tighter text-brand-blue leading-none">
@@ -525,11 +748,16 @@ export default function ClientView() {
           <p className="text-[10px] font-bold uppercase mt-3 bg-brand-blue text-brand-lime px-4 py-1 italic tracking-widest">
             {upNext.length === 0 ? "Fila livre!" : upNext.length <= 3 ? "Fila andando rápido" : "Fila movimentada"}
           </p>
-        </div>
+        </motion.div>
       </div>
 
       {/* Footer */}
-      <footer className="mt-12 flex flex-col md:flex-row justify-between items-center gap-6 border-t-8 border-brand-blue pt-8">
+      <motion.footer
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
+        className="mt-12 flex flex-col md:flex-row justify-between items-center gap-6 border-t-8 border-brand-blue pt-8"
+      >
         <div className="flex flex-wrap justify-center md:justify-start gap-4">
           <span className="text-xs font-bold border-4 border-brand-blue bg-white px-3 py-2 uppercase shadow-[4px_4px_0px_var(--color-brand-blue)]">
             tocai.com/{slug}
@@ -542,7 +770,7 @@ export default function ClientView() {
           <div className="w-5 h-5 rounded-full bg-red-600 animate-pulse shadow-[0_0_15px_rgba(220,38,38,0.5)]"></div>
           <span className="text-lg font-display uppercase tracking-widest text-brand-blue italic">Real-time Sync Active</span>
         </div>
-      </footer>
+      </motion.footer>
 
       {/* Identification Modal */}
       <AnimatePresence>
@@ -601,6 +829,6 @@ export default function ClientView() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }

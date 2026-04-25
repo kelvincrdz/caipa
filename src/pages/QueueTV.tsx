@@ -1,9 +1,28 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { Music, Play, Disc, Pause } from "lucide-react";
 import { useQueue } from "../hooks/useQueue";
 import { usePlayer } from "../hooks/usePlayer";
+
+function EqBars({ active }: { active: boolean }) {
+  return (
+    <div className="flex items-end gap-[3px] h-8 w-10 flex-shrink-0">
+      <div
+        className={`w-2 bg-brand-lime rounded-sm transition-all duration-300 ${active ? "eq-bar-1" : ""}`}
+        style={{ height: active ? undefined : "30%" }}
+      />
+      <div
+        className={`w-2 bg-brand-lime rounded-sm transition-all duration-300 ${active ? "eq-bar-2" : ""}`}
+        style={{ height: active ? undefined : "30%" }}
+      />
+      <div
+        className={`w-2 bg-brand-lime rounded-sm transition-all duration-300 ${active ? "eq-bar-3" : ""}`}
+        style={{ height: active ? undefined : "30%" }}
+      />
+    </div>
+  );
+}
 
 export default function QueueTV() {
   const { slug } = useParams<{ slug: string }>();
@@ -24,7 +43,12 @@ export default function QueueTV() {
   );
 
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden bg-brand-cream border-[16px] border-brand-blue selection:bg-brand-lime">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="flex h-screen w-full flex-col overflow-hidden bg-brand-cream border-[16px] border-brand-blue selection:bg-brand-lime"
+    >
       {/* Top Banner */}
       <header className="flex items-center justify-between border-b-[12px] border-brand-blue bg-white p-8 lg:p-12 text-brand-blue">
         <div>
@@ -79,7 +103,7 @@ export default function QueueTV() {
                   )}
                   <div className="absolute top-8 left-8 flex items-center gap-3 bg-brand-lime px-8 py-3 font-display text-3xl text-brand-blue shadow-[-8px_8px_0px_var(--color-brand-blue)]">
                     {isPlaying
-                      ? <><Play size={28} fill="currentColor" /> TOCANDO AGORA</>
+                      ? <><EqBars active={true} /> TOCANDO AGORA</>
                       : <><Music size={28} /> PRÓXIMA FAIXA</>
                     }
                   </div>
@@ -97,12 +121,30 @@ export default function QueueTV() {
                 </div>
               )}
 
-              <h2 className="mb-4 text-7xl lg:text-[8rem] font-display uppercase leading-none tracking-tighter">
-                {nowPlaying.title}
-              </h2>
-              <p className="text-4xl lg:text-6xl font-body font-black uppercase tracking-widest text-brand-lime leading-none italic">
-                {nowPlaying.artist}
-              </p>
+              <AnimatePresence mode="wait">
+                <motion.h2
+                  key={nowPlaying.id + "-title"}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.4 }}
+                  className="mb-4 text-7xl lg:text-[8rem] font-display uppercase leading-none tracking-tighter"
+                >
+                  {nowPlaying.title}
+                </motion.h2>
+              </AnimatePresence>
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={nowPlaying.id + "-artist"}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4, delay: 0.1 }}
+                  className="text-4xl lg:text-6xl font-body font-black uppercase tracking-widest text-brand-lime leading-none italic"
+                >
+                  {nowPlaying.artist}
+                </motion.p>
+              </AnimatePresence>
 
               <div className="mt-12 flex items-center gap-6 border-[8px] border-brand-cream bg-white/5 px-12 py-6 backdrop-blur-sm">
                 <div className="h-8 w-8 animate-pulse rounded-full bg-red-600 shadow-[0_0_20px_red]" />
@@ -141,6 +183,7 @@ export default function QueueTV() {
                   title={item.title}
                   artist={item.artist}
                   client={item.client_name}
+                  delay={idx * 0.1}
                 />
               ))
             )}
@@ -166,24 +209,26 @@ export default function QueueTV() {
           </div>
         </section>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-function TVQueueItem({ rank, title, artist, client }: { rank: number; title: string; artist: string; client: string; [k: string]: any }) {
+function TVQueueItem({ rank, title, artist, client, delay = 0 }: { rank: number; title: string; artist: string; client: string; delay?: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, x: 50 }}
       animate={{ opacity: 1, x: 0 }}
+      transition={{ delay, duration: 0.4, ease: "easeOut" }}
+      whileHover={{ x: -4, transition: { duration: 0.15 } }}
       className="flex items-center gap-8 border-4 border-brand-blue bg-white p-8 shadow-[8px_8px_0px_var(--color-brand-lime)]"
     >
       <span className="font-display text-7xl text-brand-blue leading-none tracking-tighter">{rank}º</span>
       <div className="flex-1 overflow-hidden">
-        <h4 className="truncate text-5xl font-display uppercase leading-none tracking-tighter">{title}</h4>
-        <p className="truncate font-body text-2xl font-black uppercase opacity-60 italic tracking-tight">{artist}</p>
+        <h4 className="truncate text-5xl font-display uppercase leading-none tracking-tighter text-brand-blue">{title}</h4>
+        <p className="truncate font-body text-2xl font-black uppercase text-brand-blue/60 italic tracking-tight">{artist}</p>
       </div>
       <div className="text-right border-l-4 border-brand-lime pl-8">
-        <span className="font-body text-xs font-black uppercase opacity-40 leading-none block mb-2 tracking-widest">
+        <span className="font-body text-xs font-black uppercase text-brand-blue/50 leading-none block mb-2 tracking-widest">
           PARA @{client}
         </span>
         <p className="font-display text-4xl text-brand-blue leading-none">UP NEXT</p>
