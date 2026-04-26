@@ -297,7 +297,7 @@ export default function QueueTV() {
       )}
 
       {/* Top Banner */}
-      <header className="flex items-center justify-between border-b-[12px] border-brand-blue bg-white p-8 lg:p-12 text-brand-blue">
+      <header className="flex flex-shrink-0 items-center justify-between border-b-[8px] border-brand-blue bg-white px-6 py-3 lg:px-10 lg:py-4 text-brand-blue">
         <div>
           {barLogo ? (
             <img
@@ -306,7 +306,7 @@ export default function QueueTV() {
               onDoubleClick={toggleParty}
               title="Duplo clique para modo festa"
               className={cn(
-                "h-20 lg:h-32 object-contain max-w-[280px] lg:max-w-[400px]",
+                "h-14 lg:h-20 object-contain max-w-[200px] lg:max-w-[280px]",
                 partyMode && "neon-text",
               )}
               style={{ cursor: "default" }}
@@ -314,7 +314,7 @@ export default function QueueTV() {
           ) : (
             <h1
               className={cn(
-                "text-7xl lg:text-9xl font-display leading-none tracking-tighter uppercase",
+                "text-5xl lg:text-7xl font-display leading-none tracking-tighter uppercase",
                 partyMode && "neon-text",
               )}
               onDoubleClick={toggleParty}
@@ -324,14 +324,14 @@ export default function QueueTV() {
               TOCA<span className={cn("text-brand-lime", !partyMode && "text-stroke-blue")}>Í</span>
             </h1>
           )}
-          <p className="font-body text-2xl font-black italic uppercase opacity-60">
+          <p className="font-body text-base font-black italic uppercase opacity-60">
             Sintonizado em: tocai.com/{slug}
           </p>
         </div>
-        <div className="text-right flex flex-col items-end gap-3">
+        <div className="text-right flex flex-col items-end gap-2">
           <p
             className={cn(
-              "font-display text-7xl lg:text-9xl leading-none tracking-tighter",
+              "font-display text-5xl lg:text-7xl leading-none tracking-tighter",
               partyMode ? "neon-text color-cycle" : "animate-pulse",
             )}
             onDoubleClick={toggleParty}
@@ -339,69 +339,69 @@ export default function QueueTV() {
           >
             {time.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
           </p>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {nowPlaying?.preview_url && (
               <button
                 onClick={handleTogglePlay}
                 className={cn(
-                  "bg-brand-blue text-brand-lime border-4 border-brand-blue px-6 py-2 font-display text-2xl flex items-center gap-2 transition-all",
+                  "bg-brand-blue text-brand-lime border-4 border-brand-blue px-4 py-1.5 font-display text-xl flex items-center gap-2 transition-all",
                   partyMode
                     ? "neon-border shadow-none"
                     : "shadow-[4px_4px_0px_var(--color-brand-lime)] hover:translate-x-[2px] hover:translate-y-[2px]",
                 )}
               >
                 {isPlaying
-                  ? <><Pause size={24} fill="currentColor" /> PAUSAR</>
-                  : <><Play size={24} fill="currentColor" />{autoplayBlocked ? "TOQUE PARA OUVIR" : "TOCAR"}</>
+                  ? <><Pause size={18} fill="currentColor" /> PAUSAR</>
+                  : <><Play size={18} fill="currentColor" />{autoplayBlocked ? "TOQUE PARA OUVIR" : "TOCAR"}</>
                 }
               </button>
             )}
             <div className={cn(
-              "bg-brand-lime px-4 py-1 border-4 border-brand-blue inline-block",
+              "bg-brand-lime px-3 py-1 border-4 border-brand-blue inline-block",
               partyMode ? "neon-border" : "shadow-[4px_4px_0px_var(--color-brand-blue)]",
             )}>
-              <span className="font-display text-2xl uppercase tracking-widest text-brand-blue">LIVE SESSION</span>
+              <span className="font-display text-xl uppercase tracking-widest text-brand-blue">LIVE SESSION</span>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 min-h-0 overflow-hidden">
         {/* Left: Now Playing */}
-        <section className="flex flex-[1.5] flex-col items-center justify-center p-12 lg:p-24 text-center bg-brand-blue text-brand-cream relative overflow-hidden">
+        <section className="flex flex-[1.5] flex-col items-center justify-center px-8 py-6 lg:px-16 lg:py-10 text-center bg-brand-blue text-brand-cream relative overflow-hidden min-h-0">
           <div className="absolute inset-0 bg-grainy opacity-10" />
 
           {nowPlaying ? (
             <>
-              <div className="relative mb-8">
+              <div className="relative mb-4">
                 <motion.div
                   animate={{ rotate: isPlaying ? 360 : 0 }}
                   transition={{ duration: partyMode ? 8 : 30, repeat: Infinity, ease: "linear" }}
                   className={cn(
-                    "absolute -inset-16 rounded-full border-8 border-dashed opacity-20",
+                    "absolute -inset-8 rounded-full border-4 border-dashed opacity-20",
                     partyMode ? "border-brand-lime" : "border-brand-lime",
                   )}
                 />
-                <div className="relative flex h-80 w-80 lg:h-[28rem] lg:w-[28rem] items-center justify-center border-[12px] border-brand-cream bg-black shadow-[32px_32px_0px_0px_var(--color-brand-lime)] overflow-hidden">
+                <div className="relative flex h-52 w-52 md:h-64 md:w-64 lg:h-72 lg:w-72 items-center justify-center border-8 border-brand-cream bg-black shadow-[16px_16px_0px_0px_var(--color-brand-lime)] overflow-hidden">
                   {nowPlaying.thumbnail_url ? (
                     <img src={nowPlaying.thumbnail_url} className="h-full w-full object-cover" alt={nowPlaying.title} />
                   ) : (
-                    <Disc size={160} className="text-brand-lime" />
+                    <Disc size={100} className="text-brand-lime" />
                   )}
                   <div className={cn(
-                    "absolute top-8 left-8 flex items-center gap-3 bg-brand-lime px-8 py-3 font-display text-3xl text-brand-blue",
-                    partyMode ? "neon-border" : "shadow-[-8px_8px_0px_var(--color-brand-blue)]",
+                    "absolute top-4 left-4 flex items-center gap-2 bg-brand-lime px-4 py-2 font-display text-xl text-brand-blue",
+                    partyMode ? "neon-border" : "shadow-[-4px_4px_0px_var(--color-brand-blue)]",
                   )}>
                     {isPlaying
                       ? <><EqBars active={true} party={partyMode} /> TOCANDO AGORA</>
-                      : <><Music size={28} /> PRÓXIMA FAIXA</>
+                      : <><Music size={18} /> PRÓXIMA FAIXA</>
                     }
                   </div>
                 </div>
               </div>
 
               {/* Audio Visualizer or Progress Bar */}
-              <div className="w-full max-w-lg mb-6">
+              <div className="w-full max-w-md mb-3">
                 {analyserNode && isPlaying ? (
                   <AudioVisualizer analyser={analyserNode} isPlaying={isPlaying} party={partyMode} />
                 ) : nowPlaying.preview_url ? (
@@ -423,7 +423,7 @@ export default function QueueTV() {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.4 }}
                   className={cn(
-                    "mb-4 text-7xl lg:text-[8rem] font-display uppercase leading-none tracking-tighter",
+                    "mb-2 text-5xl lg:text-7xl font-display uppercase leading-none tracking-tighter",
                     partyMode && "neon-text",
                   )}
                 >
@@ -438,7 +438,7 @@ export default function QueueTV() {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.4, delay: 0.1 }}
                   className={cn(
-                    "text-4xl lg:text-6xl font-body font-black uppercase tracking-widest text-brand-lime leading-none italic",
+                    "text-3xl lg:text-4xl font-body font-black uppercase tracking-widest text-brand-lime leading-none italic",
                     partyMode && "color-cycle",
                   )}
                 >
@@ -447,11 +447,11 @@ export default function QueueTV() {
               </AnimatePresence>
 
               <div className={cn(
-                "mt-8 flex items-center gap-6 border-[8px] border-brand-cream bg-white/5 px-12 py-6 backdrop-blur-sm",
+                "mt-4 flex items-center gap-4 border-4 border-brand-cream bg-white/5 px-6 py-3 backdrop-blur-sm",
                 partyMode && "neon-border",
               )}>
-                <div className="h-8 w-8 animate-pulse rounded-full bg-red-600 shadow-[0_0_20px_red]" />
-                <p className="font-display text-4xl italic uppercase leading-none text-brand-cream">
+                <div className="h-5 w-5 animate-pulse rounded-full bg-red-600 shadow-[0_0_12px_red]" />
+                <p className="font-display text-2xl italic uppercase leading-none text-brand-cream">
                   REQUISITADO POR{" "}
                   <span className="text-brand-lime">@{nowPlaying.client_name}</span>
                 </p>
@@ -461,10 +461,10 @@ export default function QueueTV() {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="mt-6 flex items-center gap-4 border-[8px] border-brand-lime bg-brand-lime/10 px-10 py-5"
+                  className="mt-3 flex items-center gap-3 border-4 border-brand-lime bg-brand-lime/10 px-6 py-3"
                 >
-                  <span className="text-4xl">❤️</span>
-                  <p className="font-display text-4xl italic uppercase leading-none text-brand-cream">
+                  <span className="text-2xl">❤️</span>
+                  <p className="font-display text-2xl italic uppercase leading-none text-brand-cream">
                     PARA{" "}
                     <span className="text-brand-lime">{nowPlaying.dedication_to}</span>
                   </p>
@@ -473,7 +473,7 @@ export default function QueueTV() {
             </>
           ) : (
             <div className={cn(
-              "font-display text-7xl opacity-30 animate-bounce text-center leading-tight",
+              "font-display text-5xl opacity-30 animate-bounce text-center leading-tight",
               partyMode && "neon-text opacity-60",
             )}>
               AGUARDANDO O PRÓXIMO HIT...
@@ -483,19 +483,19 @@ export default function QueueTV() {
 
         {/* Right: Up Next + QR */}
         <section className={cn(
-          "flex flex-1 flex-col border-l-[12px] border-brand-blue py-12",
+          "flex flex-1 flex-col border-l-8 border-brand-blue py-4 lg:py-6 min-h-0 overflow-hidden",
           partyMode ? "bg-black" : "bg-white",
         )}>
-          <div className="mb-12 px-12">
+          <div className="mb-4 px-8">
             <h3 className={cn(
-              "mb-6 inline-block border-b-8 border-brand-lime font-display text-6xl uppercase italic tracking-tighter",
+              "inline-block border-b-4 border-brand-lime font-display text-4xl uppercase italic tracking-tighter",
               partyMode ? "text-brand-lime neon-text" : "text-brand-blue",
             )}>
               PRÓXIMOS DA FILA
             </h3>
           </div>
 
-          <div className="flex-1 space-y-6 overflow-hidden px-12">
+          <div className="flex-1 min-h-0 space-y-3 overflow-hidden px-8">
             {upNext.length === 0 ? (
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -532,8 +532,8 @@ export default function QueueTV() {
 
           {/* Photo slideshow panel */}
           {config.photo_display_mode === "slideshow" && approvedPhotos.length > 0 && (
-            <div className="px-12 mt-6">
-              <div className="border-4 border-brand-blue overflow-hidden relative" style={{ height: 200 }}>
+            <div className="px-8 mt-3 flex-shrink-0">
+              <div className="border-4 border-brand-blue overflow-hidden relative" style={{ height: 120 }}>
                 <AnimatePresence mode="crossfade">
                   <motion.img
                     key={approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.id}
@@ -559,30 +559,30 @@ export default function QueueTV() {
 
           {/* QR Code + CTA */}
           <div className={cn(
-            "mt-auto p-10 border-t-[12px] border-brand-blue",
+            "flex-shrink-0 mt-auto px-8 py-4 border-t-8 border-brand-blue",
             partyMode
               ? "bg-black text-brand-lime neon-border"
-              : "bg-brand-lime text-brand-blue shadow-[-8px_-8px_0px_var(--color-brand-blue)]",
+              : "bg-brand-lime text-brand-blue shadow-[-4px_-4px_0px_var(--color-brand-blue)]",
           )}>
-            <p className="font-display text-4xl leading-none uppercase tracking-tighter mb-6">PEÇA PELO CELULAR:</p>
-            <div className="flex items-center gap-8">
+            <p className="font-display text-2xl leading-none uppercase tracking-tighter mb-3">PEÇA PELO CELULAR:</p>
+            <div className="flex items-center gap-5">
               <div className={cn(
-                "aspect-square w-52 border-[6px] bg-white p-2 flex-shrink-0",
-                partyMode ? "border-brand-lime neon-border" : "border-brand-blue shadow-[8px_8px_0px_var(--color-brand-blue)]",
+                "aspect-square w-32 border-4 bg-white p-1.5 flex-shrink-0",
+                partyMode ? "border-brand-lime neon-border" : "border-brand-blue shadow-[4px_4px_0px_var(--color-brand-blue)]",
               )}>
                 <QRCodeSVG
                   value={clientUrl}
-                  size={180}
+                  size={110}
                   bgColor="#ffffff"
                   fgColor="#0a1628"
                   level="H"
                 />
               </div>
-              <div className="space-y-2">
-                <p className="font-body text-2xl font-black uppercase leading-none italic">
+              <div className="space-y-1">
+                <p className="font-body text-lg font-black uppercase leading-none italic">
                   TOCAÍ.COM/{slug}
                 </p>
-                <p className="font-body text-lg font-bold uppercase opacity-70">
+                <p className="font-body text-sm font-bold uppercase opacity-70">
                   Aumente o volume, quem manda no bar hoje é você.
                 </p>
               </div>
@@ -593,10 +593,10 @@ export default function QueueTV() {
 
       {/* Marquee ticker */}
       <div className={cn(
-        "border-t-[8px] border-brand-blue overflow-hidden py-3",
+        "flex-shrink-0 border-t-4 border-brand-blue overflow-hidden py-2",
         partyMode ? "bg-black text-brand-lime" : "bg-brand-blue text-brand-lime",
       )}>
-        <div className="marquee-track whitespace-nowrap font-display text-2xl uppercase tracking-wide">
+        <div className="marquee-track whitespace-nowrap font-display text-xl uppercase tracking-wide">
           <span className="marquee-content">{tickerText}&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;{tickerText}</span>
         </div>
       </div>
@@ -616,31 +616,31 @@ function TVQueueItem({
       transition={{ delay, duration: 0.4, ease: "easeOut" }}
       whileHover={{ x: -4, transition: { duration: 0.15 } }}
       className={cn(
-        "flex items-center gap-8 border-4 border-brand-blue p-6",
+        "flex items-center gap-4 border-4 border-brand-blue p-3",
         party
           ? "bg-black text-brand-lime neon-border"
-          : "bg-white shadow-[8px_8px_0px_var(--color-brand-lime)]",
+          : "bg-white shadow-[4px_4px_0px_var(--color-brand-lime)]",
       )}
     >
-      <span className={cn("font-display text-7xl leading-none tracking-tighter", party ? "text-brand-lime neon-text" : "text-brand-blue")}>
+      <span className={cn("font-display text-4xl leading-none tracking-tighter flex-shrink-0", party ? "text-brand-lime neon-text" : "text-brand-blue")}>
         {rank}º
       </span>
       <div className="flex-1 overflow-hidden">
-        <h4 className={cn("truncate text-5xl font-display uppercase leading-none tracking-tighter", party ? "text-brand-lime" : "text-brand-blue")}>
+        <h4 className={cn("truncate text-3xl font-display uppercase leading-none tracking-tighter", party ? "text-brand-lime" : "text-brand-blue")}>
           {title}
         </h4>
-        <p className={cn("truncate font-body text-2xl font-black uppercase italic tracking-tight", party ? "text-brand-lime/70" : "text-brand-blue/60")}>
+        <p className={cn("truncate font-body text-lg font-black uppercase italic tracking-tight", party ? "text-brand-lime/70" : "text-brand-blue/60")}>
           {artist}
         </p>
         {dedicationTo && (
-          <p className="font-body text-lg font-bold uppercase text-pink-500 italic truncate">❤️ para {dedicationTo}</p>
+          <p className="font-body text-sm font-bold uppercase text-pink-500 italic truncate">❤️ para {dedicationTo}</p>
         )}
       </div>
-      <div className={cn("text-right border-l-4 pl-8", party ? "border-brand-lime" : "border-brand-lime")}>
-        <span className={cn("font-body text-xs font-black uppercase leading-none block mb-2 tracking-widest", party ? "text-brand-lime/50" : "text-brand-blue/50")}>
+      <div className={cn("text-right border-l-4 pl-5 flex-shrink-0", party ? "border-brand-lime" : "border-brand-lime")}>
+        <span className={cn("font-body text-[10px] font-black uppercase leading-none block mb-1 tracking-widest", party ? "text-brand-lime/50" : "text-brand-blue/50")}>
           PARA @{client}
         </span>
-        <p className={cn("font-display text-4xl leading-none", party ? "text-brand-lime neon-text" : "text-brand-blue")}>
+        <p className={cn("font-display text-2xl leading-none", party ? "text-brand-lime neon-text" : "text-brand-blue")}>
           PRÓXIMA
         </p>
       </div>

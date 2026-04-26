@@ -184,6 +184,10 @@ export default function ClientView() {
   const [photoSent, setPhotoSent] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
 
+  // Approved photos for carousel
+  const [approvedPhotos, setApprovedPhotos] = useState<any[]>([]);
+  const [carouselIdx, setCarouselIdx] = useState(0);
+
   const PHOTO_COOLDOWN_MS = 60_000; // 1 minute
   function getLastPhotoTime(slug: string, phone: string): number {
     return parseInt(localStorage.getItem(`caipa_photo_${slug}_${phone}`) || "0");
@@ -288,6 +292,45 @@ export default function ClientView() {
         if (data.logo_url) setBarLogo(data.logo_url);
       });
   }, [slug]);
+
+  // Load approved photos for carousel
+  useEffect(() => {
+    if (!slug) return;
+    supabase
+      .from("bar_photos")
+      .select("*")
+      .eq("bar_slug", slug)
+      .eq("status", "approved")
+      .order("created_at", { ascending: false })
+      .limit(20)
+      .then(({ data }) => setApprovedPhotos(data ?? []));
+
+    const ch = supabase
+      .channel(`client_photos_${slug}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "bar_photos", filter: `bar_slug=eq.${slug}` },
+        (payload) => {
+          const p = payload.new as any;
+          if (p.status === "approved") setApprovedPhotos(prev => [p, ...prev]);
+        })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "bar_photos", filter: `bar_slug=eq.${slug}` },
+        (payload) => {
+          const p = payload.new as any;
+          if (p.status === "approved") setApprovedPhotos(prev => {
+            const exists = prev.find((x: any) => x.id === p.id);
+            return exists ? prev.map((x: any) => x.id === p.id ? p : x) : [p, ...prev];
+          });
+          else setApprovedPhotos(prev => prev.filter((x: any) => x.id !== p.id));
+        })
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [slug]);
+
+  // Carousel auto-advance
+  useEffect(() => {
+    if (approvedPhotos.length < 2) return;
+    const t = setInterval(() => setCarouselIdx(i => (i + 1) % approvedPhotos.length), 5000);
+    return () => clearInterval(t);
+  }, [approvedPhotos.length]);
 
   const nowPlaying = queue[0] ?? null;
   const upNext = queue.slice(1);
@@ -1323,24 +1366,106 @@ export default function ClientView() {
           </p>
         </motion.div>
 
-        {/* Wait Time Card */}
+        {/* Wait Time + Photo Button */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4, delay: 0.4 }}
-          className="md:col-span-4 md:row-span-2 border-4 border-brand-blue p-6 flex flex-col justify-center items-center text-center bg-brand-cream shadow-[8px_8px_0px_var(--color-brand-blue)]"
+          className="md:col-span-4 md:row-span-2 flex gap-3"
         >
-          <p className="text-xs font-bold uppercase mb-2 opacity-60 tracking-widest">TEMPO ESTIMADO</p>
-          <div className="flex items-baseline gap-1">
-            <p className="text-4xl sm:text-6xl lg:text-8xl font-display tracking-tighter text-brand-blue leading-none">
-              {waitMinutes}
+          {/* Tempo Estimado */}
+          <div className="flex-1 border-4 border-brand-blue p-4 flex flex-col justify-center items-center text-center bg-brand-cream shadow-[8px_8px_0px_var(--color-brand-blue)]">
+            <p className="text-xs font-bold uppercase mb-2 opacity-60 tracking-widest">TEMPO ESTIMADO</p>
+            <div className="flex items-baseline gap-1">
+              <p className="text-4xl sm:text-6xl lg:text-7xl font-display tracking-tighter text-brand-blue leading-none">
+                {waitMinutes}
+              </p>
+              <span className="text-lg sm:text-2xl font-display text-brand-blue">MIN</span>
+            </div>
+            <p className="text-[10px] font-bold uppercase mt-2 bg-brand-blue text-brand-lime px-3 py-1 italic tracking-widest">
+              {upNext.length === 0 ? "Fila livre!" : upNext.length <= 3 ? "Fila andando rápido" : "Fila movimentada"}
             </p>
-            <span className="text-lg sm:text-2xl lg:text-3xl font-display text-brand-blue">MIN</span>
           </div>
-          <p className="text-[10px] font-bold uppercase mt-3 bg-brand-blue text-brand-lime px-4 py-1 italic tracking-widest">
-            {upNext.length === 0 ? "Fila livre!" : upNext.length <= 3 ? "Fila andando rápido" : "Fila movimentada"}
-          </p>
+
+          {/* Photo upload button */}
+          {phone && (
+            <button
+              onClick={() => setShowPhotoModal(true)}
+              className="flex flex-col items-center justify-center gap-2 border-4 border-brand-blue bg-white shadow-[8px_8px_0px_var(--color-brand-blue)] px-4 hover:bg-brand-cream transition-colors group min-w-[80px]"
+            >
+              <Camera size={28} className="text-brand-blue group-hover:scale-110 transition-transform" strokeWidth={2.5} />
+              <span className="text-[10px] font-black uppercase tracking-widest text-brand-blue text-center leading-tight">
+                FOTO<br />PRO<br />TELÃO
+              </span>
+            </button>
+          )}
         </motion.div>
+
+        {/* Photo Carousel */}
+        {approvedPhotos.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="md:col-span-7 border-4 border-brand-blue overflow-hidden relative bg-black"
+            style={{ minHeight: 180 }}
+          >
+            <AnimatePresence mode="crossfade">
+              <motion.img
+                key={approvedPhotos[carouselIdx % approvedPhotos.length]?.id}
+                src={approvedPhotos[carouselIdx % approvedPhotos.length]?.photo_url}
+                alt="Foto da noite"
+                initial={{ opacity: 0, scale: 1.06 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.97 }}
+                transition={{ duration: 0.9 }}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            </AnimatePresence>
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
+            {/* Caption + uploader */}
+            <div className="absolute bottom-0 left-0 right-0 px-4 py-3 flex items-end justify-between gap-3">
+              <div className="min-w-0">
+                {approvedPhotos[carouselIdx % approvedPhotos.length]?.caption && (
+                  <motion.p
+                    key={approvedPhotos[carouselIdx % approvedPhotos.length]?.id + "-cap"}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="font-display text-xl lg:text-2xl uppercase text-brand-lime leading-none truncate"
+                  >
+                    {approvedPhotos[carouselIdx % approvedPhotos.length].caption}
+                  </motion.p>
+                )}
+                <p className="text-[11px] font-bold uppercase text-white/60 mt-0.5">
+                  📸 {approvedPhotos[carouselIdx % approvedPhotos.length]?.uploader_name ?? "Anônimo"}
+                </p>
+              </div>
+              {/* Dots */}
+              {approvedPhotos.length > 1 && (
+                <div className="flex gap-1.5 flex-shrink-0">
+                  {approvedPhotos.slice(0, Math.min(8, approvedPhotos.length)).map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCarouselIdx(i)}
+                      className={cn(
+                        "h-2 rounded-full transition-all",
+                        i === carouselIdx % approvedPhotos.length
+                          ? "w-5 bg-brand-lime"
+                          : "w-2 bg-white/40 hover:bg-white/70"
+                      )}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* Badge */}
+            <div className="absolute top-3 left-3 bg-brand-blue/80 border-2 border-brand-lime px-2 py-1">
+              <span className="font-display text-xs uppercase text-brand-lime tracking-widest">FOTOS DA NOITE</span>
+            </div>
+          </motion.div>
+        )}
       </div>
 
       {/* Footer */}
@@ -1363,14 +1488,6 @@ export default function ClientView() {
           >
             📊 VER ESTATÍSTICAS
           </a>
-          {phone && (
-            <button
-              onClick={() => setShowPhotoModal(true)}
-              className="text-xs font-bold border-4 border-brand-blue bg-white px-3 py-2 uppercase shadow-[4px_4px_0px_var(--color-brand-blue)] hover:bg-brand-cream transition-colors flex items-center gap-2"
-            >
-              <Camera size={14} /> MANDAR PRO TELÃO
-            </button>
-          )}
         </div>
         <div className="flex items-center gap-3">
           <div className="w-5 h-5 rounded-full bg-red-600 animate-pulse shadow-[0_0_15px_rgba(220,38,38,0.5)]"></div>

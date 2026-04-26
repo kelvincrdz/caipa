@@ -37,8 +37,9 @@ ALTER TABLE sessions
 -- Ou via SQL (requer extensão pgcrypto):
 -- INSERT INTO storage.buckets (id, name, public) VALUES ('photos', 'photos', true) ON CONFLICT DO NOTHING;
 
--- RLS para bar_photos (opcional mas recomendado):
--- ALTER TABLE bar_photos ENABLE ROW LEVEL SECURITY;
--- CREATE POLICY "Anyone can insert photos" ON bar_photos FOR INSERT WITH CHECK (true);
--- CREATE POLICY "Anyone can read approved photos" ON bar_photos FOR SELECT USING (status = 'approved');
--- CREATE POLICY "Anyone can read all photos" ON bar_photos FOR SELECT USING (true);
+-- RLS para bar_photos
+ALTER TABLE bar_photos ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Anyone can insert photos" ON bar_photos FOR INSERT WITH CHECK (true);
+CREATE POLICY "Anyone can read all photos" ON bar_photos FOR SELECT USING (true);
+CREATE POLICY "Anyone can update photos" ON bar_photos FOR UPDATE USING (true);
+CREATE POLICY "Anyone can delete photos" ON bar_photos FOR DELETE USING (true);

@@ -136,6 +136,31 @@ export default function AdminView() {
     spotifyPlay(nowPlaying.spotify_uri, deviceId).catch(console.error);
   }, [nowPlaying?.id, isReady, deviceId]);
 
+  // Detecta fim de faixa e avança a fila automaticamente
+  const advanceQueueRef = useRef(advanceQueue);
+  advanceQueueRef.current = advanceQueue;
+  const prevPlayerStateRef = useRef<typeof playerState>(null);
+  const lastEndedUriRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!playerState) {
+      prevPlayerStateRef.current = null;
+      return;
+    }
+    const prev = prevPlayerStateRef.current;
+    prevPlayerStateRef.current = playerState;
+    if (
+      prev &&
+      !prev.is_paused &&
+      playerState.is_paused &&
+      playerState.position === 0 &&
+      prev.uri &&
+      lastEndedUriRef.current !== prev.uri
+    ) {
+      lastEndedUriRef.current = prev.uri;
+      advanceQueueRef.current();
+    }
+  }, [playerState]);
+
   useEffect(() => {
     if (!isReady || !deviceId || !slug) return;
     getValidToken().then(token => {
