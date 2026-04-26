@@ -8,6 +8,9 @@ export interface SessionConfig {
   spotify_device_name?: string;
   queue_locked?: boolean;
   enable_dedications?: boolean;
+  photo_display_mode?: 'none' | 'slideshow' | 'background';
+  photo_auto_approve?: boolean;
+  auto_queue_enabled?: boolean;
 }
 
 export const DEFAULT_CONFIG: SessionConfig = {
@@ -18,4 +21,7 @@ export const DEFAULT_CONFIG: SessionConfig = {
   request_cooldown_minutes: 3,
   queue_locked: false,
   enable_dedications: false,
+  photo_display_mode: 'none',
+  photo_auto_approve: false,
+  auto_queue_enabled: true,
 };

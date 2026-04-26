@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
-import { Music, Play, Disc, Pause, QrCode, Disc3 } from "lucide-react";
+import { Music, Play, Disc, Pause, Disc3 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useQueue } from "../hooks/useQueue";
 import { usePlayer } from "../hooks/usePlayer";
+import { useSession } from "../hooks/useSession";
 import { supabase } from "../lib/supabase";
 import { cn } from "../lib/utils";
 
@@ -92,7 +93,6 @@ export default function QueueTV() {
   const [time, setTime] = useState(new Date());
   const { queue, advanceQueue } = useQueue(slug);
 
-  const [showQR, setShowQR] = useState(true);
   const qrTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Party mode
@@ -112,6 +112,55 @@ export default function QueueTV() {
 
   const [barLogo, setBarLogo] = useState<string | null>(null);
 
+  // Session config for photo display mode
+  const { session: config } = useSession(slug);
+
+  // Approved photos for slideshow/background
+  const [approvedPhotos, setApprovedPhotos] = useState<any[]>([]);
+  const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
+
+  useEffect(() => {
+    if (!slug) return;
+    supabase
+      .from("bar_photos")
+      .select("*")
+      .eq("bar_slug", slug)
+      .eq("status", "approved")
+      .order("created_at", { ascending: false })
+      .limit(30)
+      .then(({ data }) => setApprovedPhotos(data ?? []));
+
+    const ch = supabase
+      .channel(`tv_photos_${slug}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "bar_photos", filter: `bar_slug=eq.${slug}` },
+        (payload) => {
+          const p = payload.new as any;
+          if (p.status === "approved") setApprovedPhotos(prev => [p, ...prev]);
+        })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "bar_photos", filter: `bar_slug=eq.${slug}` },
+        (payload) => {
+          const p = payload.new as any;
+          if (p.status === "approved") setApprovedPhotos(prev => {
+            const exists = prev.find(x => x.id === p.id);
+            return exists ? prev.map(x => x.id === p.id ? p : x) : [p, ...prev];
+          });
+          else setApprovedPhotos(prev => prev.filter(x => x.id !== p.id));
+        })
+      .on("postgres_changes", { event: "DELETE", schema: "public", table: "bar_photos", filter: `bar_slug=eq.${slug}` },
+        (payload) => setApprovedPhotos(prev => prev.filter(x => x.id !== (payload.old as any).id)))
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [slug]);
+
+  // Photo slideshow timer (8s per photo)
+  useEffect(() => {
+    if (approvedPhotos.length < 2 || config.photo_display_mode === "none") return;
+    const t = setInterval(() => {
+      setCurrentPhotoIdx(i => (i + 1) % approvedPhotos.length);
+    }, config.photo_display_mode === "background" ? 25000 : 8000);
+    return () => clearInterval(t);
+  }, [approvedPhotos.length, config.photo_display_mode]);
+
   // Bar custom theme + logo
   useEffect(() => {
     if (!slug) return;
@@ -127,14 +176,7 @@ export default function QueueTV() {
     };
   }, [slug]);
 
-  const showQRTemporarily = () => {
-    if (qrTimerRef.current) clearTimeout(qrTimerRef.current);
-    setShowQR(true);
-    qrTimerRef.current = setTimeout(() => setShowQR(false), 3000);
-  };
-
   useEffect(() => {
-    qrTimerRef.current = setTimeout(() => setShowQR(false), 3000);
     return () => { if (qrTimerRef.current) clearTimeout(qrTimerRef.current); };
   }, []);
 
@@ -218,6 +260,34 @@ export default function QueueTV() {
         partyMode && "party-mode",
       )}
     >
+      {/* Background photo mode */}
+      {config.photo_display_mode === "background" && approvedPhotos.length > 0 && (
+        <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+          <AnimatePresence>
+            <motion.div
+              key={approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.id}
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ opacity: 0.18, scale: 1.12 }}
+              exit={{ opacity: 0, scale: 1.15 }}
+              transition={{ duration: 2, ease: "easeInOut" }}
+              className="absolute inset-0"
+              style={{
+                backgroundImage: `url(${approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.photo_url})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            />
+          </AnimatePresence>
+          {/* Caption */}
+          {approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.caption && (
+            <div className="absolute bottom-24 left-8 bg-black/60 px-4 py-2 z-10">
+              <p className="font-display text-brand-lime text-2xl uppercase">
+                {approvedPhotos[currentPhotoIdx % approvedPhotos.length].caption}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
       {/* Party mode indicator */}
       {partyMode && (
         <div className="fixed top-4 right-4 z-50 flex items-center gap-2 bg-black border-2 border-brand-lime px-3 py-1.5 neon-border">
@@ -460,6 +530,33 @@ export default function QueueTV() {
             )}
           </div>
 
+          {/* Photo slideshow panel */}
+          {config.photo_display_mode === "slideshow" && approvedPhotos.length > 0 && (
+            <div className="px-12 mt-6">
+              <div className="border-4 border-brand-blue overflow-hidden relative" style={{ height: 200 }}>
+                <AnimatePresence mode="crossfade">
+                  <motion.img
+                    key={approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.id}
+                    src={approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.photo_url}
+                    alt="Foto da noite"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                </AnimatePresence>
+                {approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.caption && (
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-3 py-1.5">
+                    <p className="font-display text-brand-lime text-lg uppercase truncate">
+                      {approvedPhotos[currentPhotoIdx % approvedPhotos.length].caption}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* QR Code + CTA */}
           <div className={cn(
             "mt-auto p-10 border-t-[12px] border-brand-blue",
@@ -469,45 +566,18 @@ export default function QueueTV() {
           )}>
             <p className="font-display text-4xl leading-none uppercase tracking-tighter mb-6">PEÇA PELO CELULAR:</p>
             <div className="flex items-center gap-8">
-              <AnimatePresence mode="wait">
-                {showQR ? (
-                  <motion.div
-                    key="qr"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    className={cn(
-                      "aspect-square w-32 border-[6px] bg-white p-1 flex-shrink-0",
-                      partyMode ? "border-brand-lime neon-border" : "border-brand-blue",
-                    )}
-                  >
-                    <QRCodeSVG
-                      value={clientUrl}
-                      size={108}
-                      bgColor="#ffffff"
-                      fgColor="#0a1628"
-                      level="H"
-                    />
-                  </motion.div>
-                ) : (
-                  <motion.button
-                    key="show-qr"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    onClick={showQRTemporarily}
-                    className={cn(
-                      "aspect-square w-32 border-[6px] flex flex-col items-center justify-center gap-2 flex-shrink-0 transition-colors",
-                      partyMode
-                        ? "border-brand-lime bg-black text-brand-lime hover:bg-brand-lime/10"
-                        : "border-brand-blue bg-brand-blue text-brand-lime hover:bg-brand-blue/80",
-                    )}
-                  >
-                    <QrCode size={36} />
-                    <span className="font-display text-sm uppercase leading-none">VER QR</span>
-                  </motion.button>
-                )}
-              </AnimatePresence>
+              <div className={cn(
+                "aspect-square w-52 border-[6px] bg-white p-2 flex-shrink-0",
+                partyMode ? "border-brand-lime neon-border" : "border-brand-blue shadow-[8px_8px_0px_var(--color-brand-blue)]",
+              )}>
+                <QRCodeSVG
+                  value={clientUrl}
+                  size={180}
+                  bgColor="#ffffff"
+                  fgColor="#0a1628"
+                  level="H"
+                />
+              </div>
               <div className="space-y-2">
                 <p className="font-body text-2xl font-black uppercase leading-none italic">
                   TOCAÍ.COM/{slug}
@@ -571,7 +641,7 @@ function TVQueueItem({
           PARA @{client}
         </span>
         <p className={cn("font-display text-4xl leading-none", party ? "text-brand-lime neon-text" : "text-brand-blue")}>
-          UP NEXT
+          PRÓXIMA
         </p>
       </div>
     </motion.div>

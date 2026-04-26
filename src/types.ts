@@ -7,6 +7,27 @@ export interface Bar {
   owner_id?: string;
   theme_primary?: string;
   theme_accent?: string;
+  logo_url?: string;
+  status?: string;
+  is_approved?: boolean;
+  address?: string;
+  lat?: number;
+  lng?: number;
+  whatsapp?: string;
+  instagram?: string;
+  opening_hours?: Record<string, string>;
+  music_style?: string[];
+  cover_charge?: string;
+}
+
+export interface BarPhoto {
+  id: string;
+  bar_slug: string;
+  photo_url: string;
+  caption?: string;
+  uploader_name?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  created_at: string;
 }
 
 export interface ModerationLog {

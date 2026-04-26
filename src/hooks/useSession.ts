@@ -17,6 +17,9 @@ export function useSession(barSlug: string | undefined) {
       spotify_device_name: d.spotify_device_name ?? undefined,
       queue_locked: d.queue_locked ?? false,
       enable_dedications: d.enable_dedications ?? false,
+      photo_display_mode: d.photo_display_mode ?? 'none',
+      photo_auto_approve: d.photo_auto_approve ?? false,
+      auto_queue_enabled: d.auto_queue_enabled ?? true,
     };
   }
 

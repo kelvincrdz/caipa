@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Search, Music, ThumbsUp, Check, X, Sparkles, ExternalLink, Clock,
-  Smartphone, Info, Tag, Heart, Star, History, Zap, Play, Pause,
+  Smartphone, Info, Tag, Heart, Star, History, Zap, Play, Pause, Camera,
 } from "lucide-react";
 import { searchMusic, getSimilarTracks, getTrackInfo } from "../services/musicService";
 import { useQueue, tagMatchesTheme } from "../hooks/useQueue";
@@ -174,6 +174,93 @@ export default function ClientView() {
   // Dedication modal
   const [pendingTrack, setPendingTrack] = useState<any | null>(null);
   const [dedText, setDedText] = useState("");
+
+  // Photo upload
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoCaption, setPhotoCaption] = useState("");
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const [photoSent, setPhotoSent] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
+  const PHOTO_COOLDOWN_MS = 60_000; // 1 minute
+  function getLastPhotoTime(slug: string, phone: string): number {
+    return parseInt(localStorage.getItem(`caipa_photo_${slug}_${phone}`) || "0");
+  }
+  function setLastPhotoTime(slug: string, phone: string) {
+    localStorage.setItem(`caipa_photo_${slug}_${phone}`, String(Date.now()));
+  }
+
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      // compress by drawing to canvas at reduced quality
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let w = img.width, h = img.height;
+        const max = 1280;
+        if (w > max || h > max) {
+          if (w > h) { h = Math.round(h * max / w); w = max; }
+          else { w = Math.round(w * max / h); h = max; }
+        }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d")!.drawImage(img, 0, 0, w, h);
+        canvas.toBlob(blob => {
+          if (!blob) return;
+          const compressed = new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), { type: "image/jpeg" });
+          setPhotoFile(compressed);
+          setPhotoPreview(URL.createObjectURL(compressed));
+        }, "image/jpeg", 0.75);
+        URL.revokeObjectURL(url);
+      };
+      img.src = url;
+    } else {
+      setPhotoFile(file);
+      setPhotoPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handlePhotoUpload = async () => {
+    if (!photoFile || !slug || !phone || !clientName) return;
+    const lastTime = getLastPhotoTime(slug, phone);
+    if (Date.now() - lastTime < PHOTO_COOLDOWN_MS) {
+      alert("Aguarde 1 minuto entre envios de fotos.");
+      return;
+    }
+    setPhotoUploading(true);
+    const timestamp = Date.now();
+    const ext = photoFile.name.split(".").pop() ?? "jpg";
+    const path = `${slug}/${timestamp}.${ext}`;
+    const { error: uploadError } = await supabase.storage.from("photos").upload(path, photoFile, { upsert: false });
+    if (uploadError) {
+      alert(`Erro ao enviar foto: ${uploadError.message}`);
+      setPhotoUploading(false);
+      return;
+    }
+    const { data: urlData } = supabase.storage.from("photos").getPublicUrl(path);
+    await supabase.from("bar_photos").insert({
+      bar_slug: slug,
+      photo_url: urlData.publicUrl,
+      caption: photoCaption.trim() || null,
+      uploader_name: clientName,
+      status: "pending",
+    });
+    setLastPhotoTime(slug, phone);
+    setPhotoUploading(false);
+    setPhotoSent(true);
+    setTimeout(() => {
+      setPhotoSent(false);
+      setShowPhotoModal(false);
+      setPhotoFile(null);
+      setPhotoPreview(null);
+      setPhotoCaption("");
+    }, 2000);
+  };
 
   // Notification toasts
   const [notifToast, setNotifToast] = useState<null | "playing" | "next">(null);
@@ -828,7 +915,7 @@ export default function ClientView() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="md:col-span-7 md:row-span-4 card-bento bg-brand-blue text-brand-cream p-6 lg:p-10 flex flex-col relative overflow-hidden group"
+          className="md:col-span-7 md:row-span-4 border-4 border-brand-blue bg-brand-blue shadow-[8px_8px_0px_var(--color-brand-blue)] text-brand-cream p-6 lg:p-10 flex flex-col relative overflow-hidden group"
         >
           <div className="absolute top-0 right-0 bg-brand-lime text-brand-blue font-display px-3 py-1 sm:px-6 sm:py-2 text-base sm:text-2xl lg:text-3xl tracking-tighter shadow-[-4px_4px_0px_var(--color-brand-blue)] z-10">
             NO AR AGORA
@@ -1276,12 +1363,119 @@ export default function ClientView() {
           >
             📊 VER ESTATÍSTICAS
           </a>
+          {phone && (
+            <button
+              onClick={() => setShowPhotoModal(true)}
+              className="text-xs font-bold border-4 border-brand-blue bg-white px-3 py-2 uppercase shadow-[4px_4px_0px_var(--color-brand-blue)] hover:bg-brand-cream transition-colors flex items-center gap-2"
+            >
+              <Camera size={14} /> MANDAR PRO TELÃO
+            </button>
+          )}
         </div>
         <div className="flex items-center gap-3">
           <div className="w-5 h-5 rounded-full bg-red-600 animate-pulse shadow-[0_0_15px_rgba(220,38,38,0.5)]"></div>
           <span className="text-lg font-display uppercase tracking-widest text-brand-blue italic">Real-time Sync Active</span>
         </div>
       </motion.footer>
+
+      {/* Photo Upload Modal */}
+      <AnimatePresence>
+        {showPhotoModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[110] flex items-center justify-center bg-brand-blue/80 p-6 backdrop-blur-sm"
+          >
+            <div className="card-bento w-full max-w-sm bg-white p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-display text-3xl uppercase leading-none flex items-center gap-2">
+                  <Camera size={24} /> FOTO PRO TELÃO
+                </h3>
+                <button onClick={() => { setShowPhotoModal(false); setPhotoFile(null); setPhotoPreview(null); setPhotoCaption(""); }}
+                  className="text-brand-blue/40 hover:text-brand-blue transition-colors">
+                  <X size={24} />
+                </button>
+              </div>
+              <p className="font-body text-xs font-bold uppercase opacity-50 italic mb-4">
+                Sua foto aparece na TV após aprovação do admin.
+              </p>
+
+              {photoSent ? (
+                <div className="text-center py-8">
+                  <div className="text-green-500 flex justify-center mb-3"><Check size={48} strokeWidth={3} /></div>
+                  <p className="font-display text-2xl uppercase text-green-600">FOTO ENVIADA!</p>
+                  <p className="font-body text-sm uppercase opacity-60 mt-1">Aguardando aprovação do admin</p>
+                </div>
+              ) : (
+                <>
+                  <input
+                    ref={photoInputRef}
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handlePhotoSelect}
+                    className="hidden"
+                  />
+
+                  {photoPreview ? (
+                    <div className="relative mb-4 border-4 border-brand-blue">
+                      <img src={photoPreview} alt="Preview" className="w-full max-h-56 object-cover" />
+                      <button
+                        onClick={() => { setPhotoFile(null); setPhotoPreview(null); }}
+                        className="absolute top-2 right-2 bg-white border-2 border-brand-blue p-1 hover:bg-red-50"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => photoInputRef.current?.click()}
+                      className="w-full border-4 border-dashed border-brand-blue p-10 text-center mb-4 hover:bg-brand-cream/40 transition-colors"
+                    >
+                      <Camera size={36} className="mx-auto mb-2 text-brand-blue/40" />
+                      <p className="font-display text-xl uppercase opacity-60">Tirar foto ou escolher da galeria</p>
+                    </button>
+                  )}
+
+                  <input
+                    type="text"
+                    placeholder="Legenda curta: @seunome ou #bardobeto"
+                    maxLength={60}
+                    value={photoCaption}
+                    onChange={e => setPhotoCaption(e.target.value)}
+                    className="w-full border-4 border-brand-blue p-3 font-body text-base focus:outline-none mb-4"
+                  />
+
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => { setShowPhotoModal(false); setPhotoFile(null); setPhotoPreview(null); setPhotoCaption(""); }}
+                      className="flex-1 border-4 border-brand-blue/30 py-3 font-display text-lg uppercase text-brand-blue/60"
+                    >
+                      CANCELAR
+                    </button>
+                    <button
+                      onClick={handlePhotoUpload}
+                      disabled={!photoFile || photoUploading}
+                      className={cn(
+                        "flex-1 border-4 py-3 font-display text-lg uppercase transition-all flex items-center justify-center gap-2",
+                        photoFile && !photoUploading
+                          ? "border-brand-blue bg-brand-blue text-brand-lime shadow-[4px_4px_0px_var(--color-brand-lime)]"
+                          : "border-brand-blue/30 text-brand-blue/30 cursor-not-allowed"
+                      )}
+                    >
+                      {photoUploading
+                        ? <><div className="h-4 w-4 animate-spin rounded-full border-2 border-brand-lime border-t-transparent" /> ENVIANDO...</>
+                        : "ENVIAR"
+                      }
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Identification Modal */}
       <AnimatePresence>

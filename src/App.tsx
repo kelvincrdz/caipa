@@ -12,6 +12,7 @@ import QueueTV from "./pages/QueueTV";
 import SuperAdmin from "./pages/SuperAdmin";
 import SpotifyCallback from "./pages/SpotifyCallback";
 import StatsView from "./pages/StatsView";
+import BarProfile from "./pages/BarProfile";
 
 export default function App() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="/spotify/callback" element={<SpotifyCallback />} />
           <Route path="/admin/:slug" element={<AdminView />} />
           <Route path="/stats/:slug" element={<StatsView />} />
+          <Route path="/bar/:slug" element={<BarProfile />} />
           <Route path="/:slug" element={<ClientView />} />
           <Route path="/:slug/fila" element={<QueueTV />} />
         </Routes>

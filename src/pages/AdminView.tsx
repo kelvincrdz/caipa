@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "motion/react";
 import {
   Power, Settings, List, Trash2, ShieldAlert, ArrowUpCircle,
   Play, Music, SkipForward, Pause, Wifi, WifiOff, LogIn, LogOut, Lock, ShieldCheck, Tag, Share2, Copy, CheckCheck,
   Lock as LockIcon, Unlock, Heart, History, Search, Plus, ClipboardList, BarChart2, Palette, Ban, ImageIcon,
+  User, Camera, CheckCircle, XCircle, RefreshCw, MapPin, Phone, Instagram, Clock, DollarSign, Zap,
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { tagMatchesTheme } from "../hooks/useQueue";
@@ -65,7 +66,7 @@ export default function AdminView() {
     setLoginLoading(false);
   };
 
-  const [activeTab, setActiveTab] = useState<"queue" | "settings" | "share" | "history" | "moderation">("queue");
+  const [activeTab, setActiveTab] = useState<"queue" | "settings" | "share" | "history" | "moderation" | "profile" | "photos">("queue");
   const [copied, setCopied] = useState(false);
   const [loggedIn, setLoggedIn] = useState(isAdminLoggedIn());
   const [spotifyProfile, setSpotifyProfile] = useState<SpotifyProfile | null>(null);
@@ -97,6 +98,27 @@ export default function AdminView() {
   const [logoSaved, setLogoSaved] = useState(false);
   const [logoUploading, setLogoUploading] = useState(false);
 
+  // Bar profile
+  const [barProfile, setBarProfile] = useState({
+    description: "",
+    address: "",
+    whatsapp: "",
+    instagram: "",
+    cover_charge: "",
+    music_style: [] as string[],
+    opening_hours: {} as Record<string, string>,
+  });
+  const [profileSaved, setProfileSaved] = useState(false);
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [geocoding, setGeocoding] = useState(false);
+
+  // Photos moderation
+  const [photos, setPhotos] = useState<any[]>([]);
+  const [photosLoading, setPhotosLoading] = useState(false);
+
+  // Auto-queue
+  const autoQueueTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   // Encerrar confirmation
   const [encerrarConfirm, setEncerrarConfirm] = useState(false);
 
@@ -126,10 +148,10 @@ export default function AdminView() {
     });
   }, [isReady, deviceId, slug]);
 
-  // Load bar theme colors + logo on mount
+  // Load bar theme colors + logo + profile on mount
   useEffect(() => {
     if (!slug) return;
-    supabase.from("bars").select("theme_primary,theme_accent,logo_url").eq("slug", slug).maybeSingle()
+    supabase.from("bars").select("theme_primary,theme_accent,logo_url,description,address,whatsapp,instagram,cover_charge,music_style,opening_hours").eq("slug", slug).maybeSingle()
       .then(({ data }) => {
         if (data) {
           const p = data.theme_primary || "#336580";
@@ -138,6 +160,15 @@ export default function AdminView() {
           document.documentElement.style.setProperty("--color-brand-blue", p);
           document.documentElement.style.setProperty("--color-brand-lime", a);
           setBarLogo(data.logo_url || "");
+          setBarProfile({
+            description: data.description || "",
+            address: data.address || "",
+            whatsapp: data.whatsapp || "",
+            instagram: data.instagram || "",
+            cover_charge: data.cover_charge || "",
+            music_style: data.music_style || [],
+            opening_hours: data.opening_hours || {},
+          });
         }
       });
   }, [slug]);
@@ -168,6 +199,81 @@ export default function AdminView() {
         setHistoryLoading(false);
       });
   }, [activeTab, slug]);
+
+  // Load photos when tab is activated
+  useEffect(() => {
+    if (activeTab !== "photos" || !slug) return;
+    setPhotosLoading(true);
+    supabase
+      .from("bar_photos")
+      .select("*")
+      .eq("bar_slug", slug)
+      .order("created_at", { ascending: false })
+      .limit(50)
+      .then(({ data }) => { setPhotos(data ?? []); setPhotosLoading(false); });
+
+    const ch = supabase
+      .channel(`admin_photos_${slug}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "bar_photos", filter: `bar_slug=eq.${slug}` },
+        (payload) => setPhotos((prev: any[]) => [payload.new as any, ...prev]))
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "bar_photos", filter: `bar_slug=eq.${slug}` },
+        (payload) => setPhotos((prev: any[]) => prev.map((p: any) => p.id === (payload.new as any).id ? payload.new as any : p)))
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [activeTab, slug]);
+
+  // Auto-queue polling (every 2 minutes when admin is on queue tab and auto_queue_enabled)
+  useEffect(() => {
+    if (!slug || !config.auto_queue_enabled) {
+      if (autoQueueTimerRef.current) clearInterval(autoQueueTimerRef.current);
+      return;
+    }
+    const runAutoQueue = async () => {
+      // Check if queue is empty (only pending items)
+      const { data: pending } = await supabase.from("queue_items").select("id").eq("bar_slug", slug).eq("status", "pending");
+      if ((pending ?? []).length > 0) return; // queue not empty, do nothing
+
+      // Get played history to pick from
+      const { data: played } = await supabase
+        .from("queue_items")
+        .select("title,artist,thumbnail_url,spotify_uri,preview_url,external_urls,tags")
+        .eq("bar_slug", slug)
+        .eq("status", "played")
+        .order("score", { ascending: false })
+        .limit(100);
+
+      if (!played || played.length === 0) return;
+
+      // Filter by current theme genre if not "Livre"
+      let pool = played;
+      if (config.theme && config.theme !== "Livre") {
+        const themed = played.filter(p =>
+          (p.tags ?? []).some((t: string) => t.toLowerCase().includes(config.theme.toLowerCase()))
+        );
+        if (themed.length > 0) pool = themed;
+      }
+
+      // Pick a random track from pool
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      await supabase.from("queue_items").insert({
+        bar_slug: slug,
+        client_name: "Tocaí Auto",
+        client_id: "auto",
+        title: pick.title,
+        artist: pick.artist,
+        thumbnail_url: pick.thumbnail_url || "",
+        spotify_uri: pick.spotify_uri ?? null,
+        preview_url: pick.preview_url ?? null,
+        external_urls: pick.external_urls ?? null,
+        tags: pick.tags ?? [],
+        score: 0,
+        status: "pending",
+      });
+    };
+
+    autoQueueTimerRef.current = setInterval(runAutoQueue, 2 * 60 * 1000);
+    return () => { if (autoQueueTimerRef.current) clearInterval(autoQueueTimerRef.current); };
+  }, [slug, config.auto_queue_enabled, config.theme]);
 
   useEffect(() => {
     if (!loggedIn) { setSpotifyProfile(null); return; }
@@ -242,6 +348,60 @@ export default function AdminView() {
     setShowAdminSearch(false);
     setAdminSearch("");
     setAdminSearchResults([]);
+  };
+
+  // ── Profile handlers ───────────────────────────────────────────────────────
+  const handleSaveProfile = async () => {
+    if (!slug) return;
+    setProfileSaving(true);
+    let lat = null, lng = null;
+    // Geocode address if present
+    if (barProfile.address.trim()) {
+      setGeocoding(true);
+      try {
+        const resp = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(barProfile.address)}&format=json&limit=1`,
+          { headers: { "Accept-Language": "pt-BR" } }
+        );
+        const results = await resp.json();
+        if (results?.[0]) {
+          lat = parseFloat(results[0].lat);
+          lng = parseFloat(results[0].lon);
+        }
+      } catch {
+        // geocoding optional
+      }
+      setGeocoding(false);
+    }
+    await supabase.from("bars").update({
+      description: barProfile.description || null,
+      address: barProfile.address || null,
+      lat: lat,
+      lng: lng,
+      whatsapp: barProfile.whatsapp || null,
+      instagram: barProfile.instagram || null,
+      cover_charge: barProfile.cover_charge || null,
+      music_style: barProfile.music_style,
+      opening_hours: Object.keys(barProfile.opening_hours).length > 0 ? barProfile.opening_hours : null,
+    }).eq("slug", slug);
+    setProfileSaving(false);
+    setProfileSaved(true);
+    setTimeout(() => setProfileSaved(false), 2500);
+  };
+
+  const handlePhotoAction = async (photoId: string, action: "approved" | "rejected") => {
+    await supabase.from("bar_photos").update({ status: action }).eq("id", photoId);
+    setPhotos((prev: any[]) => prev.map((p: any) => p.id === photoId ? { ...p, status: action } : p));
+  };
+
+  const handlePhotoDelete = async (photoId: string, photoUrl: string) => {
+    await supabase.from("bar_photos").delete().eq("id", photoId);
+    // Also remove from storage
+    const pathMatch = photoUrl.match(/photos\/(.+)$/);
+    if (pathMatch) {
+      await supabase.storage.from("photos").remove([pathMatch[1]]);
+    }
+    setPhotos((prev: any[]) => prev.filter((p: any) => p.id !== photoId));
   };
 
   const handleLogoFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -336,7 +496,9 @@ export default function AdminView() {
         <div className="flex w-full justify-around gap-2 lg:flex-col lg:justify-start">
           <NavBtn active={activeTab === "queue"} icon={<List />} label="FILA" onClick={() => setActiveTab("queue")} />
           <NavBtn active={activeTab === "history"} icon={<History />} label="HIST." onClick={() => setActiveTab("history")} />
+          <NavBtn active={activeTab === "photos"} icon={<Camera />} label="FOTOS" onClick={() => setActiveTab("photos")} />
           <NavBtn active={activeTab === "moderation"} icon={<ClipboardList />} label="MOD." onClick={() => setActiveTab("moderation")} />
+          <NavBtn active={activeTab === "profile"} icon={<User />} label="PERFIL" onClick={() => setActiveTab("profile")} />
           <NavBtn active={activeTab === "settings"} icon={<Settings />} label="CONFIG" onClick={() => setActiveTab("settings")} />
           <NavBtn active={activeTab === "share"} icon={<Share2 />} label="LINK" onClick={() => setActiveTab("share")} />
 
@@ -667,6 +829,7 @@ export default function AdminView() {
                   key={item.id}
                   {...item}
                   currentTheme={config.theme}
+                  isAuto={item.client_id === "auto"}
                   onVeto={() => setModModal({ type: "veto", itemId: item.id, itemTitle: item.title, itemArtist: item.artist })}
                   onVote={() => vote(item.id, "admin")}
                   onRemove={() => setModModal({ type: "remove", itemId: item.id, itemTitle: item.title, itemArtist: item.artist })}
@@ -788,6 +951,301 @@ export default function AdminView() {
                 ))}
               </div>
             )}
+          </motion.div>
+        )}
+
+        {/* ── PHOTOS TAB ─────────────────────────────────────────────────────── */}
+        {activeTab === "photos" && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <h3 className="text-4xl font-display uppercase italic border-l-8 border-brand-blue pl-4">
+                Fotos da Noite
+              </h3>
+              <div className="flex gap-3 items-center">
+                <div className="flex items-center gap-2">
+                  <span className="font-body text-xs font-bold uppercase opacity-60">Auto-aprovar:</span>
+                  <button
+                    onClick={() => updateConfig({ photo_auto_approve: !config.photo_auto_approve })}
+                    className={cn(
+                      "flex items-center gap-2 border-4 px-4 py-2 font-display text-lg uppercase transition-all",
+                      config.photo_auto_approve
+                        ? "border-green-500 bg-green-500 text-white"
+                        : "border-brand-blue/40 text-brand-blue/60 bg-white"
+                    )}
+                  >{config.photo_auto_approve ? "ON" : "OFF"}</button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-body text-xs font-bold uppercase opacity-60">Exibição:</span>
+                  {(["none", "slideshow", "background"] as const).map(mode => (
+                    <button
+                      key={mode}
+                      onClick={() => updateConfig({ photo_display_mode: mode })}
+                      className={cn(
+                        "border-4 px-3 py-1.5 font-display text-sm uppercase transition-all",
+                        config.photo_display_mode === mode
+                          ? "border-brand-blue bg-brand-blue text-brand-lime"
+                          : "border-brand-blue/30 text-brand-blue/50 hover:border-brand-blue hover:text-brand-blue"
+                      )}
+                    >{mode === "none" ? "OFF" : mode === "slideshow" ? "SLIDE" : "FUNDO"}</button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {photosLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="h-10 w-10 animate-spin rounded-full border-4 border-brand-blue border-t-transparent" />
+              </div>
+            ) : photos.length === 0 ? (
+              <div className="border-4 border-dashed border-brand-blue bg-white/50 p-20 text-center">
+                <Camera size={40} className="mx-auto mb-4 text-brand-blue/30" />
+                <p className="font-display text-3xl uppercase opacity-40">Nenhuma foto enviada ainda</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {photos.map(photo => (
+                  <div key={photo.id} className={cn(
+                    "border-4 overflow-hidden",
+                    photo.status === "approved" ? "border-green-500" :
+                    photo.status === "rejected" ? "border-red-400 opacity-60" :
+                    "border-brand-blue"
+                  )}>
+                    <div className="relative aspect-square bg-brand-blue/10">
+                      <img
+                        src={photo.photo_url}
+                        alt={photo.caption || "Foto"}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                      <div className={cn(
+                        "absolute top-2 left-2 border-2 px-2 py-0.5 font-display text-xs uppercase",
+                        photo.status === "approved" ? "border-green-500 bg-green-500 text-white" :
+                        photo.status === "rejected" ? "border-red-500 bg-red-500 text-white" :
+                        "border-yellow-500 bg-yellow-400 text-brand-blue"
+                      )}>
+                        {photo.status === "approved" ? "OK" : photo.status === "rejected" ? "REJ." : "PEND."}
+                      </div>
+                    </div>
+                    <div className="p-3 bg-white space-y-2">
+                      {photo.caption && (
+                        <p className="font-body text-xs font-bold truncate opacity-70">{photo.caption}</p>
+                      )}
+                      <p className="font-body text-[10px] uppercase opacity-40">
+                        @{photo.uploader_name} · {new Date(photo.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                      </p>
+                      <div className="flex gap-2">
+                        {photo.status !== "approved" && (
+                          <button
+                            onClick={() => handlePhotoAction(photo.id, "approved")}
+                            className="flex-1 flex items-center justify-center gap-1 border-2 border-green-500 bg-green-50 text-green-700 px-2 py-1.5 font-display text-xs uppercase hover:bg-green-500 hover:text-white transition-all"
+                          >
+                            <CheckCircle size={12} /> OK
+                          </button>
+                        )}
+                        {photo.status !== "rejected" && (
+                          <button
+                            onClick={() => handlePhotoAction(photo.id, "rejected")}
+                            className="flex-1 flex items-center justify-center gap-1 border-2 border-red-400 bg-red-50 text-red-600 px-2 py-1.5 font-display text-xs uppercase hover:bg-red-500 hover:text-white transition-all"
+                          >
+                            <XCircle size={12} /> REJ.
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handlePhotoDelete(photo.id, photo.photo_url)}
+                          className="border-2 border-brand-blue/30 text-brand-blue/50 px-2 py-1.5 hover:border-red-500 hover:text-red-600 transition-all"
+                          title="Deletar"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        )}
+
+        {/* ── PROFILE TAB ────────────────────────────────────────────────────── */}
+        {activeTab === "profile" && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 max-w-3xl">
+            <div className="card-bento p-8">
+              <h3 className="mb-2 text-4xl font-display leading-none tracking-tighter border-b-4 border-brand-blue pb-2 inline-flex items-center gap-3">
+                <User size={28} /> PERFIL DO BAR
+              </h3>
+              <p className="mb-6 font-body text-xs font-bold uppercase opacity-50 italic">
+                Aparece na página pública <strong>/bar/{slug}</strong> e no mapa da home.
+              </p>
+
+              {/* Descrição */}
+              <div className="space-y-6">
+                <div className="flex flex-col gap-1">
+                  <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60">
+                    DESCRIÇÃO (até 300 caracteres)
+                  </label>
+                  <textarea
+                    maxLength={300}
+                    rows={3}
+                    placeholder="Descreva o seu bar, ambiente, proposta..."
+                    value={barProfile.description}
+                    onChange={e => setBarProfile(prev => ({ ...prev, description: e.target.value }))}
+                    className="w-full border-4 border-brand-blue p-4 font-body text-base focus:outline-none bg-white resize-none"
+                  />
+                  <p className="font-body text-xs uppercase opacity-40 text-right">{barProfile.description.length}/300</p>
+                </div>
+
+                {/* Endereço */}
+                <div className="flex flex-col gap-1">
+                  <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60 flex items-center gap-2">
+                    <MapPin size={12} /> ENDEREÇO COMPLETO
+                  </label>
+                  <div className="flex gap-3">
+                    <input
+                      type="text"
+                      placeholder="Rua, número, bairro, cidade — estado"
+                      value={barProfile.address}
+                      onChange={e => setBarProfile(prev => ({ ...prev, address: e.target.value }))}
+                      className="flex-1 border-4 border-brand-blue p-4 font-body text-base focus:outline-none bg-white"
+                    />
+                  </div>
+                  <p className="font-body text-xs uppercase opacity-40 italic">
+                    Coordenadas (lat/lng) serão preenchidas automaticamente via geocoding ao salvar.
+                  </p>
+                </div>
+
+                {/* WhatsApp + Instagram */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="flex flex-col gap-1">
+                    <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60 flex items-center gap-2">
+                      <Phone size={12} /> WHATSAPP (com DDD)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="11987654321"
+                      value={barProfile.whatsapp}
+                      onChange={e => setBarProfile(prev => ({ ...prev, whatsapp: e.target.value.replace(/\D/g, "") }))}
+                      className="border-4 border-brand-blue p-4 font-body text-base focus:outline-none bg-white"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60 flex items-center gap-2">
+                      <Instagram size={12} /> INSTAGRAM
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="@seubarnomeinsta"
+                      value={barProfile.instagram}
+                      onChange={e => setBarProfile(prev => ({ ...prev, instagram: e.target.value }))}
+                      className="border-4 border-brand-blue p-4 font-body text-base focus:outline-none bg-white"
+                    />
+                  </div>
+                </div>
+
+                {/* Couvert */}
+                <div className="flex flex-col gap-1">
+                  <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60 flex items-center gap-2">
+                    <DollarSign size={12} /> COUVERT / ENTRADA
+                  </label>
+                  <input
+                    type="text"
+                    placeholder='Ex: "R$15 sexta e sábado" ou "Sem couvert"'
+                    value={barProfile.cover_charge}
+                    onChange={e => setBarProfile(prev => ({ ...prev, cover_charge: e.target.value }))}
+                    className="w-full border-4 border-brand-blue p-4 font-body text-base focus:outline-none bg-white"
+                  />
+                </div>
+
+                {/* Estilo Musical */}
+                <div className="flex flex-col gap-2">
+                  <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60 flex items-center gap-2">
+                    <Tag size={12} /> ESTILO MUSICAL (selecione os gêneros)
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {GENRE_TAGS.filter(g => g.value !== "Livre").map(genre => {
+                      const selected = barProfile.music_style.includes(genre.value);
+                      return (
+                        <button
+                          key={genre.value}
+                          type="button"
+                          onClick={() => setBarProfile(prev => ({
+                            ...prev,
+                            music_style: selected
+                              ? prev.music_style.filter(g => g !== genre.value)
+                              : [...prev.music_style, genre.value],
+                          }))}
+                          className={cn(
+                            "border-4 px-4 py-1.5 font-display text-xl uppercase tracking-tight transition-all",
+                            selected
+                              ? cn(genre.cls, "shadow-[3px_3px_0px_var(--color-brand-blue)] -translate-x-0.5 -translate-y-0.5 font-black")
+                              : cn(genre.cls, "opacity-40 hover:opacity-70"),
+                          )}
+                        >
+                          {genre.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Horários */}
+                <div className="flex flex-col gap-2">
+                  <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60 flex items-center gap-2">
+                    <Clock size={12} /> HORÁRIOS DE FUNCIONAMENTO
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {[
+                      { key: "seg", label: "Segunda" }, { key: "ter", label: "Terça" },
+                      { key: "qua", label: "Quarta" }, { key: "qui", label: "Quinta" },
+                      { key: "sex", label: "Sexta" }, { key: "sab", label: "Sábado" },
+                      { key: "dom", label: "Domingo" },
+                    ].map(({ key, label }) => (
+                      <div key={key} className="flex items-center gap-3">
+                        <span className="font-display text-xl uppercase w-20 flex-shrink-0">{label}</span>
+                        <input
+                          type="text"
+                          placeholder='ex: "18h-00h" ou "fechado"'
+                          value={barProfile.opening_hours[key] || ""}
+                          onChange={e => setBarProfile(prev => ({
+                            ...prev,
+                            opening_hours: { ...prev.opening_hours, [key]: e.target.value },
+                          }))}
+                          className="flex-1 border-2 border-brand-blue p-3 font-body text-base focus:outline-none bg-white"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <button
+                    onClick={handleSaveProfile}
+                    disabled={profileSaving}
+                    className={cn(
+                      "flex items-center gap-2 border-4 px-6 py-3 font-display text-2xl uppercase transition-all",
+                      profileSaved
+                        ? "border-green-500 bg-green-500 text-white"
+                        : "border-brand-blue bg-brand-blue text-brand-lime shadow-[4px_4px_0px_var(--color-brand-lime)]",
+                      profileSaving && "opacity-60 cursor-not-allowed",
+                    )}
+                  >
+                    {profileSaving
+                      ? <><RefreshCw size={20} className="animate-spin" /> {geocoding ? "GEOCODIFICANDO..." : "SALVANDO..."}</>
+                      : profileSaved
+                      ? <><CheckCheck size={20} /> SALVO!</>
+                      : "SALVAR PERFIL"
+                    }
+                  </button>
+                  <a
+                    href={`/bar/${slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 border-4 border-brand-blue/40 px-5 py-3 font-display text-xl uppercase text-brand-blue/60 hover:border-brand-blue hover:text-brand-blue transition-all"
+                  >
+                    VER PERFIL PÚBLICO
+                  </a>
+                </div>
+              </div>
+            </div>
           </motion.div>
         )}
 
@@ -1146,6 +1604,36 @@ export default function AdminView() {
                 ✓ Configurações salvas no Supabase e sincronizadas em tempo real com todos os clientes.
               </p>
             </div>
+
+            {/* Auto-queue */}
+            <div className="card-bento p-8 bg-brand-blue/5">
+              <h3 className="mb-2 text-4xl font-display leading-none tracking-tighter border-b-4 border-brand-blue pb-2 inline-flex items-center gap-3">
+                <Zap size={28} /> AUTO-FILA
+              </h3>
+              <p className="mb-6 font-body text-xs font-bold uppercase opacity-50 italic">
+                Quando a fila esvazia, o sistema adiciona músicas automaticamente do histórico da noite. Aparecem com badge "AUTO" na fila.
+              </p>
+              <div className="flex items-center justify-between border-4 border-brand-blue bg-white p-5">
+                <div>
+                  <p className="font-display text-2xl uppercase leading-none">Auto-alimentação da Fila</p>
+                  <p className="font-body text-xs font-bold uppercase opacity-50 italic mt-1">
+                    Verifica a cada 2 minutos. Prioriza o gênero da noite.
+                  </p>
+                </div>
+                <button
+                  onClick={() => updateConfig({ auto_queue_enabled: !config.auto_queue_enabled })}
+                  className={cn(
+                    "flex items-center gap-2 border-4 px-5 py-3 font-display text-xl uppercase transition-all",
+                    config.auto_queue_enabled
+                      ? "border-brand-blue bg-brand-blue text-brand-lime shadow-[4px_4px_0px_var(--color-brand-lime)]"
+                      : "border-brand-blue/40 text-brand-blue/60 bg-white hover:border-brand-blue hover:text-brand-blue"
+                  )}
+                >
+                  <Zap size={18} fill={config.auto_queue_enabled ? "currentColor" : "none"} />
+                  {config.auto_queue_enabled ? "ATIVADO" : "ATIVAR"}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </main>
@@ -1228,7 +1716,7 @@ function NavBtn({ active, icon, label, onClick }: { active: boolean; icon: React
 }
 
 function AdminQueueItem({
-  title, artist, score, client_name, thumbnail_url, tags, dedication_to, currentTheme,
+  title, artist, score, client_name, thumbnail_url, tags, dedication_to, currentTheme, isAuto,
   onVeto, onVote, onRemove, onPlayNow,
 }: any) {
   const itemTags: string[] = tags ?? [];
@@ -1249,7 +1737,14 @@ function AdminQueueItem({
           </div>
         )}
         <div className="overflow-hidden min-w-0">
-          <h5 className="text-3xl font-display leading-none uppercase truncate tracking-tighter">{title}</h5>
+          <div className="flex items-center gap-2">
+            <h5 className="text-3xl font-display leading-none uppercase truncate tracking-tighter">{title}</h5>
+            {isAuto && (
+              <span className="flex-shrink-0 border-2 border-brand-blue bg-brand-lime text-brand-blue px-2 py-0.5 font-display text-xs uppercase tracking-tight flex items-center gap-1">
+                <Zap size={10} fill="currentColor" /> AUTO
+              </span>
+            )}
+          </div>
           <p className="font-body text-base font-black uppercase leading-tight truncate italic opacity-60">
             {artist} • @{client_name}
           </p>
