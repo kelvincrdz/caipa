@@ -9,19 +9,24 @@ export default function SpotifyCallback() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
+    const state = params.get('state');
     const err = params.get('error');
 
     if (err) {
-      setError(`Spotify recusou o acesso: ${err}`);
+      const messages: Record<string, string> = {
+        access_denied: 'Acesso negado. Você recusou a autorização do Spotify.',
+        invalid_client: 'Client ID inválido. Verifique as configurações do app.',
+      };
+      setError(messages[err] ?? `Spotify recusou o acesso: ${err}`);
       return;
     }
 
     if (!code) {
-      setError('Código de autorização não encontrado.');
+      setError('Código de autorização não encontrado na resposta do Spotify.');
       return;
     }
 
-    handleCallback(code)
+    handleCallback(code, state)
       .then(() => {
         const returnPath = sessionStorage.getItem('sp_return_path') || '/';
         sessionStorage.removeItem('sp_return_path');
@@ -33,12 +38,23 @@ export default function SpotifyCallback() {
   if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-brand-cream p-8 text-center">
-        <div className="card-bento bg-white p-10 max-w-md">
+        <div className="card-bento bg-white p-10 max-w-md w-full">
           <h2 className="font-display text-4xl text-red-600 mb-4">ERRO NO LOGIN</h2>
-          <p className="font-body text-lg mb-6">{error}</p>
-          <button onClick={() => navigate('/')} className="btn-bento w-full text-2xl">
-            VOLTAR
-          </button>
+          <p className="font-body text-base mb-8 text-brand-blue/80">{error}</p>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => window.history.back()}
+              className="btn-bento w-full text-xl"
+            >
+              TENTAR NOVAMENTE
+            </button>
+            <button
+              onClick={() => navigate('/')}
+              className="w-full border-4 border-brand-blue/30 p-4 font-display text-xl uppercase text-brand-blue/60 hover:border-brand-blue hover:text-brand-blue transition-all"
+            >
+              VOLTAR AO INÍCIO
+            </button>
+          </div>
         </div>
       </div>
     );

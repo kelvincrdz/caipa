@@ -12,7 +12,7 @@ import { cn } from "../lib/utils";
 import { useQueue } from "../hooks/useQueue";
 import { useSession } from "../hooks/useSession";
 import { useSpotifyPlayer } from "../hooks/useSpotifyPlayer";
-import { initiateLogin, isAdminLoggedIn, logout, getValidToken } from "../services/spotifyAuth";
+import { initiateLogin, isAdminLoggedIn, logout, getValidToken, getSpotifyProfile, SpotifyProfile } from "../services/spotifyAuth";
 import { play as spotifyPlay, pause as spotifyPause, resume as spotifyResume } from "../services/spotifyPlayback";
 import { supabase } from "../lib/supabase";
 import { searchMusic, getTrackInfo } from "../services/musicService";
@@ -68,6 +68,7 @@ export default function AdminView() {
   const [activeTab, setActiveTab] = useState<"queue" | "settings" | "share" | "history" | "moderation">("queue");
   const [copied, setCopied] = useState(false);
   const [loggedIn, setLoggedIn] = useState(isAdminLoggedIn());
+  const [spotifyProfile, setSpotifyProfile] = useState<SpotifyProfile | null>(null);
 
   // Admin "escolhe" search
   const [adminSearch, setAdminSearch] = useState("");
@@ -168,9 +169,15 @@ export default function AdminView() {
       });
   }, [activeTab, slug]);
 
+  useEffect(() => {
+    if (!loggedIn) { setSpotifyProfile(null); return; }
+    getSpotifyProfile().then(setSpotifyProfile);
+  }, [loggedIn]);
+
   function handleLogout() {
     logout();
     setLoggedIn(false);
+    setSpotifyProfile(null);
     updateConfig({ spotify_token: undefined, spotify_device_name: undefined });
   }
 
@@ -336,6 +343,17 @@ export default function AdminView() {
           <div className="hidden lg:mt-auto lg:block space-y-3">
             {loggedIn ? (
               <div className="space-y-2">
+                {spotifyProfile && (
+                  <div className="flex items-center gap-2 border-4 border-green-500 bg-green-50 px-3 py-2">
+                    {spotifyProfile.images?.[0]?.url && (
+                      <img src={spotifyProfile.images[0].url} alt="" className="h-7 w-7 rounded-full object-cover flex-shrink-0" />
+                    )}
+                    <div className="min-w-0">
+                      <p className="font-display text-xs uppercase leading-none truncate text-green-700">{spotifyProfile.display_name}</p>
+                      <p className="font-body text-[10px] uppercase opacity-60 truncate text-green-600">{spotifyProfile.email}</p>
+                    </div>
+                  </div>
+                )}
                 <div className={cn(
                   "flex items-center gap-2 border-4 px-4 py-2 font-display text-lg",
                   isReady
@@ -349,9 +367,9 @@ export default function AdminView() {
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="flex w-full items-center gap-3 border-4 border-brand-blue/30 p-3 font-display text-base transition-all uppercase leading-none text-brand-blue/60 hover:border-brand-blue hover:text-brand-blue"
+                  className="flex w-full items-center gap-3 border-4 border-brand-blue/30 p-3 font-display text-base transition-all uppercase leading-none text-brand-blue/60 hover:border-red-500 hover:text-red-600 hover:border-4"
                 >
-                  <LogOut size={18} /> SPOTIFY
+                  <LogOut size={18} /> DESCONECTAR SPOTIFY
                 </button>
               </div>
             ) : (
@@ -359,7 +377,7 @@ export default function AdminView() {
                 onClick={handleLogin}
                 className="flex w-full items-center gap-3 border-4 border-green-600 bg-green-600 text-white p-4 font-display text-xl transition-all uppercase leading-none hover:bg-green-700 shadow-[4px_4px_0px_rgba(0,100,0,0.3)]"
               >
-                <LogIn size={22} /> LOGIN SPOTIFY
+                <LogIn size={22} /> CONECTAR SPOTIFY
               </button>
             )}
 

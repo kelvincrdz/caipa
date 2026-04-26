@@ -19,6 +19,15 @@ function generateVerifier(): string {
     .replace(/=/g, '');
 }
 
+function generateState(): string {
+  const array = new Uint8Array(16);
+  crypto.getRandomValues(array);
+  return btoa(String.fromCharCode(...array))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+}
+
 async function generateChallenge(verifier: string): Promise<string> {
   const data = new TextEncoder().encode(verifier);
   const digest = await crypto.subtle.digest('SHA-256', data);
@@ -30,9 +39,13 @@ async function generateChallenge(verifier: string): Promise<string> {
 
 export async function initiateLogin(returnPath?: string) {
   if (returnPath) sessionStorage.setItem('sp_return_path', returnPath);
+
   const verifier = generateVerifier();
   const challenge = await generateChallenge(verifier);
+  const state = generateState();
+
   localStorage.setItem('sp_pkce_verifier', verifier);
+  localStorage.setItem('sp_oauth_state', state);
 
   const params = new URLSearchParams({
     client_id: CLIENT_ID,
@@ -41,12 +54,20 @@ export async function initiateLogin(returnPath?: string) {
     code_challenge_method: 'S256',
     code_challenge: challenge,
     scope: SCOPES,
+    state,
   });
 
   window.location.href = `https://accounts.spotify.com/authorize?${params}`;
 }
 
-export async function handleCallback(code: string): Promise<string> {
+export async function handleCallback(code: string, returnedState?: string | null): Promise<string> {
+  const savedState = localStorage.getItem('sp_oauth_state');
+  localStorage.removeItem('sp_oauth_state');
+
+  if (savedState && returnedState !== undefined && savedState !== returnedState) {
+    throw new Error('Falha de segurança: parâmetro state inválido. Possível ataque CSRF. Tente logar novamente.');
+  }
+
   const verifier = localStorage.getItem('sp_pkce_verifier');
   if (!verifier) throw new Error('Verificador PKCE não encontrado. Tente logar novamente.');
 
@@ -100,7 +121,7 @@ async function doRefresh(): Promise<string | null> {
   return data.access_token;
 }
 
-// Shared token for clients (set from Supabase sessions by ClientView)
+// Shared token for clients — set from Supabase sessions by ClientView
 let _sharedToken: string | null = null;
 export function setSharedToken(token: string | null) {
   _sharedToken = token;
@@ -111,7 +132,6 @@ export async function getValidToken(): Promise<string | null> {
 
   if (local) {
     const expiry = parseInt(localStorage.getItem('sp_token_expiry') || '0');
-    // Refresh 60s before expiry
     if (Date.now() > expiry - 60_000) {
       return doRefresh();
     }
@@ -121,12 +141,32 @@ export async function getValidToken(): Promise<string | null> {
   return _sharedToken;
 }
 
+export interface SpotifyProfile {
+  display_name: string;
+  email: string;
+  images: { url: string }[];
+}
+
+export async function getSpotifyProfile(): Promise<SpotifyProfile | null> {
+  const token = await getValidToken();
+  if (!token) return null;
+  try {
+    const res = await fetch('https://api.spotify.com/v1/me', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
+}
+
 export function isAdminLoggedIn(): boolean {
   return !!localStorage.getItem('sp_access_token');
 }
 
 export function logout() {
-  ['sp_access_token', 'sp_refresh_token', 'sp_token_expiry', 'sp_pkce_verifier'].forEach(k =>
+  ['sp_access_token', 'sp_refresh_token', 'sp_token_expiry', 'sp_pkce_verifier', 'sp_oauth_state'].forEach(k =>
     localStorage.removeItem(k),
   );
 }
