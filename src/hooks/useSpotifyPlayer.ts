@@ -24,9 +24,11 @@ export function useSpotifyPlayer(enabled: boolean, playerName = 'Tocaí Bar') {
   useEffect(() => {
     if (!enabled) return;
 
+    let mounted = true;
+
     const initPlayer = () => {
       getValidToken().then(token => {
-        if (!token) return;
+        if (!mounted || !token) return;
 
         const player = new window.Spotify.Player({
           name: playerName,
@@ -88,6 +90,7 @@ export function useSpotifyPlayer(enabled: boolean, playerName = 'Tocaí Bar') {
     }
 
     return () => {
+      mounted = false;
       if (playerRef.current) {
         playerRef.current.disconnect();
         playerRef.current = null;

@@ -54,10 +54,15 @@ export function useQueue(barSlug: string | undefined) {
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'queue_items', filter: `bar_slug=eq.${barSlug}` },
-        (payload) =>
-          setQueue(prev =>
-            sortAndNormalize(prev.map(item => (item.id === (payload.new as any).id ? (payload.new as QueueItem) : item))),
-          ),
+        (payload) => {
+          const updated = payload.new as QueueItem;
+          setQueue(prev => {
+            if (updated.status === 'played') {
+              return sortAndNormalize(prev.filter(item => item.id !== updated.id));
+            }
+            return sortAndNormalize(prev.map(item => item.id === updated.id ? updated : item));
+          });
+        },
       )
       .on(
         'postgres_changes',
@@ -169,7 +174,7 @@ export function useQueue(barSlug: string | undefined) {
 
   const advanceQueue = async () => {
     if (queue.length === 0) return;
-    await supabase.from('queue_items').delete().eq('id', queue[0].id);
+    await supabase.from('queue_items').update({ status: 'played' }).eq('id', queue[0].id);
   };
 
   return { queue, loading, addMusic, vote, superVote, reactToItem, veto, removeItem, jumpToTop, advanceQueue };

@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import {
   Power, Settings, List, Trash2, ShieldAlert, ArrowUpCircle,
   Play, Music, SkipForward, Pause, Wifi, WifiOff, LogIn, LogOut, Lock, ShieldCheck, Tag, Share2, Copy, CheckCheck,
-  Lock as LockIcon, Unlock, Heart, History, Search, Plus, ClipboardList, BarChart2, Palette, Ban,
+  Lock as LockIcon, Unlock, Heart, History, Search, Plus, ClipboardList, BarChart2, Palette, Ban, ImageIcon,
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { tagMatchesTheme } from "../hooks/useQueue";
@@ -91,6 +91,14 @@ export default function AdminView() {
   const [barColors, setBarColors] = useState({ primary: "#336580", accent: "#D1DC5A" });
   const [colorsSaved, setColorsSaved] = useState(false);
 
+  // Bar logo
+  const [barLogo, setBarLogo] = useState("");
+  const [logoSaved, setLogoSaved] = useState(false);
+  const [logoUploading, setLogoUploading] = useState(false);
+
+  // Encerrar confirmation
+  const [encerrarConfirm, setEncerrarConfirm] = useState(false);
+
   const { queue, veto, vote, removeItem, jumpToTop, advanceQueue } = useQueue(slug);
   const { session: config, updateSession: updateConfig } = useSession(slug);
   const { deviceId, isReady, playerState, togglePlay, nextTrack } = useSpotifyPlayer(loggedIn);
@@ -98,6 +106,7 @@ export default function AdminView() {
   const nowPlaying = queue[0] ?? null;
   const others = queue.slice(1);
   const barName = slug?.toUpperCase().replace("-", " ") || "MEU BAR";
+  const spotifyDesync = !!(playerState?.uri && nowPlaying?.spotify_uri && playerState.uri !== nowPlaying.spotify_uri);
 
   useEffect(() => {
     if (!isReady || !deviceId || !nowPlaying?.spotify_uri) return;
@@ -116,10 +125,10 @@ export default function AdminView() {
     });
   }, [isReady, deviceId, slug]);
 
-  // Load bar theme colors on mount
+  // Load bar theme colors + logo on mount
   useEffect(() => {
     if (!slug) return;
-    supabase.from("bars").select("theme_primary,theme_accent").eq("slug", slug).maybeSingle()
+    supabase.from("bars").select("theme_primary,theme_accent,logo_url").eq("slug", slug).maybeSingle()
       .then(({ data }) => {
         if (data) {
           const p = data.theme_primary || "#336580";
@@ -127,6 +136,7 @@ export default function AdminView() {
           setBarColors({ primary: p, accent: a });
           document.documentElement.style.setProperty("--color-brand-blue", p);
           document.documentElement.style.setProperty("--color-brand-lime", a);
+          setBarLogo(data.logo_url || "");
         }
       });
   }, [slug]);
@@ -225,6 +235,30 @@ export default function AdminView() {
     setShowAdminSearch(false);
     setAdminSearch("");
     setAdminSearchResults([]);
+  };
+
+  const handleLogoFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !slug) return;
+    setLogoUploading(true);
+    const ext = file.name.split(".").pop() ?? "png";
+    const path = `${slug}/logo.${ext}`;
+    const { error } = await supabase.storage.from("logos").upload(path, file, { upsert: true });
+    if (error) {
+      alert(`Erro ao enviar logo: ${error.message}\n\nCrie um bucket público chamado "logos" no Supabase Storage.`);
+      setLogoUploading(false);
+      return;
+    }
+    const { data } = supabase.storage.from("logos").getPublicUrl(path);
+    setBarLogo(data.publicUrl);
+    setLogoUploading(false);
+  };
+
+  const handleSaveLogo = async () => {
+    if (!slug) return;
+    await supabase.from("bars").update({ logo_url: barLogo || null }).eq("slug", slug);
+    setLogoSaved(true);
+    setTimeout(() => setLogoSaved(false), 2000);
   };
 
   // ── Login gate ─────────────────────────────────────────────────────────────
@@ -348,12 +382,29 @@ export default function AdminView() {
             >
               <BarChart2 size={18} /> ESTATÍSTICAS
             </a>
-            <button
-              onClick={() => updateConfig({ is_active: !config.queue_locked })}
-              className="flex w-full items-center gap-3 border-4 border-red-500 text-red-500 bg-red-50 p-4 font-display text-xl transition-all uppercase leading-none hover:bg-red-100"
-            >
-              <Power size={24} /> ENCERRAR
-            </button>
+            {encerrarConfirm ? (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => { updateConfig({ is_active: false }); setEncerrarConfirm(false); }}
+                  className="flex-1 border-4 border-red-600 bg-red-600 text-white p-3 font-display text-base uppercase leading-none"
+                >
+                  CONFIRMAR
+                </button>
+                <button
+                  onClick={() => setEncerrarConfirm(false)}
+                  className="flex-1 border-4 border-brand-blue/40 text-brand-blue/60 bg-white p-3 font-display text-base uppercase leading-none"
+                >
+                  CANCELAR
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setEncerrarConfirm(true)}
+                className="flex w-full items-center gap-3 border-4 border-red-500 text-red-500 bg-red-50 p-4 font-display text-xl transition-all uppercase leading-none hover:bg-red-100"
+              >
+                <Power size={24} /> ENCERRAR
+              </button>
+            )}
           </div>
         </div>
       </nav>
@@ -457,7 +508,7 @@ export default function AdminView() {
                       </p>
                     )}
 
-                    {isReady && (
+                    {isReady ? (
                       <div className="mt-3 space-y-1">
                         <div className="h-2 bg-brand-blue/20 w-full">
                           <motion.div
@@ -471,6 +522,20 @@ export default function AdminView() {
                             ⏱ {Math.floor(timeRemaining / 60)}:{String(timeRemaining % 60).padStart(2, '0')} restantes
                           </p>
                         )}
+                        {spotifyDesync && (
+                          <p className="text-[11px] font-bold uppercase text-orange-600 bg-orange-50 border border-orange-300 px-2 py-0.5 inline-block mt-1">
+                            ⚠ Spotify tocando música diferente da fila — use PULAR para sincronizar
+                          </p>
+                        )}
+                      </div>
+                    ) : loggedIn ? (
+                      <div className="mt-3 space-y-1">
+                        <div className="h-2 bg-brand-blue/20 w-full animate-pulse" />
+                        <p className="text-[11px] font-bold uppercase text-brand-blue/40">⏳ Conectando ao dispositivo Spotify...</p>
+                      </div>
+                    ) : (
+                      <div className="mt-3">
+                        <p className="text-[11px] font-bold uppercase text-brand-blue/40">Conecte o Spotify para ver progresso da faixa</p>
                       </div>
                     )}
 
@@ -532,23 +597,38 @@ export default function AdminView() {
 
               {showAdminSearch && adminSearchResults.length > 0 && (
                 <div className="mt-4 space-y-2 max-h-64 overflow-y-auto">
-                  {adminSearchResults.map(track => (
-                    <div key={track.id} className="flex items-center gap-3 p-3 border-2 border-brand-blue bg-white">
+                  {adminSearchResults.map(track => {
+                    const alreadyInQueue = queue.some(q =>
+                      q.spotify_uri === track.spotify_uri ||
+                      (q.title.toLowerCase() === track.title.toLowerCase() && q.artist.toLowerCase() === track.artist.toLowerCase())
+                    );
+                    return (
+                    <div key={track.id} className={cn("flex items-center gap-3 p-3 border-2 bg-white", alreadyInQueue ? "border-orange-400 bg-orange-50" : "border-brand-blue")}>
                       {track.thumb && (
                         <img src={track.thumb} alt={track.title} className="h-10 w-10 object-cover border border-brand-blue flex-shrink-0" />
                       )}
                       <div className="flex-1 min-w-0">
                         <p className="font-display text-lg leading-none uppercase truncate">{track.title}</p>
                         <p className="font-body text-xs font-bold uppercase opacity-60 italic truncate">{track.artist}</p>
+                        {alreadyInQueue && (
+                          <p className="text-[10px] font-bold uppercase text-orange-600 mt-0.5">já na fila</p>
+                        )}
                       </div>
                       <button
                         onClick={() => handleAdminAddTrack(track)}
-                        className="flex items-center gap-1 bg-brand-lime text-brand-blue border-2 border-brand-blue px-3 py-1.5 font-display text-sm uppercase shadow-[2px_2px_0px_var(--color-brand-blue)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all flex-shrink-0"
+                        disabled={alreadyInQueue}
+                        className={cn(
+                          "flex items-center gap-1 border-2 px-3 py-1.5 font-display text-sm uppercase flex-shrink-0 transition-all",
+                          alreadyInQueue
+                            ? "border-orange-400 text-orange-400 bg-orange-50 cursor-not-allowed opacity-60"
+                            : "bg-brand-lime text-brand-blue border-brand-blue shadow-[2px_2px_0px_var(--color-brand-blue)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none"
+                        )}
                       >
                         <Plus size={14} /> TOPO
                       </button>
                     </div>
-                  ))}
+                  );
+                  })}
                   <button
                     onClick={() => { setShowAdminSearch(false); setAdminSearchResults([]); setAdminSearch(""); }}
                     className="text-xs font-bold uppercase text-brand-blue/60 hover:text-brand-blue w-full text-center py-2"
@@ -572,7 +652,12 @@ export default function AdminView() {
                   onVeto={() => setModModal({ type: "veto", itemId: item.id, itemTitle: item.title, itemArtist: item.artist })}
                   onVote={() => vote(item.id, "admin")}
                   onRemove={() => setModModal({ type: "remove", itemId: item.id, itemTitle: item.title, itemArtist: item.artist })}
-                  onJumpToTop={() => jumpToTop(item.id)}
+                  onPlayNow={async () => {
+                    await jumpToTop(item.id);
+                    if (isReady && deviceId && item.spotify_uri) {
+                      spotifyPlay(item.spotify_uri, deviceId).catch(console.error);
+                    }
+                  }}
                 />
               ))}
               {others.length === 0 && (
@@ -931,6 +1016,80 @@ export default function AdminView() {
               </div>
             </div>
 
+            {/* Logo do Estabelecimento */}
+            <div className="card-bento p-8">
+              <h3 className="mb-2 text-4xl font-display leading-none tracking-tighter border-b-4 border-brand-blue pb-2 inline-flex items-center gap-3">
+                <ImageIcon size={28} className="inline" /> LOGO DO BAR
+              </h3>
+              <p className="mb-6 font-body text-xs font-bold uppercase opacity-50 italic">
+                Substitui o texto "TOCAÍ" na tela do cliente e na TV. PNG/JPG com fundo transparente recomendado.
+              </p>
+
+              {barLogo && (
+                <div className="mb-4 border-4 border-brand-blue p-4 bg-brand-cream/40 flex items-center justify-center">
+                  <img src={barLogo} alt="Logo preview" className="max-h-24 max-w-full object-contain" />
+                </div>
+              )}
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoFile}
+                    className="hidden"
+                    id="logo-upload"
+                  />
+                  <label
+                    htmlFor="logo-upload"
+                    className={cn(
+                      "cursor-pointer flex items-center gap-2 border-4 px-5 py-3 font-display text-xl uppercase transition-all",
+                      logoUploading
+                        ? "border-brand-blue/40 text-brand-blue/40 cursor-not-allowed"
+                        : "border-brand-blue bg-white text-brand-blue hover:bg-brand-blue hover:text-brand-lime"
+                    )}
+                  >
+                    <ImageIcon size={18} /> {logoUploading ? "ENVIANDO..." : "UPLOAD IMAGEM"}
+                  </label>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60">
+                    OU COLE UMA URL
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="https://..."
+                    value={barLogo}
+                    onChange={e => setBarLogo(e.target.value)}
+                    className="w-full border-2 border-brand-blue p-3 font-body text-base focus:outline-none bg-white"
+                  />
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleSaveLogo}
+                    className={cn(
+                      "flex items-center gap-2 border-4 px-5 py-3 font-display text-xl uppercase transition-all",
+                      logoSaved
+                        ? "border-green-500 bg-green-500 text-white"
+                        : "border-brand-blue bg-brand-blue text-brand-lime shadow-[4px_4px_0px_var(--color-brand-lime)]",
+                    )}
+                  >
+                    {logoSaved ? <><CheckCheck size={18} /> SALVO!</> : "SALVAR LOGO"}
+                  </button>
+                  {barLogo && (
+                    <button
+                      onClick={() => setBarLogo("")}
+                      className="flex items-center gap-2 border-4 border-brand-blue/30 px-5 py-3 font-display text-xl uppercase text-brand-blue/60 hover:border-red-500 hover:text-red-600 transition-all"
+                    >
+                      REMOVER
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
             {/* Blocklist */}
             <div className="card-bento p-8 bg-red-50/30 border-red-600 shadow-[8px_8px_0px_rgba(220,38,38,1)]">
               <h3 className="mb-6 text-4xl font-display text-red-600 leading-none italic underline decoration-red-600 decoration-4 underline-offset-8">
@@ -1052,7 +1211,7 @@ function NavBtn({ active, icon, label, onClick }: { active: boolean; icon: React
 
 function AdminQueueItem({
   title, artist, score, client_name, thumbnail_url, tags, dedication_to, currentTheme,
-  onVeto, onVote, onRemove, onJumpToTop,
+  onVeto, onVote, onRemove, onPlayNow,
 }: any) {
   const itemTags: string[] = tags ?? [];
   const isThemeMatch = tagMatchesTheme(itemTags, currentTheme ?? '');
@@ -1098,7 +1257,7 @@ function AdminQueueItem({
 
       <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
         <div className="flex items-center gap-1">
-          <ActionIcon icon={<Play size={24} fill="currentColor" />} label="TOCAR" color="text-brand-blue" onClick={onJumpToTop} />
+          <ActionIcon icon={<Play size={24} fill="currentColor" />} label="TOCAR" color="text-brand-blue" onClick={onPlayNow} />
           <ActionIcon icon={<ShieldAlert size={24} />} label="VETO" color="text-yellow-600" onClick={onVeto} />
           <ActionIcon icon={<ArrowUpCircle size={24} />} label="VOTAR" color="text-green-600" onClick={onVote} />
           <ActionIcon icon={<Trash2 size={24} />} label="REMOVER" color="text-red-500" onClick={onRemove} />
@@ -1118,7 +1277,7 @@ function ActionIcon({ icon, label, color, onClick }: { icon: React.ReactNode; la
       className={cn("flex flex-col items-center p-2 transition-all hover:scale-125 active:scale-90", color)}
     >
       {icon}
-      <span className="text-[10px] font-bold uppercase tracking-tighter leading-none mt-1">{label}</span>
+      <span className="hidden sm:block text-[10px] font-bold uppercase tracking-tighter leading-none mt-1">{label}</span>
     </button>
   );
 }

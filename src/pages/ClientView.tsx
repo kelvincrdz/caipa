@@ -137,6 +137,7 @@ export default function ClientView() {
   const [phone, setPhone] = useState<string | null>(localStorage.getItem("caipa_phone"));
   const [clientName, setClientName] = useState<string | null>(localStorage.getItem("caipa_name"));
   const [showIdentify, setShowIdentify] = useState(!localStorage.getItem("caipa_phone"));
+  const [barLogo, setBarLogo] = useState<string | null>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -183,18 +184,21 @@ export default function ClientView() {
   const { session } = useSession(barStatus === "approved" ? slug : undefined);
   const { queue, addMusic, vote, superVote, reactToItem } = useQueue(barStatus === "approved" ? slug : undefined);
 
-  // Bar approval check
+  // Bar approval check + load theme/logo
   useEffect(() => {
     if (!slug) { setBarStatus("not_found"); return; }
     supabase
       .from("bars")
-      .select("is_approved")
+      .select("is_approved,theme_primary,theme_accent,logo_url")
       .eq("slug", slug)
       .maybeSingle()
       .then(({ data }) => {
-        if (!data) setBarStatus("not_found");
-        else if (data.is_approved) setBarStatus("approved");
+        if (!data) { setBarStatus("not_found"); return; }
+        if (data.is_approved) setBarStatus("approved");
         else setBarStatus("pending");
+        if (data.theme_primary) document.documentElement.style.setProperty("--color-brand-blue", data.theme_primary);
+        if (data.theme_accent) document.documentElement.style.setProperty("--color-brand-lime", data.theme_accent);
+        if (data.logo_url) setBarLogo(data.logo_url);
       });
   }, [slug]);
 
@@ -248,12 +252,12 @@ export default function ClientView() {
 
     if (nowItem?.client_id === phone && nowId !== prevNowIdRef.current) {
       toastType = "playing";
-      if (Notification.permission === "granted") {
+      if ('Notification' in window && Notification.permission === "granted") {
         new Notification("🎶 Tocando agora!", { body: `${nowItem.title} — ${nowItem.artist}` });
       }
     } else if (nextItem?.client_id === phone && nextId !== prevNextIdRef.current) {
       toastType = "next";
-      if (Notification.permission === "granted") {
+      if ('Notification' in window && Notification.permission === "granted") {
         new Notification("⚡ Sua música é a próxima!", { body: `${nextItem.title} — ${nextItem.artist}` });
       }
     }
@@ -529,9 +533,17 @@ export default function ClientView() {
         className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 border-b-8 border-brand-blue pb-6"
       >
         <div>
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-display uppercase tracking-tighter leading-none text-brand-blue">
-            TOCA<span className="text-brand-lime text-stroke-blue">Í</span>
-          </h1>
+          {barLogo ? (
+            <img
+              src={barLogo}
+              alt={slug}
+              className="h-14 sm:h-20 lg:h-24 object-contain max-w-[200px] sm:max-w-[280px] mb-1"
+            />
+          ) : (
+            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-display uppercase tracking-tighter leading-none text-brand-blue">
+              TOCA<span className="text-brand-lime text-stroke-blue">Í</span>
+            </h1>
+          )}
           <p className="text-sm sm:text-xl font-body font-bold italic uppercase opacity-70">
             tocai.com/{slug}
           </p>
@@ -1294,7 +1306,9 @@ export default function ClientView() {
                 setSuperVoteAvail(hasSuperVote(p));
                 setHistory(getHistory(p));
                 setShowIdentify(false);
-                if (Notification.permission === "default") Notification.requestPermission();
+                if ('Notification' in window && Notification.permission === "default") {
+                  Notification.requestPermission().catch(() => {});
+                }
               }}
               className="card-bento w-full max-w-sm p-5 sm:p-8 bg-white"
             >

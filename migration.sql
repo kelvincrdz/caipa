@@ -37,3 +37,7 @@ CREATE TABLE IF NOT EXISTS moderation_logs (
 ALTER TABLE bars
   ADD COLUMN IF NOT EXISTS theme_primary TEXT DEFAULT '#336580',
   ADD COLUMN IF NOT EXISTS theme_accent  TEXT DEFAULT '#D1DC5A';
+
+-- 8. Logo do estabelecimento
+-- Supabase Storage: crie um bucket público chamado "logos" em Storage > New bucket
+ALTER TABLE bars ADD COLUMN IF NOT EXISTS logo_url TEXT DEFAULT NULL;

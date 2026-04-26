@@ -110,13 +110,16 @@ export default function QueueTV() {
   const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
   const [analyserNode, setAnalyserNode] = useState<AnalyserNode | null>(null);
 
-  // Bar custom theme
+  const [barLogo, setBarLogo] = useState<string | null>(null);
+
+  // Bar custom theme + logo
   useEffect(() => {
     if (!slug) return;
-    supabase.from("bars").select("theme_primary,theme_accent").eq("slug", slug).maybeSingle()
+    supabase.from("bars").select("theme_primary,theme_accent,logo_url").eq("slug", slug).maybeSingle()
       .then(({ data }) => {
         if (data?.theme_primary) document.documentElement.style.setProperty("--color-brand-blue", data.theme_primary);
         if (data?.theme_accent)  document.documentElement.style.setProperty("--color-brand-lime", data.theme_accent);
+        if (data?.logo_url) setBarLogo(data.logo_url);
       });
     return () => {
       document.documentElement.style.removeProperty("--color-brand-blue");
@@ -226,17 +229,31 @@ export default function QueueTV() {
       {/* Top Banner */}
       <header className="flex items-center justify-between border-b-[12px] border-brand-blue bg-white p-8 lg:p-12 text-brand-blue">
         <div>
-          <h1
-            className={cn(
-              "text-7xl lg:text-9xl font-display leading-none tracking-tighter uppercase",
-              partyMode && "neon-text",
-            )}
-            onDoubleClick={toggleParty}
-            title="Duplo clique para modo festa"
-            style={{ cursor: "default" }}
-          >
-            TOCA<span className={cn("text-brand-lime", !partyMode && "text-stroke-blue")}>Í</span>
-          </h1>
+          {barLogo ? (
+            <img
+              src={barLogo}
+              alt={slug}
+              onDoubleClick={toggleParty}
+              title="Duplo clique para modo festa"
+              className={cn(
+                "h-20 lg:h-32 object-contain max-w-[280px] lg:max-w-[400px]",
+                partyMode && "neon-text",
+              )}
+              style={{ cursor: "default" }}
+            />
+          ) : (
+            <h1
+              className={cn(
+                "text-7xl lg:text-9xl font-display leading-none tracking-tighter uppercase",
+                partyMode && "neon-text",
+              )}
+              onDoubleClick={toggleParty}
+              title="Duplo clique para modo festa"
+              style={{ cursor: "default" }}
+            >
+              TOCA<span className={cn("text-brand-lime", !partyMode && "text-stroke-blue")}>Í</span>
+            </h1>
+          )}
           <p className="font-body text-2xl font-black italic uppercase opacity-60">
             Sintonizado em: tocai.com/{slug}
           </p>
@@ -410,13 +427,23 @@ export default function QueueTV() {
 
           <div className="flex-1 space-y-6 overflow-hidden px-12">
             {upNext.length === 0 ? (
-              <div className={cn(
-                "h-full flex flex-col items-center justify-center text-center opacity-20 space-y-4",
-                partyMode ? "text-brand-lime" : "text-brand-blue",
-              )}>
-                <Music size={100} />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                className={cn(
+                  "h-full flex flex-col items-center justify-center text-center opacity-20 space-y-4",
+                  partyMode ? "text-brand-lime" : "text-brand-blue",
+                )}
+              >
+                <motion.div
+                  animate={{ y: [0, -14, 0] }}
+                  transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <Music size={100} />
+                </motion.div>
                 <p className="font-display text-4xl">FILA VAZIA</p>
-              </div>
+              </motion.div>
             ) : (
               upNext.map((item, idx) => (
                 <TVQueueItem
