@@ -11,6 +11,7 @@ import { useSession } from "../hooks/useSession";
 import { setSharedToken } from "../services/spotifyAuth";
 import { supabase } from "../lib/supabase";
 import { cn } from "../lib/utils";
+import { OverflowMarquee } from "../components/OverflowMarquee";
 
 // ── Tag normalization ────────────────────────────────────────────────────────
 function normalizeTag(s: string): string {
@@ -777,7 +778,10 @@ export default function ClientView() {
                 </div>
               </div>
               <div className="flex flex-col justify-center text-center lg:text-left flex-1 min-w-0">
-                <h3 className="text-2xl sm:text-4xl lg:text-6xl font-display leading-none mb-2 uppercase italic tracking-tighter truncate">{nowPlaying.title}</h3>
+                <OverflowMarquee
+                  text={nowPlaying.title}
+                  className="text-2xl sm:text-4xl lg:text-6xl font-display leading-none mb-2 uppercase italic tracking-tighter"
+                />
                 <p className="text-sm sm:text-xl lg:text-2xl font-body font-bold text-brand-lime mb-2 uppercase tracking-widest leading-none">{nowPlaying.artist}</p>
                 {(nowPlaying.tags ?? []).length > 0 && (
                   <div className="flex flex-wrap gap-1 mb-3 justify-center lg:justify-start">

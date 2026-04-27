@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { Music, Beer, Users, ArrowRight, MapPin, Disc, Radio } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import { OverflowMarquee } from "../components/OverflowMarquee";
 
 // ── Animated counter ─────────────────────────────────────────────────────────
 function useCountUp(target: number, duration = 1200) {
@@ -93,7 +94,10 @@ function LiveBarCard({ bar, nowPlaying, queueCount }: {
               </div>
             )}
             <div className="min-w-0">
-              <p className="font-display text-base leading-none uppercase truncate">{nowPlaying.title}</p>
+              <OverflowMarquee
+                text={nowPlaying.title}
+                className="font-display text-base leading-none uppercase"
+              />
               <p className="font-body text-xs font-bold uppercase opacity-60 italic truncate">{nowPlaying.artist}</p>
             </div>
           </div>

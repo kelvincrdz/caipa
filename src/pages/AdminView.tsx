@@ -12,6 +12,7 @@ import { tagMatchesTheme } from "../hooks/useQueue";
 import { cn } from "../lib/utils";
 import { useQueue } from "../hooks/useQueue";
 import { useSession } from "../hooks/useSession";
+import { OverflowMarquee } from "../components/OverflowMarquee";
 
 function getContrastColor(hex: string): string {
   const r = parseInt(hex.slice(1, 3), 16);
@@ -719,9 +720,10 @@ export default function AdminView() {
                     </div>
                   )}
                   <div className="flex-1 overflow-hidden">
-                    <p className="text-4xl font-display leading-none uppercase truncate tracking-tighter">
-                      {nowPlaying.title}
-                    </p>
+                    <OverflowMarquee
+                      text={nowPlaying.title}
+                      className="text-4xl font-display leading-none uppercase tracking-tighter"
+                    />
                     <p className="font-body text-xl uppercase font-black opacity-60 leading-tight truncate italic">
                       {nowPlaying.artist} • @{nowPlaying.client_name}
                     </p>

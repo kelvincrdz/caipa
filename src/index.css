@@ -198,6 +198,25 @@ h1, h2, h3, .font-display {
   animation: marquee 40s linear infinite;
 }
 
+/* ── Overflow marquee for track titles ───────────────────────────────────── */
+.caipa-overflow-marquee {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--marquee-gap, 48px);
+  min-width: 100%;
+  width: max-content;
+  animation: caipa-overflow-marquee var(--marquee-duration, 12s) linear infinite;
+}
+
+.caipa-overflow-marquee-item {
+  flex: 0 0 auto;
+}
+
+@keyframes caipa-overflow-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-50% - (var(--marquee-gap, 48px) / 2))); }
+}
+
 /* ── Party Mode ─────────────────────────────────────────────────────────── */
 .party-mode {
   --color-brand-blue:  #000000;
