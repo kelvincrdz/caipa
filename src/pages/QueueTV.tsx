@@ -359,20 +359,38 @@ export default function QueueTV() {
         <section className="flex flex-[1.5] flex-col items-center justify-center px-8 py-6 lg:px-16 lg:py-10 text-center bg-brand-blue text-on-primary relative overflow-hidden min-h-0">
           <div className="absolute inset-0 bg-grainy opacity-10" />
 
-          {/* Photo overlay covering the entire Now Playing section */}
+          {/* Photo overlay covering the entire Now Playing section — 2 photos stacked */}
           {config.photo_display_mode === "background" && approvedPhotos.length > 0 && (
-            <AnimatePresence>
-              <motion.img
-                key={approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.id}
-                src={approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.photo_url}
-                alt="Foto da noite"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.9 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1.2, ease: "easeInOut" }}
-                className="absolute inset-0 w-full h-full object-contain z-10 pointer-events-none"
-              />
-            </AnimatePresence>
+            <>
+              {/* Back photo */}
+              <AnimatePresence>
+                <motion.img
+                  key={approvedPhotos[(currentPhotoIdx + 1) % approvedPhotos.length]?.id + "-back"}
+                  src={approvedPhotos[(currentPhotoIdx + 1) % approvedPhotos.length]?.photo_url}
+                  alt=""
+                  initial={{ opacity: 0, rotate: 4, scale: 0.88 }}
+                  animate={{ opacity: 0.55, rotate: 4, scale: 0.88 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1.2, ease: "easeInOut" }}
+                  className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+                  style={{ zIndex: 10, transformOrigin: "center" }}
+                />
+              </AnimatePresence>
+              {/* Front photo */}
+              <AnimatePresence>
+                <motion.img
+                  key={approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.id + "-front"}
+                  src={approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.photo_url}
+                  alt="Foto da noite"
+                  initial={{ opacity: 0, rotate: -3, scale: 0.94 }}
+                  animate={{ opacity: 0.9, rotate: -3, scale: 0.94 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1.2, ease: "easeInOut" }}
+                  className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+                  style={{ zIndex: 11, transformOrigin: "center" }}
+                />
+              </AnimatePresence>
+            </>
           )}
           {config.photo_display_mode === "background" && approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.caption && (
             <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-4 py-2 z-20 pointer-events-none">
