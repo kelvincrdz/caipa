@@ -9,6 +9,14 @@ import { useSession } from "../hooks/useSession";
 import { supabase } from "../lib/supabase";
 import { cn } from "../lib/utils";
 
+function getContrastColor(hex: string): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.45 ? "#0A0A0A" : "#F5F5F5";
+}
+
 function EqBars({ active, party }: { active: boolean; party: boolean }) {
   if (party) {
     return (
@@ -166,13 +174,17 @@ export default function QueueTV() {
     if (!slug) return;
     supabase.from("bars").select("theme_primary,theme_accent,logo_url").eq("slug", slug).maybeSingle()
       .then(({ data }) => {
-        if (data?.theme_primary) document.documentElement.style.setProperty("--color-brand-blue", data.theme_primary);
+        if (data?.theme_primary) {
+          document.documentElement.style.setProperty("--color-brand-blue", data.theme_primary);
+          document.documentElement.style.setProperty("--color-on-primary", getContrastColor(data.theme_primary));
+        }
         if (data?.theme_accent)  document.documentElement.style.setProperty("--color-brand-lime", data.theme_accent);
         if (data?.logo_url) setBarLogo(data.logo_url);
       });
     return () => {
       document.documentElement.style.removeProperty("--color-brand-blue");
       document.documentElement.style.removeProperty("--color-brand-lime");
+      document.documentElement.style.removeProperty("--color-on-primary");
     };
   }, [slug]);
 
@@ -273,8 +285,9 @@ export default function QueueTV() {
               className="absolute inset-0"
               style={{
                 backgroundImage: `url(${approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.photo_url})`,
-                backgroundSize: "cover",
+                backgroundSize: "contain",
                 backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
               }}
             />
           </AnimatePresence>
@@ -368,7 +381,7 @@ export default function QueueTV() {
 
       <div className="flex flex-1 min-h-0 overflow-hidden">
         {/* Left: Now Playing */}
-        <section className="flex flex-[1.5] flex-col items-center justify-center px-8 py-6 lg:px-16 lg:py-10 text-center bg-brand-blue text-brand-cream relative overflow-hidden min-h-0">
+        <section className="flex flex-[1.5] flex-col items-center justify-center px-8 py-6 lg:px-16 lg:py-10 text-center bg-brand-blue text-on-primary relative overflow-hidden min-h-0">
           <div className="absolute inset-0 bg-grainy opacity-10" />
 
           {nowPlaying ? (
@@ -451,7 +464,7 @@ export default function QueueTV() {
                 partyMode && "neon-border",
               )}>
                 <div className="h-5 w-5 animate-pulse rounded-full bg-red-600 shadow-[0_0_12px_red]" />
-                <p className="font-display text-2xl italic uppercase leading-none text-brand-cream">
+                <p className="font-display text-2xl italic uppercase leading-none text-on-primary">
                   REQUISITADO POR{" "}
                   <span className="text-brand-lime">@{nowPlaying.client_name}</span>
                 </p>
@@ -464,7 +477,7 @@ export default function QueueTV() {
                   className="mt-3 flex items-center gap-3 border-4 border-brand-lime bg-brand-lime/10 px-6 py-3"
                 >
                   <span className="text-2xl">❤️</span>
-                  <p className="font-display text-2xl italic uppercase leading-none text-brand-cream">
+                  <p className="font-display text-2xl italic uppercase leading-none text-on-primary">
                     PARA{" "}
                     <span className="text-brand-lime">{nowPlaying.dedication_to}</span>
                   </p>
@@ -543,7 +556,7 @@ export default function QueueTV() {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.8 }}
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="absolute inset-0 w-full h-full object-contain bg-black"
                   />
                 </AnimatePresence>
                 {approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.caption && (

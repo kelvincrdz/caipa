@@ -12,6 +12,14 @@ import { tagMatchesTheme } from "../hooks/useQueue";
 import { cn } from "../lib/utils";
 import { useQueue } from "../hooks/useQueue";
 import { useSession } from "../hooks/useSession";
+
+function getContrastColor(hex: string): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.45 ? "#0A0A0A" : "#F5F5F5";
+}
 import { useSpotifyPlayer } from "../hooks/useSpotifyPlayer";
 import { initiateLogin, isAdminLoggedIn, logout, getValidToken, getSpotifyProfile, SpotifyProfile } from "../services/spotifyAuth";
 import { play as spotifyPlay, pause as spotifyPause, resume as spotifyResume } from "../services/spotifyPlayback";
@@ -1459,6 +1467,7 @@ export default function AdminView() {
                         const v = e.target.value;
                         setBarColors(prev => ({ ...prev, primary: v }));
                         document.documentElement.style.setProperty("--color-brand-blue", v);
+                        document.documentElement.style.setProperty("--color-on-primary", getContrastColor(v));
                       }}
                       className="h-14 w-14 border-4 border-brand-blue cursor-pointer p-1"
                     />
@@ -1509,6 +1518,7 @@ export default function AdminView() {
                     setBarColors({ primary: "#FFB800", accent: "#F5E6C8" });
                     document.documentElement.style.setProperty("--color-brand-blue", "#FFB800");
                     document.documentElement.style.setProperty("--color-brand-lime", "#F5E6C8");
+                    document.documentElement.style.setProperty("--color-on-primary", getContrastColor("#FFB800"));
                   }}
                   className="flex items-center gap-2 border-4 border-brand-blue/30 px-5 py-3 font-display text-xl uppercase text-brand-blue/60 hover:border-brand-blue hover:text-brand-blue transition-all"
                 >
