@@ -27,7 +27,7 @@ import { supabase } from "../lib/supabase";
 import { searchMusic, getTrackInfo } from "../services/musicService";
 
 const GENRE_TAGS = [
-  { label: "Livre",      value: "Livre",      cls: "border-brand-blue/40 text-brand-blue/60 bg-white" },
+  { label: "Livre",      value: "Livre",      cls: "border-zinc-400 text-zinc-600 bg-white" },
   { label: "Forró",      value: "Forró",      cls: "border-orange-400 text-orange-700 bg-orange-50" },
   { label: "Samba",      value: "Samba",      cls: "border-green-500 text-green-700 bg-green-50" },
   { label: "Pagode",     value: "Pagode",     cls: "border-emerald-500 text-emerald-700 bg-emerald-50" },
@@ -520,7 +520,7 @@ export default function AdminView() {
   return (
     <div className="flex min-h-screen flex-col bg-brand-cream lg:flex-row">
       {/* Sidebar */}
-      <nav className="fixed bottom-0 z-50 flex h-20 w-full border-t-4 border-brand-blue bg-white lg:static lg:flex lg:h-screen lg:w-64 lg:flex-col lg:border-r-4 lg:border-t-0 p-4 shadow-2xl">
+      <nav className="fixed bottom-0 z-50 flex h-20 w-full border-t-4 border-brand-blue bg-white lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-64 lg:flex-col lg:border-r-4 lg:border-t-0 p-4 shadow-2xl overflow-y-auto">
         <div className="hidden lg:mb-8 lg:block">
           <h1 className="text-5xl font-display text-brand-blue leading-none">TOCAÍ</h1>
           <p className="font-body text-sm font-bold opacity-60 uppercase">DASHBOARD</p>
@@ -562,7 +562,7 @@ export default function AdminView() {
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="flex w-full items-center gap-3 border-4 border-brand-blue/30 p-3 font-display text-base transition-all uppercase leading-none text-brand-blue/60 hover:border-red-500 hover:text-red-600 hover:border-4"
+                  className="flex w-full items-center gap-3 border-4 border-zinc-300 p-3 font-display text-base transition-all uppercase leading-none text-zinc-600 hover:border-red-500 hover:text-red-600 hover:border-4"
                 >
                   <LogOut size={18} /> DESCONECTAR SPOTIFY
                 </button>
@@ -583,7 +583,7 @@ export default function AdminView() {
                 "flex w-full items-center gap-3 border-4 p-4 font-display text-xl transition-all uppercase leading-none",
                 config.queue_locked
                   ? "border-orange-500 text-orange-600 bg-orange-50"
-                  : "border-brand-blue/40 text-brand-blue/60 bg-white hover:border-brand-blue hover:text-brand-blue"
+                  : "border-zinc-300 text-zinc-600 bg-white hover:border-brand-blue hover:text-brand-blue"
               )}
             >
               {config.queue_locked ? <><Unlock size={22} /> ABRIR FILA</> : <><LockIcon size={22} /> FECHAR FILA</>}
@@ -591,21 +591,31 @@ export default function AdminView() {
 
             <a
               href={`/stats/${slug}`}
-              className="flex w-full items-center gap-3 border-4 border-brand-blue/30 p-3 font-display text-base transition-all uppercase leading-none text-brand-blue/60 hover:border-brand-blue hover:text-brand-blue"
+              className="flex w-full items-center gap-3 border-4 border-zinc-300 p-3 font-display text-base transition-all uppercase leading-none text-zinc-600 hover:border-brand-blue hover:text-brand-blue"
             >
               <BarChart2 size={18} /> ESTATÍSTICAS
             </a>
             {encerrarConfirm ? (
               <div className="flex gap-2">
                 <button
-                  onClick={() => { updateConfig({ is_active: false }); setEncerrarConfirm(false); }}
+                  onClick={async () => {
+                    await updateConfig({ queue_locked: true });
+                    if (slug) {
+                      await supabase
+                        .from("queue_items")
+                        .update({ status: "played" })
+                        .eq("bar_slug", slug)
+                        .eq("status", "pending");
+                    }
+                    setEncerrarConfirm(false);
+                  }}
                   className="flex-1 border-4 border-red-600 bg-red-600 text-white p-3 font-display text-base uppercase leading-none"
                 >
                   CONFIRMAR
                 </button>
                 <button
                   onClick={() => setEncerrarConfirm(false)}
-                  className="flex-1 border-4 border-brand-blue/40 text-brand-blue/60 bg-white p-3 font-display text-base uppercase leading-none"
+                  className="flex-1 border-4 border-zinc-400 text-zinc-600 bg-white p-3 font-display text-base uppercase leading-none"
                 >
                   CANCELAR
                 </button>
@@ -731,7 +741,7 @@ export default function AdminView() {
                           />
                         </div>
                         {timeRemaining !== null && (
-                          <p className="text-[11px] font-bold uppercase text-brand-blue/60">
+                          <p className="text-[11px] font-bold uppercase text-zinc-600">
                             ⏱ {Math.floor(timeRemaining / 60)}:{String(timeRemaining % 60).padStart(2, '0')} restantes
                           </p>
                         )}
@@ -744,11 +754,11 @@ export default function AdminView() {
                     ) : loggedIn ? (
                       <div className="mt-3 space-y-1">
                         <div className="h-2 bg-brand-blue/20 w-full animate-pulse" />
-                        <p className="text-[11px] font-bold uppercase text-brand-blue/40">⏳ Conectando ao dispositivo Spotify...</p>
+                        <p className="text-[11px] font-bold uppercase text-zinc-500">⏳ Conectando ao dispositivo Spotify...</p>
                       </div>
                     ) : (
                       <div className="mt-3">
-                        <p className="text-[11px] font-bold uppercase text-brand-blue/40">Conecte o Spotify para ver progresso da faixa</p>
+                        <p className="text-[11px] font-bold uppercase text-zinc-500">Conecte o Spotify para ver progresso da faixa</p>
                       </div>
                     )}
 
@@ -795,7 +805,7 @@ export default function AdminView() {
                   value={adminSearch}
                   onChange={e => setAdminSearch(e.target.value)}
                   onKeyDown={e => e.key === "Enter" && handleAdminSearch()}
-                  className="flex-1 border-4 border-brand-blue p-4 font-display text-2xl uppercase tracking-tighter placeholder:text-brand-blue/30 focus:outline-none bg-white"
+                  className="flex-1 border-4 border-brand-blue p-4 font-display text-2xl uppercase tracking-tighter placeholder:text-zinc-400 focus:outline-none bg-white"
                 />
                 <button
                   onClick={handleAdminSearch}
@@ -844,7 +854,7 @@ export default function AdminView() {
                   })}
                   <button
                     onClick={() => { setShowAdminSearch(false); setAdminSearchResults([]); setAdminSearch(""); }}
-                    className="text-xs font-bold uppercase text-brand-blue/60 hover:text-brand-blue w-full text-center py-2"
+                    className="text-xs font-bold uppercase text-zinc-600 hover:text-brand-blue w-full text-center py-2"
                   >
                     FECHAR BUSCA
                   </button>
@@ -901,7 +911,7 @@ export default function AdminView() {
               <div className="space-y-3">
                 {playedHistory.map((item, idx) => (
                   <div key={item.id} className="flex items-center gap-4 p-4 border-4 border-brand-blue bg-white shadow-[4px_4px_0px_var(--color-brand-blue)]">
-                    <span className="font-display text-3xl text-brand-blue/30 leading-none w-8 text-center">{idx + 1}</span>
+                    <span className="font-display text-3xl text-zinc-400 leading-none w-8 text-center">{idx + 1}</span>
                     {item.thumbnail_url && (
                       <img src={item.thumbnail_url} alt={item.title} className="h-12 w-12 object-cover border-2 border-brand-blue flex-shrink-0" />
                     )}
@@ -913,7 +923,7 @@ export default function AdminView() {
                       )}
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <p className="font-display text-sm uppercase text-brand-blue/60">@{item.client_name}</p>
+                      <p className="font-display text-sm uppercase text-zinc-600">@{item.client_name}</p>
                       {item.requested_at && (
                         <p className="text-[10px] font-bold uppercase opacity-40">
                           {new Date(item.requested_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
@@ -959,11 +969,11 @@ export default function AdminView() {
                       <p className="font-display text-2xl leading-none uppercase truncate">{log.item_title}</p>
                       <p className="font-body text-sm font-bold uppercase opacity-60 italic truncate">{log.item_artist}</p>
                       {log.reason && (
-                        <p className="text-xs font-bold uppercase text-brand-blue/60 mt-0.5 italic">Motivo: {log.reason}</p>
+                        <p className="text-xs font-bold uppercase text-zinc-600 mt-0.5 italic">Motivo: {log.reason}</p>
                       )}
                     </div>
                     <div className="text-right flex-shrink-0 space-y-1">
-                      <p className="font-display text-sm uppercase text-brand-blue/60">@{log.client_name}</p>
+                      <p className="font-display text-sm uppercase text-zinc-600">@{log.client_name}</p>
                       <p className="text-[10px] font-bold uppercase opacity-40">
                         {new Date(log.logged_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
                       </p>
@@ -1003,7 +1013,7 @@ export default function AdminView() {
                       "flex items-center gap-2 border-4 px-4 py-2 font-display text-lg uppercase transition-all",
                       config.photo_auto_approve
                         ? "border-green-500 bg-green-500 text-white"
-                        : "border-brand-blue/40 text-brand-blue/60 bg-white"
+                        : "border-zinc-300 text-zinc-600 bg-white"
                     )}
                   >{config.photo_auto_approve ? "ON" : "OFF"}</button>
                 </div>
@@ -1017,7 +1027,7 @@ export default function AdminView() {
                         "border-4 px-3 py-1.5 font-display text-sm uppercase transition-all",
                         config.photo_display_mode === mode
                           ? "border-brand-blue bg-brand-blue text-brand-lime"
-                          : "border-brand-blue/30 text-brand-blue/50 hover:border-brand-blue hover:text-brand-blue"
+                          : "border-zinc-300 text-zinc-500 hover:border-brand-blue hover:text-brand-blue"
                       )}
                     >{mode === "none" ? "OFF" : mode === "slideshow" ? "SLIDE" : "FUNDO"}</button>
                   ))}
@@ -1031,7 +1041,7 @@ export default function AdminView() {
               </div>
             ) : photos.length === 0 ? (
               <div className="border-4 border-dashed border-brand-blue bg-white/50 p-20 text-center">
-                <Camera size={40} className="mx-auto mb-4 text-brand-blue/30" />
+                <Camera size={40} className="mx-auto mb-4 text-zinc-400" />
                 <p className="font-display text-3xl uppercase opacity-40">Nenhuma foto enviada ainda</p>
               </div>
             ) : (
@@ -1085,7 +1095,7 @@ export default function AdminView() {
                         )}
                         <button
                           onClick={() => handlePhotoDelete(photo.id, photo.photo_url)}
-                          className="border-2 border-brand-blue/30 text-brand-blue/50 px-2 py-1.5 hover:border-red-500 hover:text-red-600 transition-all"
+                          className="border-2 border-zinc-300 text-zinc-500 px-2 py-1.5 hover:border-red-500 hover:text-red-600 transition-all"
                           title="Deletar"
                         >
                           <Trash2 size={12} />
@@ -1113,7 +1123,7 @@ export default function AdminView() {
               {/* Descrição */}
               <div className="space-y-6">
                 <div className="flex flex-col gap-1">
-                  <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60">
+                  <label className="font-body text-xs font-bold uppercase tracking-tight text-zinc-600">
                     DESCRIÇÃO (até 300 caracteres)
                   </label>
                   <textarea
@@ -1129,7 +1139,7 @@ export default function AdminView() {
 
                 {/* Endereço */}
                 <div className="flex flex-col gap-1">
-                  <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60 flex items-center gap-2">
+                  <label className="font-body text-xs font-bold uppercase tracking-tight text-zinc-600 flex items-center gap-2">
                     <MapPin size={12} /> ENDEREÇO COMPLETO
                   </label>
                   <div className="flex gap-3">
@@ -1149,7 +1159,7 @@ export default function AdminView() {
                 {/* WhatsApp + Instagram */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="flex flex-col gap-1">
-                    <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60 flex items-center gap-2">
+                    <label className="font-body text-xs font-bold uppercase tracking-tight text-zinc-600 flex items-center gap-2">
                       <Phone size={12} /> WHATSAPP (com DDD)
                     </label>
                     <input
@@ -1161,7 +1171,7 @@ export default function AdminView() {
                     />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60 flex items-center gap-2">
+                    <label className="font-body text-xs font-bold uppercase tracking-tight text-zinc-600 flex items-center gap-2">
                       <Instagram size={12} /> INSTAGRAM
                     </label>
                     <input
@@ -1176,7 +1186,7 @@ export default function AdminView() {
 
                 {/* Couvert */}
                 <div className="flex flex-col gap-1">
-                  <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60 flex items-center gap-2">
+                  <label className="font-body text-xs font-bold uppercase tracking-tight text-zinc-600 flex items-center gap-2">
                     <DollarSign size={12} /> COUVERT / ENTRADA
                   </label>
                   <input
@@ -1190,7 +1200,7 @@ export default function AdminView() {
 
                 {/* Estilo Musical */}
                 <div className="flex flex-col gap-2">
-                  <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60 flex items-center gap-2">
+                  <label className="font-body text-xs font-bold uppercase tracking-tight text-zinc-600 flex items-center gap-2">
                     <Tag size={12} /> ESTILO MUSICAL (selecione os gêneros)
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -1222,7 +1232,7 @@ export default function AdminView() {
 
                 {/* Horários */}
                 <div className="flex flex-col gap-2">
-                  <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60 flex items-center gap-2">
+                  <label className="font-body text-xs font-bold uppercase tracking-tight text-zinc-600 flex items-center gap-2">
                     <Clock size={12} /> HORÁRIOS DE FUNCIONAMENTO
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1272,7 +1282,7 @@ export default function AdminView() {
                     href={`/bar/${slug}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 border-4 border-brand-blue/40 px-5 py-3 font-display text-xl uppercase text-brand-blue/60 hover:border-brand-blue hover:text-brand-blue transition-all"
+                    className="flex items-center gap-2 border-4 border-zinc-300 px-5 py-3 font-display text-xl uppercase text-zinc-600 hover:border-brand-blue hover:text-brand-blue transition-all"
                   >
                     VER PERFIL PÚBLICO
                   </a>
@@ -1377,7 +1387,7 @@ export default function AdminView() {
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
                 <div className="flex flex-col gap-2">
-                  <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60">
+                  <label className="font-body text-xs font-bold uppercase tracking-tight text-zinc-600">
                     PEDIDOS INICIAIS POR PESSOA
                   </label>
                   <input
@@ -1390,7 +1400,7 @@ export default function AdminView() {
                   <p className="font-body text-xs font-bold uppercase opacity-50 italic">Pedidos sem espera (padrão: 5)</p>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60">
+                  <label className="font-body text-xs font-bold uppercase tracking-tight text-zinc-600">
                     COOLDOWN APÓS O LIMITE (MINUTOS)
                   </label>
                   <input
@@ -1439,7 +1449,7 @@ export default function AdminView() {
                     "flex items-center gap-2 border-4 px-5 py-3 font-display text-xl uppercase transition-all",
                     config.enable_dedications
                       ? "border-pink-500 bg-pink-500 text-white shadow-[4px_4px_0px_rgba(236,72,153,0.5)]"
-                      : "border-brand-blue/40 bg-white text-brand-blue/60 hover:border-brand-blue hover:text-brand-blue"
+                      : "border-zinc-300 bg-white text-zinc-600 hover:border-brand-blue hover:text-brand-blue"
                   )}
                 >
                   <Heart size={18} fill={config.enable_dedications ? "currentColor" : "none"} />
@@ -1458,7 +1468,7 @@ export default function AdminView() {
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
                 <div className="flex flex-col gap-2">
-                  <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60">COR PRINCIPAL</label>
+                  <label className="font-body text-xs font-bold uppercase tracking-tight text-zinc-600">COR PRINCIPAL</label>
                   <div className="flex items-center gap-3">
                     <input
                       type="color"
@@ -1476,7 +1486,7 @@ export default function AdminView() {
                   <p className="font-body text-xs font-bold uppercase opacity-50 italic">Fundo, bordas e texto principal</p>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60">COR DE DESTAQUE</label>
+                  <label className="font-body text-xs font-bold uppercase tracking-tight text-zinc-600">COR DE DESTAQUE</label>
                   <div className="flex items-center gap-3">
                     <input
                       type="color"
@@ -1522,7 +1532,7 @@ export default function AdminView() {
                     document.documentElement.style.setProperty("--color-on-primary", getContrastColor("#FFB800"));
                     document.documentElement.style.setProperty("--color-on-accent", getContrastColor("#F5E6C8"));
                   }}
-                  className="flex items-center gap-2 border-4 border-brand-blue/30 px-5 py-3 font-display text-xl uppercase text-brand-blue/60 hover:border-brand-blue hover:text-brand-blue transition-all"
+                  className="flex items-center gap-2 border-4 border-zinc-300 px-5 py-3 font-display text-xl uppercase text-zinc-600 hover:border-brand-blue hover:text-brand-blue transition-all"
                 >
                   RESETAR
                 </button>
@@ -1558,7 +1568,7 @@ export default function AdminView() {
                     className={cn(
                       "cursor-pointer flex items-center gap-2 border-4 px-5 py-3 font-display text-xl uppercase transition-all",
                       logoUploading
-                        ? "border-brand-blue/40 text-brand-blue/40 cursor-not-allowed"
+                        ? "border-zinc-300 text-zinc-500 cursor-not-allowed"
                         : "border-brand-blue bg-white text-brand-blue hover:bg-brand-blue hover:text-brand-lime"
                     )}
                   >
@@ -1567,7 +1577,7 @@ export default function AdminView() {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60">
+                  <label className="font-body text-xs font-bold uppercase tracking-tight text-zinc-600">
                     OU COLE UMA URL
                   </label>
                   <input
@@ -1594,7 +1604,7 @@ export default function AdminView() {
                   {barLogo && (
                     <button
                       onClick={() => setBarLogo("")}
-                      className="flex items-center gap-2 border-4 border-brand-blue/30 px-5 py-3 font-display text-xl uppercase text-brand-blue/60 hover:border-red-500 hover:text-red-600 transition-all"
+                      className="flex items-center gap-2 border-4 border-zinc-300 px-5 py-3 font-display text-xl uppercase text-zinc-600 hover:border-red-500 hover:text-red-600 transition-all"
                     >
                       REMOVER
                     </button>
@@ -1610,7 +1620,7 @@ export default function AdminView() {
               </h3>
               <div className="space-y-6">
                 <div className="flex flex-col gap-1">
-                  <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60">
+                  <label className="font-body text-xs font-bold uppercase tracking-tight text-zinc-600">
                     ARTISTAS BLOQUEADOS (separados por vírgula)
                   </label>
                   <input
@@ -1622,7 +1632,7 @@ export default function AdminView() {
                   />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <label className="font-body text-xs font-bold uppercase tracking-tight text-brand-blue/60">
+                  <label className="font-body text-xs font-bold uppercase tracking-tight text-zinc-600">
                     PALAVRAS BLOQUEADAS (separadas por vírgula)
                   </label>
                   <input
@@ -1663,7 +1673,7 @@ export default function AdminView() {
                     "flex items-center gap-2 border-4 px-5 py-3 font-display text-xl uppercase transition-all",
                     config.auto_queue_enabled
                       ? "border-brand-blue bg-brand-blue text-brand-lime shadow-[4px_4px_0px_var(--color-brand-lime)]"
-                      : "border-brand-blue/40 text-brand-blue/60 bg-white hover:border-brand-blue hover:text-brand-blue"
+                      : "border-zinc-300 text-zinc-600 bg-white hover:border-brand-blue hover:text-brand-blue"
                   )}
                 >
                   <Zap size={18} fill={config.auto_queue_enabled ? "currentColor" : "none"} />
@@ -1770,7 +1780,7 @@ function AdminQueueItem({
           <img src={thumbnail_url} alt={title} className="h-14 w-14 object-cover border-2 border-brand-blue flex-shrink-0" />
         ) : (
           <div className="h-14 w-14 flex items-center justify-center bg-brand-blue/10 border-2 border-brand-blue flex-shrink-0">
-            <Music size={24} className="text-brand-blue/40" />
+            <Music size={24} className="text-zinc-500" />
           </div>
         )}
         <div className="overflow-hidden min-w-0">
@@ -1796,7 +1806,7 @@ function AdminQueueItem({
                 </span>
               )}
               {itemTags.slice(0, 4).map(tag => (
-                <span key={tag} className="bg-brand-blue/10 text-brand-blue/60 border border-brand-blue/20 text-[10px] font-bold uppercase px-2 py-0.5">
+                <span key={tag} className="bg-brand-blue/10 text-zinc-600 border border-brand-blue/20 text-[10px] font-bold uppercase px-2 py-0.5">
                   {tag}
                 </span>
               ))}
