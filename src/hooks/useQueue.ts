@@ -17,12 +17,19 @@ export function tagMatchesTheme(tags: string[], theme: string): boolean {
 }
 
 function sortAndNormalize(items: QueueItem[]): QueueItem[] {
-  return [...items]
-    .sort((a, b) => {
-      if (b.score !== a.score) return b.score - a.score;
-      return new Date(a.requested_at).getTime() - new Date(b.requested_at).getTime();
-    })
-    .map((item, i) => ({ ...item, status: i === 0 ? ('playing' as const) : ('pending' as const) }));
+  // Preserve the currently-playing item at position 0.
+  // Only the remaining (pending) items are reordered by score.
+  const playing = items.find(i => i.status === 'playing');
+  const rest = items.filter(i => i.status !== 'playing');
+
+  const sortedRest = [...rest].sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return new Date(a.requested_at).getTime() - new Date(b.requested_at).getTime();
+  });
+
+  const sorted = playing ? [playing, ...sortedRest] : sortedRest;
+
+  return sorted.map((item, i) => ({ ...item, status: i === 0 ? ('playing' as const) : ('pending' as const) }));
 }
 
 export function useQueue(barSlug: string | undefined) {
