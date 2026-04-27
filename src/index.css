@@ -6,6 +6,7 @@
   --color-brand-lime: #F5E6C8;    /* warm cream — "pop" text, button faces  */
   --color-brand-cream: #0A0A0A;   /* near-black  — page background          */
   --color-on-primary: #0A0A0A;    /* auto-contrast text on brand-blue bg    */
+  --color-on-accent:  #0A0A0A;    /* auto-contrast text on brand-lime bg    */
 
   /* ── Typography ────────────────────────────────────────────────────────── */
   --font-display: "Calistoga", "Georgia", serif;

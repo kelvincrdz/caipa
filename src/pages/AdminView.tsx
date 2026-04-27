@@ -1485,6 +1485,7 @@ export default function AdminView() {
                         const v = e.target.value;
                         setBarColors(prev => ({ ...prev, accent: v }));
                         document.documentElement.style.setProperty("--color-brand-lime", v);
+                        document.documentElement.style.setProperty("--color-on-accent", getContrastColor(v));
                       }}
                       className="h-14 w-14 border-4 border-brand-blue cursor-pointer p-1"
                     />
@@ -1519,6 +1520,7 @@ export default function AdminView() {
                     document.documentElement.style.setProperty("--color-brand-blue", "#FFB800");
                     document.documentElement.style.setProperty("--color-brand-lime", "#F5E6C8");
                     document.documentElement.style.setProperty("--color-on-primary", getContrastColor("#FFB800"));
+                    document.documentElement.style.setProperty("--color-on-accent", getContrastColor("#F5E6C8"));
                   }}
                   className="flex items-center gap-2 border-4 border-brand-blue/30 px-5 py-3 font-display text-xl uppercase text-brand-blue/60 hover:border-brand-blue hover:text-brand-blue transition-all"
                 >
