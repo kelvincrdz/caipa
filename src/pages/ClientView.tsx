@@ -177,6 +177,7 @@ export default function ClientView() {
 
   // Photo upload
   const [showPhotoModal, setShowPhotoModal] = useState(false);
+  const [showPhotoGallery, setShowPhotoGallery] = useState(false);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoCaption, setPhotoCaption] = useState("");
@@ -1374,15 +1375,35 @@ export default function ClientView() {
           className="md:col-span-4 md:row-span-2 flex gap-3"
         >
           {/* Tempo Estimado */}
-          <div className="flex-1 border-4 border-brand-blue p-4 flex flex-col justify-center items-center text-center bg-brand-cream shadow-[8px_8px_0px_var(--color-brand-blue)]">
-            <p className="text-xs font-bold uppercase mb-2 opacity-60 tracking-widest">TEMPO ESTIMADO</p>
-            <div className="flex items-baseline gap-1">
+          <div className="flex-1 border-4 border-brand-blue p-4 flex flex-col justify-center items-center text-center bg-brand-cream shadow-[8px_8px_0px_var(--color-brand-blue)] relative overflow-hidden">
+            {/* Blurred photo backdrop */}
+            {approvedPhotos.length > 0 && (
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={approvedPhotos[carouselIdx % approvedPhotos.length]?.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 0.38 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1.5 }}
+                  className="absolute inset-0 scale-110 pointer-events-none"
+                  style={{
+                    backgroundImage: `url(${approvedPhotos[carouselIdx % approvedPhotos.length]?.photo_url})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    filter: "blur(12px)",
+                  }}
+                />
+              </AnimatePresence>
+            )}
+            <div className="absolute inset-0 bg-brand-cream/60 pointer-events-none" />
+            <p className="relative z-10 text-xs font-bold uppercase mb-2 opacity-60 tracking-widest">TEMPO ESTIMADO</p>
+            <div className="relative z-10 flex items-baseline gap-1">
               <p className="text-4xl sm:text-6xl lg:text-7xl font-display tracking-tighter text-brand-blue leading-none">
                 {waitMinutes}
               </p>
               <span className="text-lg sm:text-2xl font-display text-brand-blue">MIN</span>
             </div>
-            <p className="text-[10px] font-bold uppercase mt-2 bg-brand-blue text-brand-lime px-3 py-1 italic tracking-widest">
+            <p className="relative z-10 text-[10px] font-bold uppercase mt-2 bg-brand-blue text-brand-lime px-3 py-1 italic tracking-widest">
               {upNext.length === 0 ? "Fila livre!" : upNext.length <= 3 ? "Fila andando rápido" : "Fila movimentada"}
             </p>
           </div>
@@ -1401,71 +1422,6 @@ export default function ClientView() {
           )}
         </motion.div>
 
-        {/* Photo Carousel */}
-        {approvedPhotos.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="md:col-span-7 border-4 border-brand-blue overflow-hidden relative bg-black"
-            style={{ minHeight: 180 }}
-          >
-            <AnimatePresence mode="crossfade">
-              <motion.img
-                key={approvedPhotos[carouselIdx % approvedPhotos.length]?.id}
-                src={approvedPhotos[carouselIdx % approvedPhotos.length]?.photo_url}
-                alt="Foto da noite"
-                initial={{ opacity: 0, scale: 1.06 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.97 }}
-                transition={{ duration: 0.9 }}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-            </AnimatePresence>
-            {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
-            {/* Caption + uploader */}
-            <div className="absolute bottom-0 left-0 right-0 px-4 py-3 flex items-end justify-between gap-3">
-              <div className="min-w-0">
-                {approvedPhotos[carouselIdx % approvedPhotos.length]?.caption && (
-                  <motion.p
-                    key={approvedPhotos[carouselIdx % approvedPhotos.length]?.id + "-cap"}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="font-display text-xl lg:text-2xl uppercase text-brand-lime leading-none truncate"
-                  >
-                    {approvedPhotos[carouselIdx % approvedPhotos.length].caption}
-                  </motion.p>
-                )}
-                <p className="text-[11px] font-bold uppercase text-white/60 mt-0.5">
-                  📸 {approvedPhotos[carouselIdx % approvedPhotos.length]?.uploader_name ?? "Anônimo"}
-                </p>
-              </div>
-              {/* Dots */}
-              {approvedPhotos.length > 1 && (
-                <div className="flex gap-1.5 flex-shrink-0">
-                  {approvedPhotos.slice(0, Math.min(8, approvedPhotos.length)).map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setCarouselIdx(i)}
-                      className={cn(
-                        "h-2 rounded-full transition-all",
-                        i === carouselIdx % approvedPhotos.length
-                          ? "w-5 bg-brand-lime"
-                          : "w-2 bg-white/40 hover:bg-white/70"
-                      )}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-            {/* Badge */}
-            <div className="absolute top-3 left-3 bg-brand-blue/80 border-2 border-brand-lime px-2 py-1">
-              <span className="font-display text-xs uppercase text-brand-lime tracking-widest">FOTOS DA NOITE</span>
-            </div>
-          </motion.div>
-        )}
       </div>
 
       {/* Footer */}
@@ -1488,12 +1444,76 @@ export default function ClientView() {
           >
             📊 VER ESTATÍSTICAS
           </a>
+          {approvedPhotos.length > 0 && (
+            <button
+              onClick={() => setShowPhotoGallery(true)}
+              className="text-xs font-bold border-4 border-brand-blue bg-white px-3 py-2 uppercase shadow-[4px_4px_0px_var(--color-brand-blue)] hover:bg-brand-cream transition-colors flex items-center gap-1"
+            >
+              <Camera size={12} /> FOTOS DA NOITE
+            </button>
+          )}
         </div>
         <div className="flex items-center gap-3">
           <div className="w-5 h-5 rounded-full bg-red-600 animate-pulse shadow-[0_0_15px_rgba(220,38,38,0.5)]"></div>
           <span className="text-lg font-display uppercase tracking-widest text-brand-blue italic">Real-time Sync Active</span>
         </div>
       </motion.footer>
+
+      {/* Photo Gallery Modal */}
+      <AnimatePresence>
+        {showPhotoGallery && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[115] bg-brand-blue/95 backdrop-blur-md overflow-y-auto p-4 sm:p-6"
+          >
+            <div className="max-w-4xl mx-auto">
+              <div className="flex justify-between items-center mb-6 border-b-4 border-brand-lime pb-4">
+                <h3 className="font-display text-3xl sm:text-5xl uppercase text-white flex items-center gap-3">
+                  <Camera size={28} className="text-brand-lime" /> FOTOS DA NOITE
+                </h3>
+                <button
+                  onClick={() => setShowPhotoGallery(false)}
+                  className="text-white/60 hover:text-brand-lime transition-colors p-1"
+                >
+                  <X size={28} strokeWidth={3} />
+                </button>
+              </div>
+              <div className="columns-2 sm:columns-3 gap-3">
+                {approvedPhotos.map(photo => (
+                  <div key={photo.id} className="break-inside-avoid mb-3 relative group">
+                    <img
+                      src={photo.photo_url}
+                      alt={photo.caption ?? ""}
+                      className="w-full border-2 border-white/10 group-hover:border-brand-lime transition-colors"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                      <a
+                        href={photo.photo_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={e => e.stopPropagation()}
+                        className="border-4 border-brand-blue bg-brand-lime text-brand-blue font-display text-sm uppercase px-4 py-2 shadow-[3px_3px_0px_var(--color-brand-blue)]"
+                      >
+                        ABRIR
+                      </a>
+                    </div>
+                    {(photo.caption || photo.uploader_name) && (
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-2 py-1.5">
+                        {photo.caption && (
+                          <p className="font-display text-xs uppercase text-brand-lime leading-none truncate">{photo.caption}</p>
+                        )}
+                        <p className="text-[10px] font-bold uppercase text-white/50 mt-0.5">📸 {photo.uploader_name ?? "Anônimo"}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Photo Upload Modal */}
       <AnimatePresence>

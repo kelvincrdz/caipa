@@ -112,8 +112,7 @@ export default function QueueTV() {
 
   const [barLogo, setBarLogo] = useState<string | null>(null);
 
-  // Session config for photo display mode
-  const { session: config } = useSession(slug);
+  useSession(slug);
 
   // Approved photos for slideshow/background
   const [approvedPhotos, setApprovedPhotos] = useState<any[]>([]);
@@ -152,14 +151,14 @@ export default function QueueTV() {
     return () => { supabase.removeChannel(ch); };
   }, [slug]);
 
-  // Photo slideshow timer (8s per photo)
+  // Photo slideshow timer (10s per pair)
   useEffect(() => {
-    if (approvedPhotos.length < 2 || config.photo_display_mode === "none") return;
+    if (approvedPhotos.length < 2) return;
     const t = setInterval(() => {
       setCurrentPhotoIdx(i => (i + 1) % approvedPhotos.length);
-    }, config.photo_display_mode === "background" ? 25000 : 8000);
+    }, 10000);
     return () => clearInterval(t);
-  }, [approvedPhotos.length, config.photo_display_mode]);
+  }, [approvedPhotos.length]);
 
   // Bar custom theme + logo
   useEffect(() => {
@@ -260,34 +259,6 @@ export default function QueueTV() {
         partyMode && "party-mode",
       )}
     >
-      {/* Background photo mode */}
-      {config.photo_display_mode === "background" && approvedPhotos.length > 0 && (
-        <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-          <AnimatePresence>
-            <motion.div
-              key={approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.id}
-              initial={{ opacity: 0, scale: 1.05 }}
-              animate={{ opacity: 0.18, scale: 1.12 }}
-              exit={{ opacity: 0, scale: 1.15 }}
-              transition={{ duration: 2, ease: "easeInOut" }}
-              className="absolute inset-0"
-              style={{
-                backgroundImage: `url(${approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.photo_url})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
-            />
-          </AnimatePresence>
-          {/* Caption */}
-          {approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.caption && (
-            <div className="absolute bottom-24 left-8 bg-black/60 px-4 py-2 z-10">
-              <p className="font-display text-brand-lime text-2xl uppercase">
-                {approvedPhotos[currentPhotoIdx % approvedPhotos.length].caption}
-              </p>
-            </div>
-          )}
-        </div>
-      )}
       {/* Party mode indicator */}
       {partyMode && (
         <div className="fixed top-4 right-4 z-50 flex items-center gap-2 bg-black border-2 border-brand-lime px-3 py-1.5 neon-border">
@@ -370,6 +341,38 @@ export default function QueueTV() {
         {/* Left: Now Playing */}
         <section className="flex flex-[1.5] flex-col items-center justify-center px-8 py-6 lg:px-16 lg:py-10 text-center bg-brand-blue text-brand-cream relative overflow-hidden min-h-0">
           <div className="absolute inset-0 bg-grainy opacity-10" />
+
+          {/* Two photos at bottom corners - subtle fade in/out */}
+          {approvedPhotos.length > 0 && (
+            <>
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.id + "-l"}
+                  src={approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.photo_url}
+                  alt=""
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 0.38 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 2, ease: "easeInOut" }}
+                  className="absolute bottom-2 left-2 pointer-events-none"
+                  style={{ width: "22%", height: "auto", maxHeight: "44%" }}
+                />
+              </AnimatePresence>
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={approvedPhotos[(currentPhotoIdx + 1) % approvedPhotos.length]?.id + "-r"}
+                  src={approvedPhotos[(currentPhotoIdx + 1) % approvedPhotos.length]?.photo_url}
+                  alt=""
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 0.38 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 2, ease: "easeInOut", delay: 0.6 }}
+                  className="absolute bottom-2 right-2 pointer-events-none"
+                  style={{ width: "22%", height: "auto", maxHeight: "44%" }}
+                />
+              </AnimatePresence>
+            </>
+          )}
 
           {nowPlaying ? (
             <>
@@ -529,33 +532,6 @@ export default function QueueTV() {
               ))
             )}
           </div>
-
-          {/* Photo slideshow panel */}
-          {config.photo_display_mode === "slideshow" && approvedPhotos.length > 0 && (
-            <div className="px-8 mt-3 flex-shrink-0">
-              <div className="border-4 border-brand-blue overflow-hidden relative" style={{ height: 120 }}>
-                <AnimatePresence mode="crossfade">
-                  <motion.img
-                    key={approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.id}
-                    src={approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.photo_url}
-                    alt="Foto da noite"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.8 }}
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                </AnimatePresence>
-                {approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.caption && (
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-3 py-1.5">
-                    <p className="font-display text-brand-lime text-lg uppercase truncate">
-                      {approvedPhotos[currentPhotoIdx % approvedPhotos.length].caption}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
 
           {/* QR Code + CTA */}
           <div className={cn(

@@ -43,3 +43,17 @@ CREATE POLICY "Anyone can insert photos" ON bar_photos FOR INSERT WITH CHECK (tr
 CREATE POLICY "Anyone can read all photos" ON bar_photos FOR SELECT USING (true);
 CREATE POLICY "Anyone can update photos" ON bar_photos FOR UPDATE USING (true);
 CREATE POLICY "Anyone can delete photos" ON bar_photos FOR DELETE USING (true);
+
+-- Storage policies para o bucket "photos"
+-- IMPORTANTE: o RLS do Storage fica em storage.objects
+CREATE POLICY "Anyone can upload to photos bucket"
+  ON storage.objects FOR INSERT
+  WITH CHECK (bucket_id = 'photos');
+
+CREATE POLICY "Anyone can read photos bucket"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'photos');
+
+CREATE POLICY "Anyone can delete photos bucket"
+  ON storage.objects FOR DELETE
+  USING (bucket_id = 'photos');
