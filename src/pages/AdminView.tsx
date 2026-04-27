@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import {
-  Queue, Settings, BarChart2, Share2, History, Shield,
+  List, Settings, BarChart2, Share2, History, Shield,
   Play, Pause, SkipForward, Volume2, VolumeX, Power,
   Trash2, GripVertical, Plus, Search, Music, User,
   ExternalLink, Copy, CheckCircle, XCircle, X
@@ -36,7 +36,7 @@ function Sidebar({ activeTab, setActiveTab, modoFesta, session }: {
   session: any;
 }) {
   const navItems: Array<{ id: TabType; label: string; icon: React.ReactNode }> = [
-    { id: "queue", label: "Fila", icon: <Queue size={20} /> },
+    { id: "queue", label: "Fila", icon: <List size={20} /> },
     { id: "stats", label: "Stats", icon: <BarChart2 size={20} /> },
     { id: "share", label: "Compartilhar", icon: <Share2 size={20} /> },
     { id: "settings", label: "Configurações", icon: <Settings size={20} /> },
