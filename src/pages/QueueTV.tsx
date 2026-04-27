@@ -276,35 +276,6 @@ export default function QueueTV() {
         partyMode && "party-mode",
       )}
     >
-      {/* Background photo mode */}
-      {config.photo_display_mode === "background" && approvedPhotos.length > 0 && (
-        <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-          <AnimatePresence>
-            <motion.div
-              key={approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.id}
-              initial={{ opacity: 0, scale: 1.05 }}
-              animate={{ opacity: 0.18, scale: 1.12 }}
-              exit={{ opacity: 0, scale: 1.15 }}
-              transition={{ duration: 2, ease: "easeInOut" }}
-              className="absolute inset-0"
-              style={{
-                backgroundImage: `url(${approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.photo_url})`,
-                backgroundSize: "contain",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-              }}
-            />
-          </AnimatePresence>
-          {/* Caption */}
-          {approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.caption && (
-            <div className="absolute bottom-24 left-8 bg-black/60 px-4 py-2 z-10">
-              <p className="font-display text-brand-lime text-2xl uppercase">
-                {approvedPhotos[currentPhotoIdx % approvedPhotos.length].caption}
-              </p>
-            </div>
-          )}
-        </div>
-      )}
       {/* Party mode indicator */}
       {partyMode && (
         <div className="fixed top-4 right-4 z-50 flex items-center gap-2 bg-black border-2 border-brand-lime px-3 py-1.5 neon-border">
@@ -405,8 +376,30 @@ export default function QueueTV() {
                   ) : (
                     <Disc size={100} className="text-brand-lime" />
                   )}
+                  {/* Photo overlay inside the now-playing box */}
+                  {config.photo_display_mode === "background" && approvedPhotos.length > 0 && (
+                    <AnimatePresence>
+                      <motion.img
+                        key={approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.id}
+                        src={approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.photo_url}
+                        alt="Foto da noite"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 0.5 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 1.2, ease: "easeInOut" }}
+                        className="absolute inset-0 w-full h-full object-cover z-10"
+                      />
+                    </AnimatePresence>
+                  )}
+                  {config.photo_display_mode === "background" && approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.caption && (
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-2 py-1 z-20">
+                      <p className="font-display text-brand-lime text-xs uppercase truncate">
+                        {approvedPhotos[currentPhotoIdx % approvedPhotos.length].caption}
+                      </p>
+                    </div>
+                  )}
                   <div className={cn(
-                    "absolute top-2 left-2 flex items-center gap-1 bg-brand-lime px-2 py-1 font-display text-sm text-on-accent",
+                    "absolute top-2 left-2 flex items-center gap-1 bg-brand-lime px-2 py-1 font-display text-sm text-on-accent z-30",
                     partyMode ? "neon-border" : "shadow-[-4px_4px_0px_var(--color-brand-blue)]",
                   )}>
                     {isPlaying
