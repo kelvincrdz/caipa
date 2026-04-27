@@ -138,8 +138,8 @@ export default function Register() {
                 <QRCodeSVG
                   value={clientUrl}
                   size={180}
-                  bgColor="#FDE6C2"
-                  fgColor="#336580"
+                  bgColor="#1A1A1A"
+                  fgColor="#FFB800"
                   level="M"
                 />
               </div>

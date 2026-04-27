@@ -182,8 +182,8 @@ function LiveMap({ bars }: { bars: Array<{ slug: string; name: string; lat: numb
     markersRef.current = [];
 
     bars.forEach(bar => {
-      const color = bar.isLive ? "#D1DC5A" : "#336580";
-      const border = bar.isLive ? "#336580" : "#1a3a4a";
+      const color = bar.isLive ? "#FFB800" : "#807A6D";
+      const border = bar.isLive ? "#FFB800" : "#252525";
       const anim = bar.isLive ? "animation:map-pulse 1.5s ease-in-out infinite;" : "";
       const icon = L.divIcon({
         className: "",
@@ -199,7 +199,7 @@ function LiveMap({ bars }: { bars: Array<{ slug: string; name: string; lat: numb
             ${bar.isLive ? '<span style="color:red;font-weight:bold;font-size:11px">● AO VIVO</span><br>' : ""}
             <b style="font-size:15px">${bar.name}</b>
             ${bar.address ? `<br><small>${bar.address}</small>` : ""}
-            <br><a href="/${bar.slug}" style="display:inline-block;margin-top:6px;background:#336580;color:#D1DC5A;padding:4px 10px;font-weight:bold;font-size:12px;text-decoration:none">VER BAR →</a>
+            <br><a href="/${bar.slug}" style="display:inline-block;margin-top:6px;background:#FFB800;color:#0A0A0A;padding:4px 10px;font-weight:bold;font-size:12px;text-decoration:none">VER BAR →</a>
           </div>`,
           { maxWidth: 220 },
         );

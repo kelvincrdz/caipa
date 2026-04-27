@@ -90,7 +90,7 @@ export default function AdminView() {
   const [modLoading, setModLoading] = useState(false);
 
   // Bar theme colors
-  const [barColors, setBarColors] = useState({ primary: "#336580", accent: "#D1DC5A" });
+  const [barColors, setBarColors] = useState({ primary: "#FFB800", accent: "#F5E6C8" });
   const [colorsSaved, setColorsSaved] = useState(false);
 
   // Bar logo
@@ -179,8 +179,8 @@ export default function AdminView() {
     supabase.from("bars").select("theme_primary,theme_accent,logo_url,description,address,whatsapp,instagram,cover_charge,music_style,opening_hours").eq("slug", slug).maybeSingle()
       .then(({ data }) => {
         if (data) {
-          const p = data.theme_primary || "#336580";
-          const a = data.theme_accent  || "#D1DC5A";
+          const p = data.theme_primary || "#FFB800";
+          const a = data.theme_accent  || "#F5E6C8";
           setBarColors({ primary: p, accent: a });
           document.documentElement.style.setProperty("--color-brand-blue", p);
           document.documentElement.style.setProperty("--color-brand-lime", a);
@@ -1308,7 +1308,7 @@ export default function AdminView() {
                 </div>
 
                 <div className="flex justify-center p-6 border-4 border-brand-blue bg-white">
-                  <QRCodeSVG value={clientUrl} size={240} bgColor="#ffffff" fgColor="#0a1628" level="H" />
+                  <QRCodeSVG value={clientUrl} size={240} bgColor="#1A1A1A" fgColor="#FFB800" level="H" />
                 </div>
                 <p className="mt-4 font-body text-xs font-bold uppercase opacity-50 text-center">
                   Aponte a câmera do celular para o QR Code
@@ -1506,9 +1506,9 @@ export default function AdminView() {
                 </button>
                 <button
                   onClick={() => {
-                    setBarColors({ primary: "#336580", accent: "#D1DC5A" });
-                    document.documentElement.style.setProperty("--color-brand-blue", "#336580");
-                    document.documentElement.style.setProperty("--color-brand-lime", "#D1DC5A");
+                    setBarColors({ primary: "#FFB800", accent: "#F5E6C8" });
+                    document.documentElement.style.setProperty("--color-brand-blue", "#FFB800");
+                    document.documentElement.style.setProperty("--color-brand-lime", "#F5E6C8");
                   }}
                   className="flex items-center gap-2 border-4 border-brand-blue/30 px-5 py-3 font-display text-xl uppercase text-brand-blue/60 hover:border-brand-blue hover:text-brand-blue transition-all"
                 >

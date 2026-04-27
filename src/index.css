@@ -1,21 +1,25 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Bebas+Neue&family=Inter:wght@400;700;900&display=swap');
 
 @theme {
-  --color-brand-blue: #336580;
-  --color-brand-lime: #D1DC5A;
-  --color-brand-cream: #FDE6C2;
+  /* ── Midnight Vinyl palette ─────────────────────────────────────────────── */
+  --color-brand-blue: #FFB800;    /* amber  — accents, borders, icons       */
+  --color-brand-lime: #F5E6C8;    /* warm cream — "pop" text, button faces  */
+  --color-brand-cream: #0A0A0A;   /* near-black  — page background          */
 
-  --font-display: "Bebas Neue", "Impact", "Arial Black", sans-serif;
-  --font-body: "Barlow Condensed", sans-serif;
-  --font-bento: "Inter", sans-serif;
+  /* ── Typography ────────────────────────────────────────────────────────── */
+  --font-display: "Calistoga", "Georgia", serif;
+  --font-body: "IBM Plex Sans", sans-serif;
+  --font-bento: "Space Grotesk", sans-serif;
 
+  /* ── Animation shorthands ───────────────────────────────────────────────── */
   --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   --animate-float: float 3s ease-in-out infinite;
   --animate-eq-1: eq-bar 0.7s ease-in-out infinite;
   --animate-eq-2: eq-bar 0.9s ease-in-out infinite 0.15s;
   --animate-eq-3: eq-bar 0.6s ease-in-out infinite 0.3s;
 }
+
+/* ── Keyframes ────────────────────────────────────────────────────────────── */
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
@@ -38,8 +42,8 @@
 }
 
 @keyframes map-pulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(209,220,90,0.7); }
-  50%       { transform: scale(1.3); box-shadow: 0 0 0 8px rgba(209,220,90,0); }
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,184,0,0.7); }
+  50%       { transform: scale(1.3); box-shadow: 0 0 0 8px rgba(255,184,0,0); }
 }
 
 @keyframes count-up {
@@ -53,23 +57,55 @@
   100% { transform: scale(1)    translateX(0)   translateY(0); }
 }
 
-.animate-ken-burns { animation: ken-burns 20s ease-in-out infinite; }
+/* ── Midnight Vinyl kit animations ─────────────────────────────────────────── */
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
-.animate-slide-up {
-  animation: slide-up 0.4s ease-out both;
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
+
+@keyframes captionIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toastUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  to { background-position: -200% 0; }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ── Animation utilities ─────────────────────────────────────────────────── */
+
+.animate-ken-burns  { animation: ken-burns  20s ease-in-out infinite; }
+.animate-float      { animation: float      3s  ease-in-out infinite; }
+.animate-slide-up   { animation: slide-up   0.4s ease-out both; }
+.animate-scale-in   { animation: scaleIn    0.5s cubic-bezier(.22,.68,0,1.2) both; }
+.animate-toast-up   { animation: toastUp    0.4s cubic-bezier(.22,.68,0,1.2) both; }
+.animate-caption-in { animation: captionIn  0.4s ease both; }
 
 .eq-bar-1 { animation: eq-bar 0.7s ease-in-out infinite; }
 .eq-bar-2 { animation: eq-bar 0.9s ease-in-out infinite 0.15s; }
 .eq-bar-3 { animation: eq-bar 0.6s ease-in-out infinite 0.3s; }
 
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+
 :root {
-  background-color: var(--color-brand-cream);
-  color: var(--color-brand-blue);
+  background-color: #0A0A0A;
+  color: #F5E6C8;
   font-family: var(--font-bento);
 }
 
@@ -77,30 +113,68 @@ h1, h2, h3, .font-display {
   font-family: var(--font-display);
 }
 
-/* Textura de bar/ambiente noturno */
+/* Override Tailwind's bg-white to use the dark surface in this theme.
+   Rules outside @layer have higher cascade priority than layered utilities. */
+.bg-white {
+  background-color: #1A1A1A;
+}
+
+/* ── Grain texture overlay ───────────────────────────────────────────────── */
 .bg-grainy {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3BaseFilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/baseFilter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/baseFilter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.08;
   pointer-events: none;
 }
 
+/* ── Card & button components ───────────────────────────────────────────── */
+
+/* Asymmetric radius — signature Midnight Vinyl token */
+.asym {
+  border-radius: 2px 14px 2px 14px;
+}
+
 .card-bento {
-  @apply border-4 border-brand-blue bg-white shadow-[8px_8px_0px_var(--color-brand-blue)];
+  background-color: #1A1A1A;
+  border: 2px solid var(--color-brand-blue);
+  border-radius: 2px 14px 2px 14px;
+  box-shadow: 4px 4px 0 rgba(255,184,0,0.35);
 }
 
 .card-bento-lime {
-  @apply border-4 border-brand-blue bg-brand-lime shadow-[8px_8px_0px_var(--color-brand-blue)];
+  background-color: var(--color-brand-blue);
+  color: #0A0A0A;
+  border: 2px solid var(--color-brand-blue);
+  border-radius: 2px 14px 2px 14px;
+  box-shadow: 4px 4px 0 rgba(255,184,0,0.35);
 }
 
 .btn-bento {
-  @apply bg-brand-lime text-brand-blue border-4 border-brand-blue px-4 py-2 sm:px-6 sm:py-3 font-display text-lg sm:text-2xl uppercase tracking-tighter shadow-[6px_6px_0px_var(--color-brand-blue)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_var(--color-brand-blue)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none;
+  @apply bg-brand-lime text-brand-cream border-2 border-brand-blue px-4 py-2 sm:px-6 sm:py-3 font-display text-lg sm:text-2xl uppercase tracking-tighter transition-all;
+  border-radius: 2px 14px 2px 14px;
+  box-shadow: 4px 4px 0 rgba(255,184,0,0.4);
+  font-family: var(--font-display);
+}
+.btn-bento:hover  {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 rgba(255,184,0,0.4);
+}
+.btn-bento:active {
+  transform: translate(4px, 4px);
+  box-shadow: none;
 }
 
 .text-stroke-blue {
   -webkit-text-stroke: 2px var(--color-brand-blue);
 }
 
-/* Scrollbar thin para filas */
+/* ── Shimmer skeleton ────────────────────────────────────────────────────── */
+.shimmer {
+  background: linear-gradient(90deg, #1A1A1A 25%, #252525 50%, #1A1A1A 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
 .queue-scroll {
   scrollbar-width: thin;
   scrollbar-color: var(--color-brand-blue) transparent;
@@ -109,23 +183,17 @@ h1, h2, h3, .font-display {
 .queue-scroll::-webkit-scrollbar-track { background: transparent; }
 .queue-scroll::-webkit-scrollbar-thumb { background: var(--color-brand-blue); border-radius: 2px; }
 
-/* Marquee ticker */
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-.marquee-track {
-  display: inline-block;
-}
+/* ── Marquee ticker ──────────────────────────────────────────────────────── */
+.marquee-track   { display: inline-block; }
 .marquee-content {
   display: inline-block;
   animation: marquee 40s linear infinite;
 }
 
-/* ── Party Mode ─────────────────────────────────────────────────────────────── */
+/* ── Party Mode ─────────────────────────────────────────────────────────── */
 .party-mode {
-  --color-brand-blue: #000000;
-  --color-brand-lime: #39ff14;
+  --color-brand-blue:  #000000;
+  --color-brand-lime:  #39ff14;
   --color-brand-cream: #0a0a0a;
 }
 
@@ -147,9 +215,9 @@ h1, h2, h3, .font-display {
   100% { color: #39ff14; }
 }
 
-.party-mode .neon-text  { animation: neon-glow   1.6s ease-in-out infinite; }
-.party-mode .neon-border { animation: neon-border 1.6s ease-in-out infinite; }
-.party-mode .color-cycle { animation: color-cycle 3s   linear      infinite; }
+.party-mode .neon-text   { animation: neon-glow   1.6s ease-in-out infinite; }
+.party-mode .neon-border { animation: neon-border  1.6s ease-in-out infinite; }
+.party-mode .color-cycle { animation: color-cycle  3s   linear      infinite; }
 
 @keyframes party-eq-bar {
   0%, 100% { height: 20%; }
@@ -158,8 +226,8 @@ h1, h2, h3, .font-display {
   75%  { height: 100%; }
 }
 
-.party-eq-1 { animation: party-eq-bar 0.4s ease-in-out infinite; }
-.party-eq-2 { animation: party-eq-bar 0.5s ease-in-out infinite 0.08s; }
+.party-eq-1 { animation: party-eq-bar 0.40s ease-in-out infinite; }
+.party-eq-2 { animation: party-eq-bar 0.50s ease-in-out infinite 0.08s; }
 .party-eq-3 { animation: party-eq-bar 0.35s ease-in-out infinite 0.16s; }
 .party-eq-4 { animation: party-eq-bar 0.55s ease-in-out infinite 0.05s; }
 .party-eq-5 { animation: party-eq-bar 0.42s ease-in-out infinite 0.22s; }

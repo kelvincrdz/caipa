@@ -253,7 +253,7 @@ function BarCard({
 
         {/* QR Code miniatura */}
         <div className="border-4 border-brand-blue p-2 bg-white flex-shrink-0">
-          <QRCodeSVG value={clientUrl} size={72} bgColor="#ffffff" fgColor="#336580" level="M" />
+          <QRCodeSVG value={clientUrl} size={72} bgColor="#1A1A1A" fgColor="#FFB800" level="M" />
         </div>
       </div>
 

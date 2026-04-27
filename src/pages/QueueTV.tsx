@@ -64,7 +64,7 @@ function AudioVisualizer({ analyser, isPlaying, party }: { analyser: AnalyserNod
           const hue = (i / barCount) * 360;
           ctx.fillStyle = `hsl(${hue}, 100%, 55%)`;
         } else {
-          ctx.fillStyle = "#D1DC5A";
+          ctx.fillStyle = "#FFB800";
         }
         ctx.fillRect(i * barW + 1, canvas.height - h, barW - 2, h);
       }
@@ -573,8 +573,8 @@ export default function QueueTV() {
                 <QRCodeSVG
                   value={clientUrl}
                   size={110}
-                  bgColor="#ffffff"
-                  fgColor="#0a1628"
+                  bgColor="#1A1A1A"
+                  fgColor="#FFB800"
                   level="H"
                 />
               </div>

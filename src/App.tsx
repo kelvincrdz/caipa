@@ -16,7 +16,7 @@ import BarProfile from "./pages/BarProfile";
 
 export default function App() {
   return (
-    <div className="relative min-h-screen selection:bg-brand-lime selection:text-brand-blue border-[12px] border-brand-blue bg-brand-cream">
+    <div className="relative min-h-screen selection:bg-brand-blue selection:text-brand-cream border-[8px] border-brand-blue bg-brand-cream" style={{ borderRadius: "0 0 0 0" }}>
       {/* Texture Overlay */}
       <div className="bg-grainy fixed inset-0 z-[100] pointer-events-none overflow-hidden" />
       
