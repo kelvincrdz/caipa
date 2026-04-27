@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: [
     './index.html',
     './src/**/*.{js,ts,jsx,tsx}',
@@ -10,21 +10,20 @@ module.exports = {
         // Design System principal - Dark/Amber
         primary: '#FFB800',  // Amber principal
         secondary: '#0A0A0A', // Preto principal
+        'surface-dark': '#1A1A1A',    // Cinza escuro para cards
+        'surface-darker': '#2A2A2A',  // Hover states
+        'text-muted': '#807A6D',   // Texto secundário
         surface: {
-          dark: '#1A1A1A',    // Cinza escuro para cards
-          darker: '#2A2A2A',  // Hover states
+          dark: '#1A1A1A',
+          darker: '#2A2A2A',
         },
         accent: {
           amber: '#FFB800',   // Amber
           green: '#39FF14',   // Party mode
         },
         text: {
-          muted: '#807A6D',   // Texto secundário
+          muted: '#807A6D',
         },
-        // Alias para compatibilidade
-        'surface-dark': '#1A1A1A',
-        'surface-darker': '#2A2A2A',
-        'text-muted': '#807A6D',
       },
       fontFamily: {
         'display': ['Calistoga', 'serif'],           // 96px Hero titles
