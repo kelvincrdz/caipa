@@ -359,9 +359,32 @@ export default function QueueTV() {
         <section className="flex flex-[1.5] flex-col items-center justify-center px-8 py-6 lg:px-16 lg:py-10 text-center bg-brand-blue text-on-primary relative overflow-hidden min-h-0">
           <div className="absolute inset-0 bg-grainy opacity-10" />
 
+          {/* Photo overlay covering the entire Now Playing section */}
+          {config.photo_display_mode === "background" && approvedPhotos.length > 0 && (
+            <AnimatePresence>
+              <motion.img
+                key={approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.id}
+                src={approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.photo_url}
+                alt="Foto da noite"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.5 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1.2, ease: "easeInOut" }}
+                className="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none"
+              />
+            </AnimatePresence>
+          )}
+          {config.photo_display_mode === "background" && approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.caption && (
+            <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-4 py-2 z-20 pointer-events-none">
+              <p className="font-display text-brand-lime text-lg uppercase truncate">
+                {approvedPhotos[currentPhotoIdx % approvedPhotos.length].caption}
+              </p>
+            </div>
+          )}
+
           {nowPlaying ? (
             <>
-              <div className="relative mb-4">
+              <div className="relative mb-4 z-30">
                 <motion.div
                   animate={{ rotate: isPlaying ? 360 : 0 }}
                   transition={{ duration: partyMode ? 8 : 30, repeat: Infinity, ease: "linear" }}
@@ -376,30 +399,8 @@ export default function QueueTV() {
                   ) : (
                     <Disc size={100} className="text-brand-lime" />
                   )}
-                  {/* Photo overlay inside the now-playing box */}
-                  {config.photo_display_mode === "background" && approvedPhotos.length > 0 && (
-                    <AnimatePresence>
-                      <motion.img
-                        key={approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.id}
-                        src={approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.photo_url}
-                        alt="Foto da noite"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 0.5 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 1.2, ease: "easeInOut" }}
-                        className="absolute inset-0 w-full h-full object-cover z-10"
-                      />
-                    </AnimatePresence>
-                  )}
-                  {config.photo_display_mode === "background" && approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.caption && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-2 py-1 z-20">
-                      <p className="font-display text-brand-lime text-xs uppercase truncate">
-                        {approvedPhotos[currentPhotoIdx % approvedPhotos.length].caption}
-                      </p>
-                    </div>
-                  )}
                   <div className={cn(
-                    "absolute top-2 left-2 flex items-center gap-1 bg-brand-lime px-2 py-1 font-display text-sm text-on-accent z-30",
+                    "absolute top-2 left-2 flex items-center gap-1 bg-brand-lime px-2 py-1 font-display text-sm text-on-accent",
                     partyMode ? "neon-border" : "shadow-[-4px_4px_0px_var(--color-brand-blue)]",
                   )}>
                     {isPlaying
@@ -411,7 +412,7 @@ export default function QueueTV() {
               </div>
 
               {/* Audio Visualizer or Progress Bar */}
-              <div className="w-full max-w-md mb-3">
+              <div className="relative z-30 w-full max-w-md mb-3">
                 {analyserNode && isPlaying ? (
                   <AudioVisualizer analyser={analyserNode} isPlaying={isPlaying} party={partyMode} />
                 ) : nowPlaying.preview_url ? (
@@ -433,7 +434,7 @@ export default function QueueTV() {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.4 }}
                   className={cn(
-                    "mb-1 text-3xl lg:text-4xl font-display uppercase leading-none tracking-tighter",
+                    "relative z-30 mb-1 text-3xl lg:text-4xl font-display uppercase leading-none tracking-tighter",
                     partyMode && "neon-text",
                   )}
                 >
@@ -448,7 +449,7 @@ export default function QueueTV() {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.4, delay: 0.1 }}
                   className={cn(
-                    "text-xl lg:text-2xl font-body font-black uppercase tracking-widest text-brand-lime leading-none italic",
+                    "relative z-30 text-xl lg:text-2xl font-body font-black uppercase tracking-widest text-brand-lime leading-none italic",
                     partyMode && "color-cycle",
                   )}
                 >
@@ -457,7 +458,7 @@ export default function QueueTV() {
               </AnimatePresence>
 
               <div className={cn(
-                "mt-3 flex items-center gap-3 border-4 border-brand-cream bg-white/5 px-4 py-2 backdrop-blur-sm",
+                "relative z-30 mt-3 flex items-center gap-3 border-4 border-brand-cream bg-white/5 px-4 py-2 backdrop-blur-sm",
                 partyMode && "neon-border",
               )}>
                 <div className="h-3.5 w-3.5 animate-pulse rounded-full bg-red-600 shadow-[0_0_8px_red]" />
@@ -471,7 +472,7 @@ export default function QueueTV() {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="mt-3 flex items-center gap-3 border-4 border-brand-lime bg-brand-lime/10 px-6 py-3"
+                  className="relative z-30 mt-3 flex items-center gap-3 border-4 border-brand-lime bg-brand-lime/10 px-6 py-3"
                 >
                   <span className="text-2xl">❤️</span>
                   <p className="font-display text-base italic uppercase leading-none text-on-primary">
