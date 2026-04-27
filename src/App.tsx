@@ -16,10 +16,7 @@ import BarProfile from "./pages/BarProfile";
 
 export default function App() {
   return (
-    <div className="relative min-h-screen selection:bg-brand-lime selection:text-brand-blue border-[12px] border-brand-blue bg-brand-cream">
-      {/* Texture Overlay */}
-      <div className="bg-grainy fixed inset-0 z-[100] pointer-events-none overflow-hidden" />
-      
+    <div className="relative min-h-screen bg-secondary text-white">
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
