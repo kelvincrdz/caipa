@@ -367,10 +367,10 @@ export default function QueueTV() {
                 src={approvedPhotos[currentPhotoIdx % approvedPhotos.length]?.photo_url}
                 alt="Foto da noite"
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 0.5 }}
+                animate={{ opacity: 0.9 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 1.2, ease: "easeInOut" }}
-                className="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none"
+                className="absolute inset-0 w-full h-full object-contain z-10 pointer-events-none"
               />
             </AnimatePresence>
           )}
