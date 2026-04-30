@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
+import { QRCodeSVG } from "qrcode.react";
 import {
   Search, Music, ThumbsUp, Check, X, Sparkles, ExternalLink, Clock,
   Smartphone, Info, Tag, Heart, Star, History, Zap, Play, Pause, Camera,
@@ -211,6 +212,7 @@ export default function ClientView() {
 
   const { session } = useSession(barStatus === "approved" ? slug : undefined);
   const { queue, addMusic, vote, superVote, reactToItem } = useQueue(barStatus === "approved" ? slug : undefined);
+  const clientUrl = `${window.location.origin}/${slug}`;
 
   const PHOTO_COOLDOWN_MS = 60_000;
 
@@ -529,7 +531,7 @@ export default function ClientView() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="flex min-h-screen flex-col bg-brand-cream p-4 lg:p-8"
+      className="flex min-h-screen flex-col bg-brand-cream p-4 pb-28 md:pb-6 lg:p-8"
     >
       {/* Notification Toast */}
       <AnimatePresence>
@@ -569,7 +571,7 @@ export default function ClientView() {
         initial={{ y: -24, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 border-b-8 border-brand-blue pb-6"
+        className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 max-[399px]:mb-4 border-b-8 border-brand-blue pb-5"
       >
         <div>
           {barLogo ? (
@@ -579,7 +581,7 @@ export default function ClientView() {
               TOCA<span className="text-brand-lime text-stroke-blue">Í</span>
             </h1>
           )}
-          <p className="text-sm sm:text-xl font-body font-bold italic uppercase opacity-70">
+          <p className="text-sm sm:text-xl font-body font-bold italic uppercase opacity-85">
             tocai.com/{slug}
           </p>
         </div>
@@ -595,7 +597,7 @@ export default function ClientView() {
             </div>
           )}
           {barName && (
-            <p className="font-body text-xs font-bold uppercase opacity-50 tracking-widest">{barName}</p>
+            <p className="font-body text-xs font-bold uppercase opacity-75 tracking-widest">{barName}</p>
           )}
           <div className={cn("px-4 py-1 border-4 border-brand-blue inline-block mb-2 shadow-[4px_4px_0px_var(--color-brand-blue)]", themeAccent.badge)}>
             <span className="text-sm font-bold uppercase tracking-widest text-brand-lime">Tema da Noite</span>
@@ -607,7 +609,7 @@ export default function ClientView() {
       </motion.header>
 
       {/* Bento Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 flex-grow relative">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 max-[399px]:gap-4 flex-grow relative">
 
         {/* Search Results Overlay */}
         <AnimatePresence>
@@ -763,7 +765,7 @@ export default function ClientView() {
 
         {/* NOW PLAYING card */}
         <motion.div layout initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
-          className="md:col-span-7 md:row-span-4 border-4 border-brand-blue bg-brand-blue shadow-[8px_8px_0px_var(--color-brand-blue)] text-brand-cream p-6 lg:p-10 flex flex-col relative overflow-hidden group"
+          className="md:col-span-7 md:row-span-4 border-4 border-brand-blue bg-brand-blue shadow-[8px_8px_0px_var(--color-brand-blue)] text-brand-cream p-6 lg:p-10 max-[399px]:p-4 flex flex-col relative overflow-hidden group"
         >
           <div className="absolute top-0 right-0 bg-brand-lime text-brand-cream font-display px-3 py-1 sm:px-6 sm:py-2 text-base sm:text-2xl lg:text-3xl tracking-tighter shadow-[-4px_4px_0px_var(--color-brand-blue)] z-10">
             NO AR AGORA
@@ -782,7 +784,7 @@ export default function ClientView() {
                   text={nowPlaying.title}
                   className="text-2xl sm:text-4xl lg:text-6xl font-display leading-none mb-2 uppercase italic tracking-tighter"
                 />
-                <p className="text-sm sm:text-xl lg:text-2xl font-body font-bold text-brand-lime mb-2 uppercase tracking-widest leading-none">{nowPlaying.artist}</p>
+                <p className="text-sm sm:text-xl lg:text-2xl font-body font-bold text-brand-lime mb-2 uppercase tracking-widest leading-none opacity-95">{nowPlaying.artist}</p>
                 {(nowPlaying.tags ?? []).length > 0 && (
                   <div className="flex flex-wrap gap-1 mb-3 justify-center lg:justify-start">
                     {(nowPlaying.tags ?? []).slice(0, 4).map((tag: string) => {
@@ -798,13 +800,13 @@ export default function ClientView() {
                 {nowPlaying.dedication_to && (
                   <div className="flex items-center gap-2 mb-3 justify-center lg:justify-start">
                     <span className="text-lg">❤️</span>
-                    <span className="text-sm font-body font-bold uppercase text-brand-lime/80 italic">Para {nowPlaying.dedication_to}</span>
+                    <span className="text-sm font-body font-bold uppercase text-brand-lime/95 italic">Para {nowPlaying.dedication_to}</span>
                   </div>
                 )}
                 {session.spotify_device_name ? (
                   <div className="flex items-center gap-2 mb-3 justify-center lg:justify-start">
                     <Smartphone size={13} className="text-brand-lime/70 flex-shrink-0" />
-                    <span className="text-[10px] font-body font-bold uppercase opacity-60 tracking-widest">tocando em: {session.spotify_device_name}</span>
+                    <span className="text-[10px] font-body font-bold uppercase opacity-85 tracking-widest">tocando em: {session.spotify_device_name}</span>
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 mb-3 justify-center lg:justify-start">
@@ -812,14 +814,14 @@ export default function ClientView() {
                   </div>
                 )}
                 {nowPlaying.external_urls?.spotify && (
-                  <a href={nowPlaying.external_urls.spotify} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-brand-lime/70 font-body text-xs font-bold uppercase underline mb-4 justify-center lg:justify-start">
+                  <a href={nowPlaying.external_urls.spotify} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-brand-lime/90 font-body text-xs font-bold uppercase underline mb-4 justify-center lg:justify-start">
                     <ExternalLink size={12} /> Ouvir no Spotify
                   </a>
                 )}
                 <div className="flex items-center justify-center lg:justify-start gap-3 mt-2">
                   <div className="w-10 h-10 rounded-full bg-brand-lime border-4 border-brand-cream flex items-center justify-center text-lg shadow-[4px_4px_0px_var(--color-brand-blue)]">🎶</div>
                   <div className="text-left">
-                    <p className="text-[10px] uppercase font-bold opacity-70 tracking-widest">Requisitado por</p>
+                    <p className="text-[10px] uppercase font-bold opacity-90 tracking-widest">Requisitado por</p>
                     <p className="text-base sm:text-lg lg:text-xl font-display uppercase tracking-tight leading-none">@{nowPlaying.client_name}</p>
                   </div>
                 </div>
@@ -839,7 +841,7 @@ export default function ClientView() {
 
         {/* Queue Card — with tabs */}
         <motion.div initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.25 }}
-          className="md:col-span-5 md:row-span-6 card-bento p-6 lg:p-8 flex flex-col bg-white"
+          className="md:col-span-5 md:row-span-6 card-bento p-6 lg:p-8 max-[399px]:p-4 max-[399px]:max-h-[50vh] flex flex-col bg-white"
         >
           {/* Tabs */}
           <div className="flex gap-2 mb-4 border-b-4 border-brand-blue pb-3">
@@ -861,11 +863,18 @@ export default function ClientView() {
                     className={cn("flex flex-col p-4 border-4 border-brand-blue shadow-[4px_4px_0px_var(--color-brand-blue)] transition-shadow", idx === 0 ? "bg-brand-cream" : "bg-white", votedItems.has(item.id) && "bg-green-900/20")}
                   >
                     <div className="flex items-center gap-4">
+                      {item.thumbnail_url && (
+                        <img
+                          src={item.thumbnail_url}
+                          alt={item.title}
+                          className="h-14 w-14 sm:h-16 sm:w-16 object-cover border-2 border-brand-blue shadow-[2px_2px_0px_var(--color-brand-blue)] flex-shrink-0"
+                        />
+                      )}
                       <span className={cn("font-display text-2xl sm:text-4xl lg:text-5xl leading-none opacity-40", themeAccent.title)}>{(idx + 2).toString().padStart(2, "0")}</span>
                       <div className="flex-grow min-w-0">
                         <p className="font-display text-lg sm:text-2xl lg:text-3xl leading-none uppercase truncate tracking-tighter">{item.title}</p>
                         <div className="flex items-center gap-2 mt-1 flex-wrap">
-                          <p className="text-[10px] lg:text-xs font-body font-bold uppercase opacity-70 truncate italic">{item.artist}</p>
+                          <p className="text-[10px] lg:text-xs font-body font-bold uppercase opacity-90 truncate italic">{item.artist}</p>
                           {item.client_id === phone && (<span className="bg-brand-lime text-brand-cream text-[10px] px-1 font-bold border border-brand-blue leading-none flex-shrink-0">VOCÊ</span>)}
                           {tagMatchesTheme(item.tags ?? [], session.theme ?? '') && (
                             <span className={cn("text-[10px] font-bold uppercase px-1.5 py-0.5 border flex items-center gap-1 flex-shrink-0", themeAccent.badge, "text-brand-lime border-brand-blue/40")}><Tag size={8} /> TEMA</span>
@@ -886,15 +895,15 @@ export default function ClientView() {
                             <Zap size={14} fill="currentColor" /><span className="text-[9px] font-bold uppercase leading-none">+3</span>
                           </button>
                         )}
-                        <p className="text-[9px] font-bold uppercase opacity-60 mt-1">@{item.client_name}</p>
+                        <p className="text-[9px] font-bold uppercase opacity-85 mt-1">@{item.client_name}</p>
                       </div>
                     </div>
                     {/* Reactions */}
                     <div className="flex items-center gap-2 mt-2 pt-2 border-t border-brand-blue/10">
-                      <button onClick={() => handleReact(item.id, 'fire')} className={cn("flex items-center gap-1 text-[11px] font-bold uppercase px-2 py-0.5 border-2 transition-all", myReact === 'fire' ? "border-orange-400 bg-orange-900/30 text-orange-400" : "border-transparent text-brand-blue/40 hover:border-orange-300")}>
+                      <button onClick={() => handleReact(item.id, 'fire')} className={cn("flex items-center gap-1 text-[11px] font-bold uppercase px-2 py-0.5 border-2 transition-all", myReact === 'fire' ? "border-orange-400 bg-orange-900/30 text-orange-400" : "border-transparent text-brand-blue/70 hover:border-orange-300")}>
                         🔥 {reactions.fire > 0 ? reactions.fire : ""}
                       </button>
-                      <button onClick={() => handleReact(item.id, 'heart')} className={cn("flex items-center gap-1 text-[11px] font-bold uppercase px-2 py-0.5 border-2 transition-all", myReact === 'heart' ? "border-red-400 bg-red-900/30 text-red-400" : "border-transparent text-brand-blue/40 hover:border-red-300")}>
+                      <button onClick={() => handleReact(item.id, 'heart')} className={cn("flex items-center gap-1 text-[11px] font-bold uppercase px-2 py-0.5 border-2 transition-all", myReact === 'heart' ? "border-red-400 bg-red-900/30 text-red-400" : "border-transparent text-brand-blue/70 hover:border-red-300")}>
                         ❤️ {reactions.heart > 0 ? reactions.heart : ""}
                       </button>
                       {superVoteAvail && (<span className="ml-auto text-[9px] font-bold uppercase text-yellow-400 opacity-70">⚡ super voto disponível</span>)}
@@ -914,7 +923,7 @@ export default function ClientView() {
                   {track.thumb && (<img src={track.thumb} alt={track.title} className="h-12 w-12 object-cover border-2 border-brand-blue flex-shrink-0" />)}
                   <div className="flex-grow min-w-0">
                     <p className="font-display text-lg leading-none uppercase truncate">{track.title}</p>
-                    <p className="font-body text-xs font-bold uppercase opacity-60 italic truncate">{track.artist}</p>
+                    <p className="font-body text-xs font-bold uppercase opacity-85 italic truncate">{track.artist}</p>
                   </div>
                   <div className="flex gap-2 flex-shrink-0">
                     <button onClick={() => handleRequest(track)} disabled={session.queue_locked} className="btn-bento text-sm px-3 py-1 disabled:opacity-40">PEDIR</button>
@@ -934,8 +943,8 @@ export default function ClientView() {
                   {track.thumb && (<img src={track.thumb} alt={track.title} className="h-12 w-12 object-cover border-2 border-brand-blue flex-shrink-0" />)}
                   <div className="flex-grow min-w-0">
                     <p className="font-display text-lg leading-none uppercase truncate">{track.title}</p>
-                    <p className="font-body text-xs font-bold uppercase opacity-60 italic truncate">{track.artist}</p>
-                    {track.requestedAt && (<p className="text-[9px] font-bold uppercase opacity-40 mt-0.5">{new Date(track.requestedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</p>)}
+                    <p className="font-body text-xs font-bold uppercase opacity-85 italic truncate">{track.artist}</p>
+                    {track.requestedAt && (<p className="text-[9px] font-bold uppercase opacity-70 mt-0.5">{new Date(track.requestedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</p>)}
                   </div>
                   <button onClick={() => handleRequest(track)} disabled={session.queue_locked} className="btn-bento text-sm px-3 py-1 flex-shrink-0 disabled:opacity-40">DE NOVO</button>
                 </div>
@@ -944,7 +953,7 @@ export default function ClientView() {
           )}
 
           {/* Search bar */}
-          <div className="mt-4">
+          <div className="mt-4 hidden md:block">
             {session.queue_locked ? (
               <div className="border-4 border-red-600 bg-red-900/30 p-4 text-center">
                 <p className="font-display text-xl sm:text-2xl uppercase text-red-400">🔒 Fila Fechada</p>
@@ -994,7 +1003,7 @@ export default function ClientView() {
 
         {/* Wait Time + Photo Button */}
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4, delay: 0.4 }}
-          className="md:col-span-4 md:row-span-2 flex gap-3"
+          className="md:col-span-4 md:row-span-2 flex max-[399px]:flex-col gap-3"
         >
           {/* Tempo Estimado */}
           <div className="flex-1 border-4 border-brand-blue p-4 flex flex-col justify-center items-center text-center bg-brand-cream shadow-[8px_8px_0px_var(--color-brand-blue)] relative overflow-hidden">
@@ -1008,7 +1017,7 @@ export default function ClientView() {
               </AnimatePresence>
             )}
             <div className="absolute inset-0 bg-brand-cream/60 pointer-events-none" />
-            <p className="relative z-10 text-xs font-bold uppercase mb-2 opacity-60 tracking-widest">TEMPO ESTIMADO</p>
+            <p className="relative z-10 text-xs font-bold uppercase mb-2 opacity-85 tracking-widest">TEMPO ESTIMADO</p>
             <div className="relative z-10 flex items-baseline gap-1">
               <p className="text-4xl sm:text-6xl lg:text-7xl font-display tracking-tighter text-brand-blue leading-none">{waitMinutes}</p>
               <span className="text-lg sm:text-2xl font-display text-brand-blue">MIN</span>
@@ -1021,7 +1030,7 @@ export default function ClientView() {
           {/* Photo upload button */}
           {phone && (
             <button onClick={() => setShowPhotoModal(true)}
-              className="flex flex-col items-center justify-center gap-2 border-4 border-brand-blue bg-white shadow-[8px_8px_0px_var(--color-brand-blue)] px-4 hover:bg-brand-cream transition-colors group min-w-[80px]"
+              className="flex flex-col items-center justify-center gap-2 border-4 border-brand-blue bg-white shadow-[8px_8px_0px_var(--color-brand-blue)] px-4 py-4 hover:bg-brand-cream transition-colors group min-w-[80px] max-[399px]:min-h-[120px]"
             >
               <Camera size={28} className="text-brand-blue group-hover:scale-110 transition-transform" strokeWidth={2.5} />
               <span className="text-[10px] font-black uppercase tracking-widest text-brand-blue text-center leading-tight">FOTO<br />PRO<br />TELÃO</span>
@@ -1033,7 +1042,7 @@ export default function ClientView() {
 
       {/* Footer */}
       <motion.footer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.5 }}
-        className="mt-12 flex flex-col md:flex-row justify-between items-center gap-6 border-t-8 border-brand-blue pt-8"
+        className="mt-10 md:mt-12 flex flex-col md:flex-row justify-between items-center gap-6 border-t-8 border-brand-blue pt-6 md:pt-8"
       >
         <div className="flex flex-wrap justify-center md:justify-start gap-4">
           <span className="text-xs font-bold border-4 border-brand-blue bg-white px-3 py-2 uppercase shadow-[4px_4px_0px_var(--color-brand-blue)]">tocai.com/{slug}</span>
@@ -1045,11 +1054,45 @@ export default function ClientView() {
             </button>
           )}
         </div>
-        <div className="flex items-center gap-3">
-          <div className="w-5 h-5 rounded-full bg-red-600 animate-pulse shadow-[0_0_15px_rgba(220,38,38,0.5)]" />
-          <span className="text-lg font-display uppercase tracking-widest text-brand-blue italic">Real-time Sync Active</span>
+        <div className="flex items-center gap-4">
+          <div className="hidden sm:block border-4 border-brand-blue bg-white p-1 shadow-[4px_4px_0px_var(--color-brand-blue)]">
+            <QRCodeSVG value={clientUrl} size={62} bgColor="#ffffff" fgColor="#0A0A0A" level="H" />
+          </div>
+          <div>
+            <p className="text-[10px] font-body font-black uppercase tracking-widest text-brand-blue/80">Compartilhe com um amigo</p>
+            <div className="flex items-center gap-3 mt-1">
+              <div className="w-5 h-5 rounded-full bg-red-600 animate-pulse shadow-[0_0_15px_rgba(220,38,38,0.5)]" />
+              <span className="text-lg font-display uppercase tracking-widest text-brand-blue italic">Real-time Sync Active</span>
+            </div>
+          </div>
         </div>
       </motion.footer>
+
+      {/* Mobile fixed search */}
+      <div className="fixed bottom-0 left-0 right-0 z-[140] p-3 md:hidden bg-brand-cream/95 backdrop-blur-md border-t-4 border-brand-blue">
+        {session.queue_locked ? (
+          <div className="border-4 border-red-600 bg-red-900/30 p-2 text-center">
+            <p className="font-display text-lg uppercase text-red-400">🔒 Fila Fechada</p>
+          </div>
+        ) : (
+          <div className="relative flex items-center">
+            <input
+              type="text"
+              placeholder="QUER OUVIR O QUÊ?"
+              className="w-full border-4 border-brand-blue bg-white px-4 py-3 font-display text-lg uppercase tracking-tighter placeholder:text-brand-blue/60 focus:outline-none focus:ring-4 focus:ring-brand-lime/30"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && handleSearch()}
+            />
+            <button
+              onClick={handleSearch}
+              className="absolute right-2 bg-brand-blue p-2 text-brand-lime shadow-[2px_2px_0px_var(--color-brand-lime)] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all"
+            >
+              {isSearching ? <div className="h-5 w-5 animate-spin rounded-full border-4 border-brand-lime border-t-transparent" /> : <Search size={20} strokeWidth={3} />}
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Photo Gallery Modal */}
       <AnimatePresence>

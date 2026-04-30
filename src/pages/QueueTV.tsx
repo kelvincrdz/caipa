@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, type MutableRefObject } from "react";
 import { useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { Music, Play, Disc, Pause, Disc3 } from "lucide-react";
@@ -8,6 +8,81 @@ import { usePlayer } from "../hooks/usePlayer";
 import { useSession } from "../hooks/useSession";
 import { supabase } from "../lib/supabase";
 import { cn } from "../lib/utils";
+
+type StingerVariant = "classic" | "gol_de_placa" | "ritmo_noite" | "palco_rock";
+
+function resolveStingerVariant(theme?: string): StingerVariant {
+  const t = (theme ?? "").toLowerCase();
+  if (/(futebol|arena|torcida|gol|esporte)/.test(t)) return "gol_de_placa";
+  if (/(samba|pagode|forr|ax[ée]|funk|mpb)/.test(t)) return "ritmo_noite";
+  if (/(rock|metal|indie|punk)/.test(t)) return "palco_rock";
+  return "classic";
+}
+
+function playStingerSfx(ctxRef: MutableRefObject<AudioContext | null>, variant: StingerVariant) {
+  try {
+    const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+    if (!Ctx) return;
+    if (!ctxRef.current) ctxRef.current = new Ctx();
+    const ctx = ctxRef.current;
+    if (ctx.state === "suspended") void ctx.resume();
+
+    const now = ctx.currentTime;
+    const gain = ctx.createGain();
+    gain.connect(ctx.destination);
+
+    const osc = ctx.createOscillator();
+    osc.connect(gain);
+
+    if (variant === "gol_de_placa") {
+      osc.type = "square";
+      osc.frequency.setValueAtTime(180, now);
+      osc.frequency.exponentialRampToValueAtTime(620, now + 0.2);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.07, now + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+
+      const horn = ctx.createOscillator();
+      const hornGain = ctx.createGain();
+      horn.type = "sawtooth";
+      horn.frequency.setValueAtTime(340, now + 0.06);
+      horn.frequency.exponentialRampToValueAtTime(520, now + 0.28);
+      hornGain.gain.setValueAtTime(0.0001, now + 0.06);
+      hornGain.gain.exponentialRampToValueAtTime(0.04, now + 0.12);
+      hornGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.42);
+      horn.connect(hornGain);
+      hornGain.connect(ctx.destination);
+      horn.start(now + 0.06);
+      horn.stop(now + 0.43);
+    } else if (variant === "ritmo_noite") {
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(240, now);
+      osc.frequency.exponentialRampToValueAtTime(460, now + 0.18);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.05, now + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.38);
+    } else if (variant === "palco_rock") {
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(150, now);
+      osc.frequency.exponentialRampToValueAtTime(420, now + 0.22);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.06, now + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.42);
+    } else {
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.exponentialRampToValueAtTime(520, now + 0.2);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.045, now + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.36);
+    }
+
+    osc.start(now);
+    osc.stop(now + 0.48);
+  } catch {
+    // Avoid breaking visual transition if audio is blocked by the environment.
+  }
+}
 
 function getContrastColor(hex: string): string {
   const r = parseInt(hex.slice(1, 3), 16);
@@ -126,6 +201,13 @@ export default function QueueTV() {
   // Approved photos for slideshow/background
   const [approvedPhotos, setApprovedPhotos] = useState<any[]>([]);
   const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
+  const [recentTracks, setRecentTracks] = useState<any[]>([]);
+  const [coverSpotlightIdx, setCoverSpotlightIdx] = useState(0);
+  const [stingerTrack, setStingerTrack] = useState<any | null>(null);
+  const [showStinger, setShowStinger] = useState(false);
+  const prevNowPlayingIdRef = useRef<string | null>(null);
+  const stingerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stingerAudioCtxRef = useRef<AudioContext | null>(null);
 
   useEffect(() => {
     if (!slug) return;
@@ -203,6 +285,33 @@ export default function QueueTV() {
 
   const nowPlaying = queue[0] ?? null;
   const upNext = queue.slice(1, 5);
+  const coverRail = [...recentTracks.slice(0, 3), ...queue.slice(0, 6)].filter(Boolean);
+  const stingerVariant = resolveStingerVariant(config.theme);
+
+  useEffect(() => {
+    if (!nowPlaying?.id) return;
+    const previousId = prevNowPlayingIdRef.current;
+    if (previousId && previousId !== nowPlaying.id) {
+      const previousTrack = queue.find(item => item.id === previousId);
+      if (previousTrack) {
+        setRecentTracks(prev => [previousTrack, ...prev.filter(item => item.id !== previousTrack.id)].slice(0, 8));
+      }
+      setStingerTrack(nowPlaying);
+      setShowStinger(true);
+      playStingerSfx(stingerAudioCtxRef, stingerVariant);
+      if (stingerTimerRef.current) clearTimeout(stingerTimerRef.current);
+      stingerTimerRef.current = setTimeout(() => setShowStinger(false), 1300);
+    }
+    prevNowPlayingIdRef.current = nowPlaying.id;
+  }, [nowPlaying, queue, stingerVariant]);
+
+  useEffect(() => {
+    if (coverRail.length < 2) return;
+    const t = setInterval(() => {
+      setCoverSpotlightIdx(i => (i + 1) % coverRail.length);
+    }, 2600);
+    return () => clearInterval(t);
+  }, [coverRail.length]);
 
   const { isPlaying, progress, autoplayBlocked, togglePlay, audioRef } = usePlayer(
     nowPlaying?.preview_url,
@@ -284,6 +393,92 @@ export default function QueueTV() {
         </div>
       )}
 
+      <AnimatePresence>
+        {showStinger && stingerTrack && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.24 }}
+            className="pointer-events-none fixed inset-0 z-[120]"
+          >
+            {stingerVariant === "gol_de_placa" ? (
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: [0, 1, 0] }}
+                  transition={{ duration: 0.86, times: [0, 0.18, 1] }}
+                  className="absolute inset-0 bg-white"
+                />
+                <motion.div
+                  initial={{ x: "-120%", skewX: -12 }}
+                  animate={{ x: ["-120%", "0%", "0%", "110%"], skewX: [-12, 0, 0, 12] }}
+                  transition={{ duration: 1.28, times: [0, 0.22, 0.72, 1], ease: "easeInOut" }}
+                  className="absolute top-[32%] left-0 right-0 border-y-8 border-brand-lime bg-brand-blue px-8 py-7"
+                >
+                  <p className="font-display text-brand-lime text-3xl lg:text-6xl uppercase tracking-tight">GOL DE PLACA</p>
+                  <p className="font-display text-white text-xl lg:text-4xl uppercase truncate">{stingerTrack.title}</p>
+                </motion.div>
+              </>
+            ) : stingerVariant === "ritmo_noite" ? (
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: [0, 0.7, 0] }}
+                  transition={{ duration: 0.9, times: [0, 0.24, 1] }}
+                  className="absolute inset-0 bg-gradient-to-r from-brand-blue via-brand-lime/70 to-brand-blue"
+                />
+                <motion.div
+                  initial={{ y: 120, opacity: 0 }}
+                  animate={{ y: [120, 0, 0, -120], opacity: [0, 1, 1, 0] }}
+                  transition={{ duration: 1.22, times: [0, 0.2, 0.72, 1], ease: "easeInOut" }}
+                  className="absolute top-[36%] left-[8%] right-[8%] border-8 border-brand-lime bg-brand-blue/95 px-8 py-6"
+                >
+                  <p className="font-display text-brand-lime text-2xl lg:text-5xl uppercase tracking-tight">RITMO DA NOITE</p>
+                  <p className="font-display text-white text-xl lg:text-4xl uppercase truncate">{stingerTrack.title}</p>
+                </motion.div>
+              </>
+            ) : stingerVariant === "palco_rock" ? (
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: [0, 0.9, 0] }}
+                  transition={{ duration: 0.82, times: [0, 0.16, 1] }}
+                  className="absolute inset-0 bg-black"
+                />
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: [0.8, 1.03, 1], opacity: [0, 1, 0] }}
+                  transition={{ duration: 1.15, times: [0, 0.26, 1], ease: "easeOut" }}
+                  className="absolute top-[34%] left-[10%] right-[10%] border-8 border-brand-lime bg-brand-blue px-8 py-6"
+                >
+                  <p className="font-display text-brand-lime text-2xl lg:text-5xl uppercase tracking-tight">PALCO ABERTO</p>
+                  <p className="font-display text-white text-xl lg:text-4xl uppercase truncate">{stingerTrack.title}</p>
+                </motion.div>
+              </>
+            ) : (
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: [0, 0.95, 0] }}
+                  transition={{ duration: 0.8, times: [0, 0.2, 1] }}
+                  className="absolute inset-0 bg-white"
+                />
+                <motion.div
+                  initial={{ x: "-100%" }}
+                  animate={{ x: ["-100%", "0%", "0%", "100%"] }}
+                  transition={{ duration: 1.2, times: [0, 0.22, 0.72, 1], ease: "easeInOut" }}
+                  className="absolute top-[35%] left-0 right-0 border-y-8 border-brand-lime bg-brand-blue px-8 py-6"
+                >
+                  <p className="font-display text-brand-lime text-3xl lg:text-6xl uppercase tracking-tight">TOCANDO AGORA</p>
+                  <p className="font-display text-white text-xl lg:text-4xl uppercase truncate">{stingerTrack.title}</p>
+                </motion.div>
+              </>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Top Banner */}
       <header className="flex flex-shrink-0 items-center justify-between border-b-[8px] border-brand-blue bg-white px-6 py-3 lg:px-10 lg:py-4 text-brand-blue">
         <div>
@@ -312,7 +507,7 @@ export default function QueueTV() {
               TOCA<span className={cn("text-brand-lime", !partyMode && "text-stroke-blue")}>Í</span>
             </h1>
           )}
-          <p className="font-body text-xs font-black italic uppercase opacity-60">
+          <p className="font-body text-xs font-black italic uppercase opacity-85">
             Sintonizado em: tocai.com/{slug}
           </p>
         </div>
@@ -524,6 +719,64 @@ export default function QueueTV() {
             </h3>
           </div>
 
+          <div className="px-8 mb-3 flex-shrink-0">
+            <div className="border-4 border-brand-blue bg-brand-blue/10 p-3">
+              <p className={cn("font-body text-[10px] font-black uppercase mb-2 tracking-widest", partyMode ? "text-brand-lime/90" : "text-brand-blue/80")}>PAINEL DINAMICO DA FILA</p>
+              <div className="relative h-24 overflow-hidden border-2 border-brand-blue bg-black/40">
+                <AnimatePresence mode="wait">
+                  {coverRail[coverSpotlightIdx % Math.max(coverRail.length, 1)]?.thumbnail_url ? (
+                    <motion.img
+                      key={coverRail[coverSpotlightIdx % coverRail.length]?.id + "-rail"}
+                      src={coverRail[coverSpotlightIdx % coverRail.length]?.thumbnail_url}
+                      alt={coverRail[coverSpotlightIdx % coverRail.length]?.title}
+                      initial={{ opacity: 0, scale: 1.06 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.45 }}
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  ) : (
+                    <motion.div
+                      key="rail-empty"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 flex items-center justify-center"
+                    >
+                      <Music size={28} className={cn(partyMode ? "text-brand-lime/80" : "text-brand-blue/70")} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                <div className="absolute inset-x-0 bottom-0 bg-black/60 px-3 py-1">
+                  <p className="font-display text-sm uppercase text-brand-lime truncate">
+                    {coverRail[coverSpotlightIdx % Math.max(coverRail.length, 1)]?.title ?? "Aguardando proximas faixas"}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-2 flex gap-1 overflow-hidden">
+                {coverRail.slice(0, 6).map((item, idx) => (
+                  <div
+                    key={item.id + "-thumb-" + idx}
+                    className={cn(
+                      "h-10 w-10 flex-shrink-0 border-2 transition-all",
+                      idx === (coverSpotlightIdx % Math.max(coverRail.length, 1))
+                        ? "border-brand-lime scale-105"
+                        : "border-brand-blue/70 opacity-75",
+                    )}
+                  >
+                    {item.thumbnail_url ? (
+                      <img src={item.thumbnail_url} alt={item.title} className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center bg-black">
+                        <Music size={14} className="text-brand-lime/70" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
           <div className="flex-1 min-h-0 space-y-3 overflow-hidden px-8">
             {upNext.length === 0 ? (
               <motion.div
@@ -548,6 +801,7 @@ export default function QueueTV() {
                 <TVQueueItem
                   key={item.id}
                   rank={idx + 2}
+                  thumbnailUrl={item.thumbnail_url}
                   title={item.title}
                   artist={item.artist}
                   client={item.client_name}
@@ -610,7 +864,7 @@ export default function QueueTV() {
                 <p className="font-body text-sm font-black uppercase leading-none italic">
                   TOCAÍ.COM/{slug}
                 </p>
-                <p className="font-body text-xs font-bold uppercase opacity-70">
+                <p className="font-body text-xs font-bold uppercase opacity-90">
                   Aumente o volume, quem manda no bar hoje é você.
                 </p>
               </div>
@@ -633,9 +887,9 @@ export default function QueueTV() {
 }
 
 function TVQueueItem({
-  rank, title, artist, client, dedicationTo, delay = 0, party,
+  rank, thumbnailUrl, title, artist, client, dedicationTo, delay = 0, party,
 }: {
-  key?: string; rank: number; title: string; artist: string; client: string; dedicationTo?: string; delay?: number; party: boolean;
+  key?: string; rank: number; thumbnailUrl?: string; title: string; artist: string; client: string; dedicationTo?: string; delay?: number; party: boolean;
 }) {
   return (
     <motion.div
@@ -650,6 +904,15 @@ function TVQueueItem({
           : "bg-white shadow-[4px_4px_0px_var(--color-brand-lime)]",
       )}
     >
+      <div className="h-14 w-14 flex-shrink-0 border-2 border-brand-blue overflow-hidden">
+        {thumbnailUrl ? (
+          <img src={thumbnailUrl} alt={title} className="h-full w-full object-cover" />
+        ) : (
+          <div className="h-full w-full flex items-center justify-center bg-black">
+            <Music size={18} className="text-brand-lime/80" />
+          </div>
+        )}
+      </div>
       <span className={cn("font-display text-2xl leading-none tracking-tighter flex-shrink-0", party ? "text-brand-lime neon-text" : "text-brand-blue")}>
         {rank}º
       </span>
@@ -657,7 +920,7 @@ function TVQueueItem({
         <h4 className={cn("truncate text-lg lg:text-xl font-display uppercase leading-none tracking-tighter", party ? "text-brand-lime" : "text-brand-blue")}>
           {title}
         </h4>
-        <p className={cn("truncate font-body text-sm font-black uppercase italic tracking-tight", party ? "text-brand-lime/70" : "text-brand-blue/60")}>
+        <p className={cn("truncate font-body text-sm font-black uppercase italic tracking-tight", party ? "text-brand-lime/90" : "text-brand-blue/85")}>
           {artist}
         </p>
         {dedicationTo && (
@@ -665,7 +928,7 @@ function TVQueueItem({
         )}
       </div>
       <div className={cn("text-right border-l-4 pl-5 flex-shrink-0", party ? "border-brand-lime" : "border-brand-lime")}>
-        <span className={cn("font-body text-[10px] font-black uppercase leading-none block mb-1 tracking-widest", party ? "text-brand-lime/50" : "text-brand-blue/50")}>
+        <span className={cn("font-body text-[10px] font-black uppercase leading-none block mb-1 tracking-widest", party ? "text-brand-lime/75" : "text-brand-blue/75")}>
           PARA @{client}
         </span>
         <p className={cn("font-display text-lg leading-none", party ? "text-brand-lime neon-text" : "text-brand-blue")}>
