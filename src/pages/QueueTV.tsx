@@ -710,78 +710,95 @@ export default function QueueTV() {
           "flex flex-1 flex-col border-l-8 border-brand-blue py-4 lg:py-6 min-h-0 overflow-hidden",
           partyMode ? "bg-black" : "bg-white",
         )}>
-          <div className="mb-4 px-8">
-            <h3 className={cn(
-              "inline-block border-b-4 border-brand-lime font-display text-xl lg:text-2xl uppercase italic tracking-tighter",
-              partyMode ? "text-brand-lime neon-text" : "text-brand-blue",
-            )}>
-              PRÓXIMOS DA FILA
-            </h3>
-          </div>
-
-          <div className="px-8 mb-3 flex-shrink-0">
-            <div className="border-4 border-brand-blue bg-brand-blue/10 p-3">
-              <p className={cn("font-body text-[10px] font-black uppercase mb-2 tracking-widest", partyMode ? "text-brand-lime/90" : "text-brand-blue/80")}>PAINEL DINAMICO DA FILA</p>
-              <div className="relative h-24 overflow-hidden border-2 border-brand-blue bg-black/40">
-                <AnimatePresence mode="wait">
-                  {coverRail[coverSpotlightIdx % Math.max(coverRail.length, 1)]?.thumbnail_url ? (
-                    <motion.img
-                      key={coverRail[coverSpotlightIdx % coverRail.length]?.id + "-rail"}
-                      src={coverRail[coverSpotlightIdx % coverRail.length]?.thumbnail_url}
-                      alt={coverRail[coverSpotlightIdx % coverRail.length]?.title}
-                      initial={{ opacity: 0, scale: 1.06 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.45 }}
-                      className="absolute inset-0 h-full w-full object-cover"
-                    />
-                  ) : (
-                    <motion.div
-                      key="rail-empty"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="absolute inset-0 flex items-center justify-center"
-                    >
-                      <Music size={28} className={cn(partyMode ? "text-brand-lime/80" : "text-brand-blue/70")} />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-                <div className="absolute inset-x-0 bottom-0 bg-black/60 px-3 py-1">
-                  <p className="font-display text-sm uppercase text-brand-lime truncate">
-                    {coverRail[coverSpotlightIdx % Math.max(coverRail.length, 1)]?.title ?? "Aguardando proximas faixas"}
-                  </p>
-                </div>
-              </div>
-              <div className="mt-2 flex gap-1 overflow-hidden">
-                {coverRail.slice(0, 6).map((item, idx) => (
-                  <div
-                    key={item.id + "-thumb-" + idx}
-                    className={cn(
-                      "h-10 w-10 flex-shrink-0 border-2 transition-all",
-                      idx === (coverSpotlightIdx % Math.max(coverRail.length, 1))
-                        ? "border-brand-lime scale-105"
-                        : "border-brand-blue/70 opacity-75",
-                    )}
-                  >
-                    {item.thumbnail_url ? (
-                      <img src={item.thumbnail_url} alt={item.title} className="h-full w-full object-cover" />
-                    ) : (
-                      <div className="h-full w-full flex items-center justify-center bg-black">
-                        <Music size={14} className="text-brand-lime/70" />
-                      </div>
-                    )}
-                  </div>
+          <div className="mb-4 px-8 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex gap-[3px] items-end h-6">
+                {[0.9, 0.5, 0.75, 0.35, 0.6].map((base, i) => (
+                  <motion.div
+                    key={i}
+                    animate={{ scaleY: [base, 1, base * 0.4, 1, base] }}
+                    transition={{ duration: 1.1 + i * 0.18, repeat: Infinity, ease: "easeInOut", delay: i * 0.12 }}
+                    className={cn("w-1.5 origin-bottom rounded-sm", partyMode ? "bg-brand-lime" : "bg-brand-lime")}
+                    style={{ height: "100%" }}
+                  />
                 ))}
               </div>
+              <h3 className={cn(
+                "font-display text-xl lg:text-2xl uppercase italic tracking-tighter border-b-4 border-brand-lime",
+                partyMode ? "text-brand-lime neon-text" : "text-brand-blue",
+              )}>
+                PRÓXIMOS DA FILA
+              </h3>
             </div>
+            {upNext.length > 0 && (
+              <motion.span
+                key={upNext.length}
+                initial={{ scale: 1.4, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                className={cn(
+                  "font-display text-xl leading-none px-2.5 py-0.5 border-4",
+                  partyMode ? "border-brand-lime text-brand-lime neon-text" : "bg-brand-lime text-on-accent border-brand-blue shadow-[3px_3px_0px_var(--color-brand-blue)]",
+                )}
+              >
+                {upNext.length}
+              </motion.span>
+            )}
           </div>
 
-          <div className="flex-1 min-h-0 space-y-3 overflow-hidden px-8">
+          {coverRail.length > 0 && (
+            <div className="px-8 mb-4 flex-shrink-0">
+              <div className="flex gap-2 overflow-hidden">
+                {coverRail.slice(0, 6).map((item, idx) => {
+                  const isActive = idx === (coverSpotlightIdx % Math.max(coverRail.length, 1));
+                  return (
+                    <motion.div
+                      key={item.id + "-thumb-" + idx}
+                      animate={{
+                        scale: isActive ? 1.14 : 1,
+                        opacity: isActive ? 1 : 0.45,
+                        y: isActive ? -3 : 0,
+                      }}
+                      transition={{ duration: 0.35, ease: "easeOut" }}
+                      className={cn(
+                        "h-14 w-14 flex-shrink-0 border-2 overflow-hidden relative",
+                        isActive
+                          ? partyMode
+                            ? "border-brand-lime shadow-[0_0_14px_var(--color-brand-lime)]"
+                            : "border-brand-lime shadow-[3px_3px_0px_var(--color-brand-blue)]"
+                          : "border-transparent",
+                      )}
+                    >
+                      {item.thumbnail_url ? (
+                        <img src={item.thumbnail_url} alt={item.title} className="h-full w-full object-cover" />
+                      ) : (
+                        <div className={cn("h-full w-full flex items-center justify-center", partyMode ? "bg-black" : "bg-brand-blue/10")}>
+                          <Music size={16} className={cn(partyMode ? "text-brand-lime/70" : "text-brand-blue/50")} />
+                        </div>
+                      )}
+                      {isActive && (
+                        <motion.div
+                          layoutId="cover-active-dot"
+                          className="absolute bottom-0.5 left-0 right-0 flex justify-center"
+                        >
+                          <div className="w-1.5 h-1.5 rounded-full bg-brand-lime" />
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          <div className="flex-1 min-h-0 space-y-2 overflow-hidden px-8">
+            <AnimatePresence mode="popLayout">
             {upNext.length === 0 ? (
               <motion.div
+                key="empty"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.5 }}
                 className={cn(
                   "h-full flex flex-col items-center justify-center text-center opacity-20 space-y-4",
@@ -806,12 +823,11 @@ export default function QueueTV() {
                   artist={item.artist}
                   client={item.client_name}
                   dedicationTo={item.dedication_to}
-                  delay={idx * 0.1}
+                  delay={idx * 0.08}
                   party={partyMode}
                 />
               ))
-            )}
-          </div>
+            )}            </AnimatePresence>          </div>
 
           {/* Photo slideshow panel */}
           {config.photo_display_mode === "slideshow" && approvedPhotos.length > 0 && (
@@ -893,46 +909,80 @@ function TVQueueItem({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, x: 50 }}
+      layout
+      initial={{ opacity: 0, x: 60 }}
       animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -40, transition: { duration: 0.25 } }}
       transition={{ delay, duration: 0.4, ease: "easeOut" }}
-      whileHover={{ x: -4, transition: { duration: 0.15 } }}
+      whileHover={{ x: -3, transition: { duration: 0.12 } }}
       className={cn(
-        "flex items-center gap-4 border-4 border-brand-blue p-3",
+        "flex items-center gap-3 relative overflow-hidden border-l-[6px] border-brand-lime",
         party
-          ? "bg-black text-brand-lime neon-border"
-          : "bg-white shadow-[4px_4px_0px_var(--color-brand-lime)]",
+          ? "bg-black border-r border-r-brand-lime/20 py-2.5 pr-3"
+          : "bg-white border-4 border-l-[6px] border-brand-blue py-2.5 pr-3 shadow-[4px_4px_0px_var(--color-brand-lime)]",
       )}
     >
-      <div className="h-14 w-14 flex-shrink-0 border-2 border-brand-blue overflow-hidden">
+      {/* Rank badge */}
+      <div className={cn(
+        "flex-shrink-0 w-9 flex flex-col items-center justify-center self-stretch",
+        party ? "bg-brand-lime/10" : "bg-brand-lime/15",
+      )}>
+        <span className={cn(
+          "font-display text-2xl leading-none tracking-tighter",
+          party ? "text-brand-lime neon-text" : "text-brand-blue",
+        )}>
+          {rank}
+        </span>
+        <span className={cn("font-display text-[10px] leading-none", party ? "text-brand-lime/60" : "text-brand-blue/50")}>º</span>
+      </div>
+
+      {/* Thumbnail */}
+      <div className={cn(
+        "h-12 w-12 flex-shrink-0 overflow-hidden border-2",
+        party ? "border-brand-lime/40" : "border-brand-blue/40",
+      )}>
         {thumbnailUrl ? (
           <img src={thumbnailUrl} alt={title} className="h-full w-full object-cover" />
         ) : (
-          <div className="h-full w-full flex items-center justify-center bg-black">
-            <Music size={18} className="text-brand-lime/80" />
+          <div className={cn("h-full w-full flex items-center justify-center", party ? "bg-black" : "bg-brand-blue/5")}>
+            <Music size={18} className={cn(party ? "text-brand-lime/70" : "text-brand-blue/40")} />
           </div>
         )}
       </div>
-      <span className={cn("font-display text-2xl leading-none tracking-tighter flex-shrink-0", party ? "text-brand-lime neon-text" : "text-brand-blue")}>
-        {rank}º
-      </span>
+
+      {/* Track info */}
       <div className="flex-1 overflow-hidden">
-        <h4 className={cn("truncate text-lg lg:text-xl font-display uppercase leading-none tracking-tighter", party ? "text-brand-lime" : "text-brand-blue")}>
+        <h4 className={cn(
+          "truncate text-base lg:text-lg font-display uppercase leading-none tracking-tighter",
+          party ? "text-brand-lime" : "text-brand-blue",
+        )}>
           {title}
         </h4>
-        <p className={cn("truncate font-body text-sm font-black uppercase italic tracking-tight", party ? "text-brand-lime/90" : "text-brand-blue/85")}>
+        <p className={cn(
+          "truncate font-body text-xs font-black uppercase italic tracking-tight mt-0.5",
+          party ? "text-brand-lime/75" : "text-brand-blue/70",
+        )}>
           {artist}
         </p>
         {dedicationTo && (
-          <p className="font-body text-sm font-bold uppercase text-pink-500 italic truncate">❤️ para {dedicationTo}</p>
+          <p className="font-body text-xs font-bold uppercase text-pink-400 italic truncate mt-0.5">❤️ {dedicationTo}</p>
         )}
       </div>
-      <div className={cn("text-right border-l-4 pl-5 flex-shrink-0", party ? "border-brand-lime" : "border-brand-lime")}>
-        <span className={cn("font-body text-[10px] font-black uppercase leading-none block mb-1 tracking-widest", party ? "text-brand-lime/75" : "text-brand-blue/75")}>
-          PARA @{client}
-        </span>
-        <p className={cn("font-display text-lg leading-none", party ? "text-brand-lime neon-text" : "text-brand-blue")}>
-          PRÓXIMA
+
+      {/* Requester */}
+      <div className={cn(
+        "flex-shrink-0 text-right border-l-2 pl-2",
+        party ? "border-brand-lime/30" : "border-brand-blue/20",
+      )}>
+        <span className={cn(
+          "font-body text-[9px] font-black uppercase leading-none block tracking-widest",
+          party ? "text-brand-lime/55" : "text-brand-blue/55",
+        )}>@</span>
+        <p className={cn(
+          "font-display text-sm leading-tight max-w-[80px] truncate",
+          party ? "text-brand-lime neon-text" : "text-brand-blue",
+        )}>
+          {client}
         </p>
       </div>
     </motion.div>
