@@ -4,6 +4,7 @@
  */
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import AdminView from "./pages/AdminView";
@@ -13,10 +14,14 @@ import SuperAdmin from "./pages/SuperAdmin";
 import SpotifyCallback from "./pages/SpotifyCallback";
 import StatsView from "./pages/StatsView";
 import BarProfile from "./pages/BarProfile";
+import { applyTheme } from "./lib/themes";
 
 export default function App() {
+  // Apply boteco as global default; bar-specific pages override this themselves
+  useEffect(() => { applyTheme("boteco"); }, []);
+
   return (
-    <div className="relative min-h-screen selection:bg-brand-blue selection:text-brand-cream border-[8px] border-brand-blue bg-brand-cream" style={{ borderRadius: "0 0 0 0" }}>
+    <div className="app-root selection:bg-brand-blue selection:text-brand-cream">
       {/* Texture Overlay */}
       <div className="bg-grainy fixed inset-0 z-[100] pointer-events-none overflow-hidden" />
       

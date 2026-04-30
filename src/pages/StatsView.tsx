@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { motion } from "motion/react";
 import { BarChart2, Music, Users, ThumbsUp, Disc, ArrowLeft } from "lucide-react";
 import { supabase } from "../lib/supabase";
+import { applyTheme } from "../lib/themes";
 
 interface Stats {
   totalInQueue: number;
@@ -29,8 +30,11 @@ export default function StatsView() {
   useEffect(() => {
     if (!slug) return;
 
-    supabase.from("bars").select("name").eq("slug", slug).maybeSingle()
-      .then(({ data }) => { if (data?.name) setBarName(data.name); });
+    supabase.from("bars").select("name,visual_theme").eq("slug", slug).maybeSingle()
+      .then(({ data }) => {
+        if (data?.name) setBarName(data.name);
+        applyTheme(data?.visual_theme ?? 'boteco');
+      });
 
     supabase.from("queue_items")
       .select("*")

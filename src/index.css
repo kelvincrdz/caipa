@@ -1,19 +1,22 @@
 @import "tailwindcss";
 
+/* ══════════════════════════════════════════════════════════════════════════════
+   TOCAI - VISUAL KITS DESIGN SYSTEM
+   4 themes: boteco (default) | bossa-nova | amber | litoral
+   Strategy: [data-theme] on <html> overrides CSS custom properties.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
 @theme {
-  /* ── Midnight Vinyl palette ─────────────────────────────────────────────── */
-  --color-brand-blue: #FFB800;    /* amber  — accents, borders, icons       */
-  --color-brand-lime: #F5E6C8;    /* warm cream — "pop" text, button faces  */
-  --color-brand-cream: #0A0A0A;   /* near-black  — page background          */
-  --color-on-primary: #0A0A0A;    /* auto-contrast text on brand-blue bg    */
-  --color-on-accent:  #0A0A0A;    /* auto-contrast text on brand-lime bg    */
+  --color-brand-blue:  #00509D;
+  --color-brand-lime:  #E6AA22;
+  --color-brand-cream: #FCF8F2;
+  --color-on-primary:  #FFFFFF;
+  --color-on-accent:   #1A1A1A;
 
-  /* ── Typography ────────────────────────────────────────────────────────── */
-  --font-display: "Calistoga", "Georgia", serif;
-  --font-body: "IBM Plex Sans", sans-serif;
-  --font-bento: "Space Grotesk", sans-serif;
+  --font-display: "Zilla Slab", "Georgia", serif;
+  --font-body:    "Karla", "Helvetica Neue", sans-serif;
+  --font-bento:   "Karla", "Helvetica Neue", sans-serif;
 
-  /* ── Animation shorthands ───────────────────────────────────────────────── */
   --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   --animate-float: float 3s ease-in-out infinite;
   --animate-eq-1: eq-bar 0.7s ease-in-out infinite;
@@ -21,7 +24,202 @@
   --animate-eq-3: eq-bar 0.6s ease-in-out infinite 0.3s;
 }
 
-/* ── Keyframes ────────────────────────────────────────────────────────────── */
+/* ── Boteco Nostalgico (DEFAULT) ─────────────────────────────────────────────── */
+:root,
+[data-theme="boteco"] {
+  --color-brand-blue:  #00509D;
+  --color-brand-lime:  #E6AA22;
+  --color-brand-cream: #FCF8F2;
+  --color-on-primary:  #FFFFFF;
+  --color-on-accent:   #1A1A1A;
+
+  --t-card-bg:               #FFFFFF;
+  --t-card-border:           2px dashed #00509D;
+  --t-card-radius:           0px;
+  --t-card-shadow:           3px 3px 0px #1A1A1A;
+  --t-card-highlight-border: 8px solid #00509D;
+
+  --t-btn-radius:         0px;
+  --t-btn-border:         3px solid #1A1A1A;
+  --t-btn-shadow:         3px 3px 0px #1A1A1A;
+  --t-btn-hover-tx:       -1px;
+  --t-btn-hover-ty:       -1px;
+  --t-btn-hover-shadow:   4px 4px 0px #1A1A1A;
+  --t-btn-active-tx:      3px;
+  --t-btn-active-ty:      3px;
+  --t-btn-active-shadow:  0px 0px 0px transparent;
+
+  --t-input-border:       2px solid #00509D;
+  --t-input-radius:       0px;
+  --t-input-focus-bg:     #F4F8FF;
+
+  --t-divider:            4px solid #00509D;
+  --t-text-primary:       #1A1A1A;
+  --t-text-muted:         #5A6A7A;
+
+  --font-display: "Zilla Slab", "Georgia", serif;
+  --font-body:    "Karla", "Helvetica Neue", sans-serif;
+  --font-bento:   "Karla", "Helvetica Neue", sans-serif;
+  --t-heading-style: normal;
+  --t-page-border: 8px solid #00509D;
+}
+
+/* ── Bossa Nova ──────────────────────────────────────────────────────────────── */
+[data-theme="bossa-nova"] {
+  --color-brand-blue:  #2A4B3C;
+  --color-brand-lime:  #D97746;
+  --color-brand-cream: #F4F1EA;
+  --color-on-primary:  #FFFFFF;
+  --color-on-accent:   #FFFFFF;
+
+  --t-card-bg:               #FFFFFF;
+  --t-card-border:           none;
+  --t-card-radius:           16px;
+  --t-card-shadow:           0 4px 15px rgba(42, 75, 60, 0.08);
+  --t-card-highlight-border: 6px solid #2A4B3C;
+
+  --t-btn-radius:         16px;
+  --t-btn-border:         none;
+  --t-btn-shadow:         0 4px 12px rgba(42, 75, 60, 0.2);
+  --t-btn-hover-tx:       0px;
+  --t-btn-hover-ty:       0px;
+  --t-btn-hover-shadow:   0 6px 20px rgba(42, 75, 60, 0.25);
+  --t-btn-active-tx:      0px;
+  --t-btn-active-ty:      1px;
+  --t-btn-active-shadow:  inset 0 2px 6px rgba(0,0,0,0.15);
+
+  --t-input-border:       1px solid rgba(42, 75, 60, 0.35);
+  --t-input-radius:       12px;
+  --t-input-focus-bg:     #FAFEF9;
+
+  --t-divider:            2px solid rgba(42, 75, 60, 0.2);
+  --t-text-primary:       #1C1C1C;
+  --t-text-muted:         #6B7E74;
+
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-body:    "Outfit", "Helvetica Neue", sans-serif;
+  --font-bento:   "Outfit", "Helvetica Neue", sans-serif;
+  --t-heading-style: normal;
+  --t-page-border: none;
+}
+
+/* ── Luz de Ambar (Dark bohemio) ─────────────────────────────────────────────── */
+[data-theme="amber"] {
+  --color-brand-blue:  #D4AF37;
+  --color-brand-lime:  #E8DCC7;
+  --color-brand-cream: #1C1816;
+  --color-on-primary:  #1C1816;
+  --color-on-accent:   #1C1816;
+
+  --t-card-bg:               #2A2421;
+  --t-card-border:           1px solid rgba(212, 175, 55, 0.15);
+  --t-card-radius:           4px;
+  --t-card-shadow:           0 10px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+  --t-card-highlight-border: 1px solid rgba(212, 175, 55, 0.5);
+
+  --t-btn-radius:         4px;
+  --t-btn-border:         1px solid #D4AF37;
+  --t-btn-shadow:         0 0 10px rgba(212, 175, 55, 0.1);
+  --t-btn-hover-tx:       0px;
+  --t-btn-hover-ty:       0px;
+  --t-btn-hover-shadow:   0 0 20px rgba(212, 175, 55, 0.3);
+  --t-btn-active-tx:      0px;
+  --t-btn-active-ty:      0px;
+  --t-btn-active-shadow:  0 0 30px rgba(212, 175, 55, 0.5);
+
+  --t-input-border:       1px solid rgba(212, 175, 55, 0.2);
+  --t-input-radius:       4px;
+  --t-input-focus-bg:     #322E2B;
+
+  --t-divider:            1px solid rgba(212, 175, 55, 0.15);
+  --t-text-primary:       #E8DCC7;
+  --t-text-muted:         #9A8F7E;
+
+  --font-display: "Cormorant Garamond", "Georgia", serif;
+  --font-body:    "Karla", "Helvetica Neue", sans-serif;
+  --font-bento:   "Karla", "Helvetica Neue", sans-serif;
+  --t-heading-style: italic;
+  --t-page-border: none;
+}
+
+/* ── Litoral Artesanal ───────────────────────────────────────────────────────── */
+[data-theme="litoral"] {
+  --color-brand-blue:  #B65C3A;
+  --color-brand-lime:  #F5F0EC;
+  --color-brand-cream: #EADDD7;
+  --color-on-primary:  #FFFFFF;
+  --color-on-accent:   #4A3B32;
+
+  --t-card-bg:               #F5F0EC;
+  --t-card-border:           none;
+  --t-card-radius:           40px 10px 40px 10px;
+  --t-card-shadow:           5px 5px 20px rgba(74, 59, 50, 0.1);
+  --t-card-highlight-border: 4px solid #B65C3A;
+
+  --t-btn-radius:         30px;
+  --t-btn-border:         2px solid #B65C3A;
+  --t-btn-shadow:         none;
+  --t-btn-hover-tx:       0px;
+  --t-btn-hover-ty:       -2px;
+  --t-btn-hover-shadow:   0 6px 16px rgba(182, 92, 58, 0.2);
+  --t-btn-active-tx:      0px;
+  --t-btn-active-ty:      1px;
+  --t-btn-active-shadow:  none;
+
+  --t-input-border:       2px solid rgba(182, 92, 58, 0.3);
+  --t-input-radius:       20px;
+  --t-input-focus-bg:     #FDF8F5;
+
+  --t-divider:            2px solid rgba(182, 92, 58, 0.2);
+  --t-text-primary:       #4A3B32;
+  --t-text-muted:         #7A6B60;
+
+  --font-display: "Alice", "Georgia", serif;
+  --font-body:    "Karla", "Helvetica Neue", sans-serif;
+  --font-bento:   "Karla", "Helvetica Neue", sans-serif;
+  --t-heading-style: normal;
+  --t-page-border: none;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   BASE STYLES
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  background-color: var(--color-brand-cream);
+  color: var(--t-text-primary);
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+  font-style: var(--t-heading-style);
+}
+
+[data-theme="amber"] h1,
+[data-theme="amber"] h2,
+[data-theme="amber"] h3,
+[data-theme="amber"] h4,
+[data-theme="amber"] .font-display {
+  font-style: italic;
+}
+
+/* bg-white reads the theme card background */
+.bg-white {
+  background-color: var(--t-card-bg) !important;
+}
+
+/* App wrapper */
+.app-root {
+  border: var(--t-page-border);
+  background-color: var(--color-brand-cream);
+  min-height: 100vh;
+  position: relative;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   KEYFRAMES
+   ══════════════════════════════════════════════════════════════════════════════ */
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
@@ -54,21 +252,14 @@
 }
 
 @keyframes ken-burns {
-  0%   { transform: scale(1)    translateX(0)   translateY(0); }
+  0%   { transform: scale(1) translateX(0) translateY(0); }
   50%  { transform: scale(1.08) translateX(-1%) translateY(-1%); }
-  100% { transform: scale(1)    translateX(0)   translateY(0); }
+  100% { transform: scale(1) translateX(0) translateY(0); }
 }
-
-/* ── Midnight Vinyl kit animations ─────────────────────────────────────────── */
 
 @keyframes scaleIn {
   from { opacity: 0; transform: scale(0.92); }
   to   { opacity: 1; transform: scale(1); }
-}
-
-@keyframes fadeSlideUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes captionIn {
@@ -87,10 +278,10 @@
 
 @keyframes marquee {
   from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  to   { transform: translateX(-50%); }
 }
 
-/* ── Animation utilities ─────────────────────────────────────────────────── */
+/* ── Animation utilities ──────────────────────────────────────────────────── */
 
 .animate-ken-burns  { animation: ken-burns  20s ease-in-out infinite; }
 .animate-float      { animation: float      3s  ease-in-out infinite; }
@@ -103,86 +294,86 @@
 .eq-bar-2 { animation: eq-bar 0.9s ease-in-out infinite 0.15s; }
 .eq-bar-3 { animation: eq-bar 0.6s ease-in-out infinite 0.3s; }
 
-/* ── Base ─────────────────────────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════════════
+   THEME-AWARE COMPONENT CLASSES
+   ══════════════════════════════════════════════════════════════════════════════ */
 
-:root {
-  background-color: #0A0A0A;
-  color: #F5E6C8;
-  font-family: var(--font-bento);
-}
-
-h1, h2, h3, .font-display {
-  font-family: var(--font-display);
-}
-
-/* Override Tailwind's bg-white to use the dark surface in this theme.
-   Rules outside @layer have higher cascade priority than layered utilities. */
-.bg-white {
-  background-color: #1A1A1A;
-}
-
-/* ── Grain texture overlay ───────────────────────────────────────────────── */
+/* ── Grain overlay ────────────────────────────────────────────────────────── */
 .bg-grainy {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/baseFilter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.03;
   pointer-events: none;
 }
+[data-theme="amber"] .bg-grainy { opacity: 0.05; }
 
-/* ── Card & button components ───────────────────────────────────────────── */
-
-/* Asymmetric radius — signature Midnight Vinyl token */
-.asym {
-  border-radius: 2px 14px 2px 14px;
-}
+/* ── Cards ────────────────────────────────────────────────────────────────── */
 
 .card-bento {
-  background-color: #1A1A1A;
-  border: 2px solid var(--color-brand-blue);
-  border-radius: 2px 14px 2px 14px;
-  box-shadow: 4px 4px 0 rgba(255,184,0,0.35);
+  background-color: var(--t-card-bg);
+  border: var(--t-card-border);
+  border-radius: var(--t-card-radius);
+  box-shadow: var(--t-card-shadow);
+}
+
+[data-theme="bossa-nova"] .card-bento {
+  border-left: var(--t-card-highlight-border);
 }
 
 .card-bento-lime {
   background-color: var(--color-brand-blue);
-  color: #0A0A0A;
-  border: 2px solid var(--color-brand-blue);
-  border-radius: 2px 14px 2px 14px;
-  box-shadow: 4px 4px 0 rgba(255,184,0,0.35);
+  color: var(--color-on-primary);
+  border: var(--t-card-border);
+  border-radius: var(--t-card-radius);
+  box-shadow: var(--t-card-shadow);
 }
 
+/* ── Buttons ──────────────────────────────────────────────────────────────── */
+
 .btn-bento {
-  @apply bg-brand-lime text-brand-cream border-2 border-brand-blue px-4 py-2 sm:px-6 sm:py-3 font-display text-lg sm:text-2xl uppercase tracking-tighter transition-all;
-  border-radius: 2px 14px 2px 14px;
-  box-shadow: 4px 4px 0 rgba(255,184,0,0.4);
+  @apply px-4 py-2 sm:px-6 sm:py-3 font-display text-lg sm:text-2xl uppercase tracking-tighter transition-all;
+  background-color: var(--color-brand-lime);
+  color: var(--color-brand-blue);
+  border: var(--t-btn-border);
+  border-radius: var(--t-btn-radius);
+  box-shadow: var(--t-btn-shadow);
   font-family: var(--font-display);
+  font-style: normal;
 }
-.btn-bento:hover  {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 rgba(255,184,0,0.4);
+
+.btn-bento:hover {
+  transform: translate(var(--t-btn-hover-tx), var(--t-btn-hover-ty));
+  box-shadow: var(--t-btn-hover-shadow);
 }
+
 .btn-bento:active {
-  transform: translate(4px, 4px);
-  box-shadow: none;
+  transform: translate(var(--t-btn-active-tx), var(--t-btn-active-ty));
+  box-shadow: var(--t-btn-active-shadow);
 }
+
+[data-theme="amber"] .btn-bento {
+  background: transparent;
+  color: var(--color-brand-blue);
+  border: 1px solid var(--color-brand-blue);
+}
+
+/* ── Text stroke ──────────────────────────────────────────────────────────── */
 
 .text-stroke-blue {
   -webkit-text-stroke: 2px var(--color-brand-blue);
 }
 
-/* ── Shimmer skeleton ────────────────────────────────────────────────────── */
+/* ── Shimmer skeleton ─────────────────────────────────────────────────────── */
 .shimmer {
-  background: linear-gradient(90deg, #1A1A1A 25%, #252525 50%, #1A1A1A 75%);
+  background: linear-gradient(90deg, var(--t-card-bg) 25%, color-mix(in srgb, var(--t-card-bg) 85%, var(--color-brand-blue)) 50%, var(--t-card-bg) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite;
 }
 
-/* ── Vinyl spin ──────────────────────────────────────────────────────────── */
-@keyframes vinyl-spin {
-  to { transform: rotate(360deg); }
-}
+/* ── Vinyl spin ───────────────────────────────────────────────────────────── */
+@keyframes vinyl-spin { to { transform: rotate(360deg); } }
 .animate-vinyl { animation: vinyl-spin 4s linear infinite; }
 
-/* ── Scrollbar ───────────────────────────────────────────────────────────── */
+/* ── Scrollbar ────────────────────────────────────────────────────────────── */
 .queue-scroll {
   scrollbar-width: thin;
   scrollbar-color: var(--color-brand-blue) transparent;
@@ -191,14 +382,10 @@ h1, h2, h3, .font-display {
 .queue-scroll::-webkit-scrollbar-track { background: transparent; }
 .queue-scroll::-webkit-scrollbar-thumb { background: var(--color-brand-blue); border-radius: 2px; }
 
-/* ── Marquee ticker ──────────────────────────────────────────────────────── */
+/* ── Marquee ──────────────────────────────────────────────────────────────── */
 .marquee-track   { display: inline-block; }
-.marquee-content {
-  display: inline-block;
-  animation: marquee 40s linear infinite;
-}
+.marquee-content { display: inline-block; animation: marquee 40s linear infinite; }
 
-/* ── Overflow marquee for track titles ───────────────────────────────────── */
 .caipa-overflow-marquee {
   display: inline-flex;
   align-items: baseline;
@@ -207,17 +394,23 @@ h1, h2, h3, .font-display {
   width: max-content;
   animation: caipa-overflow-marquee var(--marquee-duration, 12s) linear infinite;
 }
-
-.caipa-overflow-marquee-item {
-  flex: 0 0 auto;
-}
+.caipa-overflow-marquee-item { flex: 0 0 auto; }
 
 @keyframes caipa-overflow-marquee {
   from { transform: translateX(0); }
-  to { transform: translateX(calc(-50% - (var(--marquee-gap, 48px) / 2))); }
+  to   { transform: translateX(calc(-50% - (var(--marquee-gap, 48px) / 2))); }
 }
 
-/* ── Party Mode ─────────────────────────────────────────────────────────── */
+/* ── Bossa Nova smooth interactions ──────────────────────────────────────── */
+[data-theme="bossa-nova"] a,
+[data-theme="bossa-nova"] button {
+  transition: opacity 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   PARTY MODE (overlays current theme)
+   ══════════════════════════════════════════════════════════════════════════════ */
+
 .party-mode {
   --color-brand-blue:  #000000;
   --color-brand-lime:  #39ff14;
@@ -258,4 +451,3 @@ h1, h2, h3, .font-display {
 .party-eq-3 { animation: party-eq-bar 0.35s ease-in-out infinite 0.16s; }
 .party-eq-4 { animation: party-eq-bar 0.55s ease-in-out infinite 0.05s; }
 .party-eq-5 { animation: party-eq-bar 0.42s ease-in-out infinite 0.22s; }
-.party-eq-6 { animation: party-eq-bar 0.48s ease-in-out infinite 0.12s; }

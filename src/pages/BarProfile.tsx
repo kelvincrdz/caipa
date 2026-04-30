@@ -8,6 +8,7 @@ import {
 import { supabase } from "../lib/supabase";
 import { Bar } from "../types";
 import { cn } from "../lib/utils";
+import { applyTheme } from "../lib/themes";
 
 const DAYS: { key: string; label: string }[] = [
   { key: "seg", label: "Segunda" },
@@ -54,6 +55,7 @@ export default function BarProfile() {
       .eq("slug", slug)
       .maybeSingle()
       .then(({ data }) => {
+        applyTheme(data?.visual_theme ?? 'boteco');
         if (data?.theme_primary)
           document.documentElement.style.setProperty("--color-brand-blue", data.theme_primary);
         if (data?.theme_accent)
@@ -62,6 +64,7 @@ export default function BarProfile() {
         setLoading(false);
       });
     return () => {
+      applyTheme('boteco');
       document.documentElement.style.removeProperty("--color-brand-blue");
       document.documentElement.style.removeProperty("--color-brand-lime");
     };

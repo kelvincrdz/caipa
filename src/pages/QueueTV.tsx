@@ -8,6 +8,7 @@ import { usePlayer } from "../hooks/usePlayer";
 import { useSession } from "../hooks/useSession";
 import { supabase } from "../lib/supabase";
 import { cn } from "../lib/utils";
+import { applyTheme } from "../lib/themes";
 
 type StingerVariant = "classic" | "gol_de_placa" | "ritmo_noite" | "palco_rock";
 
@@ -254,8 +255,9 @@ export default function QueueTV() {
   // Bar custom theme + logo
   useEffect(() => {
     if (!slug) return;
-    supabase.from("bars").select("theme_primary,theme_accent,logo_url").eq("slug", slug).maybeSingle()
+    supabase.from("bars").select("theme_primary,theme_accent,logo_url,visual_theme").eq("slug", slug).maybeSingle()
       .then(({ data }) => {
+        applyTheme(data?.visual_theme ?? 'boteco');
         if (data?.theme_primary) {
           document.documentElement.style.setProperty("--color-brand-blue", data.theme_primary);
           document.documentElement.style.setProperty("--color-on-primary", getContrastColor(data.theme_primary));
@@ -267,6 +269,7 @@ export default function QueueTV() {
         if (data?.logo_url) setBarLogo(data.logo_url);
       });
     return () => {
+      applyTheme('boteco');
       document.documentElement.style.removeProperty("--color-brand-blue");
       document.documentElement.style.removeProperty("--color-brand-lime");
       document.documentElement.style.removeProperty("--color-on-primary");

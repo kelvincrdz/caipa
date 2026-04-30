@@ -26,9 +26,9 @@ export default {
         },
       },
       fontFamily: {
-        'display': ['Calistoga', 'serif'],           // 96px Hero titles
-        'body': ['Space Grotesk', 'sans-serif'],     // 48px stats, navegação
-        'label': ['IBM Plex Sans', 'sans-serif'],    // 14px labels
+        'display': ['Zilla Slab', 'Fraunces', 'Cormorant Garamond', 'Alice', 'serif'],
+        'body': ['Karla', 'Outfit', 'Helvetica Neue', 'sans-serif'],
+        'label': ['Karla', 'sans-serif'],
       },
       fontSize: {
         'hero-desktop': '96px',

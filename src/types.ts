@@ -7,6 +7,7 @@ export interface Bar {
   owner_id?: string;
   theme_primary?: string;
   theme_accent?: string;
+  visual_theme?: string;
   logo_url?: string;
   status?: string;
   is_approved?: boolean;

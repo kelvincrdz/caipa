@@ -13,6 +13,7 @@ import { setSharedToken } from "../services/spotifyAuth";
 import { supabase } from "../lib/supabase";
 import { cn } from "../lib/utils";
 import { OverflowMarquee } from "../components/OverflowMarquee";
+import { applyTheme } from "../lib/themes";
 
 // ── Tag normalization ────────────────────────────────────────────────────────
 function normalizeTag(s: string): string {
@@ -221,13 +222,14 @@ export default function ClientView() {
     if (!slug) { setBarStatus("not_found"); return; }
     supabase
       .from("bars")
-      .select("is_approved,theme_primary,theme_accent,logo_url,name")
+      .select("is_approved,theme_primary,theme_accent,logo_url,name,visual_theme")
       .eq("slug", slug)
       .maybeSingle()
       .then(({ data }) => {
         if (!data) { setBarStatus("not_found"); return; }
         if (data.is_approved) setBarStatus("approved");
         else setBarStatus("pending");
+        applyTheme(data.visual_theme ?? 'boteco');
         if (data.theme_primary) document.documentElement.style.setProperty("--color-brand-blue", data.theme_primary);
         if (data.theme_accent) document.documentElement.style.setProperty("--color-brand-lime", data.theme_accent);
         if (data.logo_url) setBarLogo(data.logo_url);

@@ -26,6 +26,7 @@ import { initiateLogin, isAdminLoggedIn, logout, getValidToken, getSpotifyProfil
 import { play as spotifyPlay, pause as spotifyPause, resume as spotifyResume } from "../services/spotifyPlayback";
 import { supabase } from "../lib/supabase";
 import { searchMusic, getTrackInfo } from "../services/musicService";
+import { applyTheme, VISUAL_THEMES, THEME_META } from "../lib/themes";
 
 const GENRE_TAGS = [
   { label: "Livre",      value: "Livre",      cls: "border-zinc-400 text-zinc-600 bg-white" },
@@ -101,6 +102,10 @@ export default function AdminView() {
   // Bar theme colors
   const [barColors, setBarColors] = useState({ primary: "#FFB800", accent: "#F5E6C8" });
   const [colorsSaved, setColorsSaved] = useState(false);
+
+  // Visual kit
+  const [visualTheme, setVisualTheme] = useState("boteco");
+  const [visualThemeSaved, setVisualThemeSaved] = useState(false);
 
   // Bar logo
   const [barLogo, setBarLogo] = useState("");
@@ -185,7 +190,7 @@ export default function AdminView() {
   // Load bar theme colors + logo + profile on mount
   useEffect(() => {
     if (!slug) return;
-    supabase.from("bars").select("theme_primary,theme_accent,logo_url,description,address,whatsapp,instagram,cover_charge,music_style,opening_hours").eq("slug", slug).maybeSingle()
+    supabase.from("bars").select("theme_primary,theme_accent,logo_url,description,address,whatsapp,instagram,cover_charge,music_style,opening_hours,visual_theme").eq("slug", slug).maybeSingle()
       .then(({ data }) => {
         if (data) {
           const p = data.theme_primary || "#FFB800";
@@ -193,6 +198,9 @@ export default function AdminView() {
           setBarColors({ primary: p, accent: a });
           document.documentElement.style.setProperty("--color-brand-blue", p);
           document.documentElement.style.setProperty("--color-brand-lime", a);
+          const vt = data.visual_theme ?? 'boteco';
+          setVisualTheme(vt);
+          applyTheme(vt);
           setBarLogo(data.logo_url || "");
           setBarProfile({
             description: data.description || "",
@@ -1458,6 +1466,68 @@ export default function AdminView() {
                   {config.enable_dedications ? "ATIVADO" : "ATIVAR"}
                 </button>
               </div>
+            </div>
+
+            {/* Visual Kit Selector */}
+            <div className="card-bento p-8">
+              <h3 className="mb-2 text-4xl font-display leading-none tracking-tighter border-b-4 border-brand-blue pb-2 inline-block">
+                VISUAL DO BAR
+              </h3>
+              <p className="mb-6 font-body text-xs font-bold uppercase opacity-50 italic">
+                Escolha o kit visual — define fontes, cores e estilo de todos os elementos
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                {VISUAL_THEMES.map(themeId => {
+                  const meta = THEME_META[themeId];
+                  const isActive = visualTheme === themeId;
+                  return (
+                    <button
+                      key={themeId}
+                      onClick={() => { applyTheme(themeId); setVisualTheme(themeId); }}
+                      className={cn(
+                        "border-4 p-5 text-left transition-all",
+                        isActive
+                          ? "border-brand-blue shadow-[4px_4px_0px_var(--color-brand-blue)] -translate-x-0.5 -translate-y-0.5"
+                          : "border-zinc-300 hover:border-brand-blue"
+                      )}
+                      style={{ backgroundColor: meta.bgPage }}
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-5 h-5 rounded-full border-2 border-white/50 flex-shrink-0"
+                          style={{ backgroundColor: meta.colorPrimary }} />
+                        <div className="w-5 h-5 rounded-full border-2 border-white/50 flex-shrink-0"
+                          style={{ backgroundColor: meta.colorAction }} />
+                        {isActive && <span className="ml-auto text-xs font-bold uppercase"
+                          style={{ color: meta.colorPrimary, fontFamily: meta.fontDisplay }}>ATIVO</span>}
+                      </div>
+                      <p className="font-bold text-xl leading-none mb-1"
+                        style={{ fontFamily: meta.fontDisplay, color: meta.colorPrimary, fontStyle: meta.previewFontStyle ?? 'normal' }}>
+                        {meta.name}
+                      </p>
+                      <p className="text-xs uppercase opacity-60"
+                        style={{ color: meta.colorPrimary, fontFamily: '"Karla", sans-serif' }}>
+                        {meta.description}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                onClick={async () => {
+                  if (!slug) return;
+                  await supabase.from("bars").update({ visual_theme: visualTheme }).eq("slug", slug);
+                  setVisualThemeSaved(true);
+                  setTimeout(() => setVisualThemeSaved(false), 2000);
+                }}
+                className={cn(
+                  "flex items-center gap-2 border-4 px-5 py-3 font-display text-xl uppercase transition-all",
+                  visualThemeSaved
+                    ? "border-green-500 bg-green-500 text-white"
+                    : "border-brand-blue bg-brand-blue text-brand-lime shadow-[4px_4px_0px_var(--color-brand-lime)]"
+                )}
+              >
+                {visualThemeSaved ? <><CheckCheck size={18} /> SALVO!</> : "SALVAR VISUAL"}
+              </button>
             </div>
 
             {/* Tema customizável */}
