@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, type MutableRefObject } from "react";
 import { useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
-import { Music, Play, Disc, Pause, Disc3 } from "lucide-react";
+import { Music, Play, Disc, Pause, Disc3, Clock, TrendingUp, Flame, Heart, User, HeartHandshake } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useQueue } from "../hooks/useQueue";
 import { usePlayer } from "../hooks/usePlayer";
@@ -369,11 +369,11 @@ export default function QueueTV() {
   const clientUrl = `${window.location.origin}/${slug}`;
 
   const tickerItems = queue.map(item =>
-    `♪ ${item.title} — ${item.artist}${item.dedication_to ? ` (❤️ ${item.dedication_to})` : ""}  @${item.client_name}`
+    `* ${item.title} -- ${item.artist}${item.dedication_to ? ` [para: ${item.dedication_to}]` : ""}  @${item.client_name}`
   );
   const tickerText = tickerItems.length > 0
-    ? tickerItems.join("   ·   ")
-    : "♪ Nenhuma música na fila — seja o primeiro a pedir!";
+    ? tickerItems.join("   /   ")
+    : "* Nenhuma musica na fila -- seja o primeiro a pedir!";
 
   return (
     <motion.div
@@ -687,7 +687,7 @@ export default function QueueTV() {
                   animate={{ opacity: 1, scale: 1 }}
                   className="relative z-30 mt-3 flex items-center gap-3 border-4 border-brand-lime bg-brand-lime/10 px-6 py-3"
                 >
-                  <span className="text-2xl">❤️</span>
+                  <HeartHandshake size={24} className="text-brand-lime flex-shrink-0" />
                   <p className="font-display text-base italic uppercase leading-none text-on-primary">
                     PARA{" "}
                     <span className="text-brand-lime">{nowPlaying.dedication_to}</span>
@@ -823,6 +823,10 @@ export default function QueueTV() {
                   artist={item.artist}
                   client={item.client_name}
                   dedicationTo={item.dedication_to}
+                  score={item.score ?? 0}
+                  reactions={item.reactions}
+                  tags={item.tags}
+                  estimatedMinutes={Math.round((idx + 1) * 3.5)}
                   delay={idx * 0.08}
                   party={partyMode}
                 />
@@ -903,87 +907,163 @@ export default function QueueTV() {
 }
 
 function TVQueueItem({
-  rank, thumbnailUrl, title, artist, client, dedicationTo, delay = 0, party,
+  rank, thumbnailUrl, title, artist, client, dedicationTo, score, reactions, tags, estimatedMinutes, delay = 0, party,
 }: {
-  key?: string; rank: number; thumbnailUrl?: string; title: string; artist: string; client: string; dedicationTo?: string; delay?: number; party: boolean;
+  key?: string;
+  rank: number;
+  thumbnailUrl?: string;
+  title: string;
+  artist: string;
+  client: string;
+  dedicationTo?: string;
+  score?: number;
+  reactions?: { fire?: number; heart?: number } | null;
+  tags?: string[];
+  estimatedMinutes?: number;
+  delay?: number;
+  party: boolean;
 }) {
+  const fire = reactions?.fire ?? 0;
+  const heart = reactions?.heart ?? 0;
+  const hasReactions = fire > 0 || heart > 0;
+  const isSuperVoted = (score ?? 0) >= 3;
+
   return (
     <motion.div
       layout
       initial={{ opacity: 0, x: 60 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -40, transition: { duration: 0.25 } }}
-      transition={{ delay, duration: 0.4, ease: "easeOut" }}
+      transition={{ delay, duration: 0.38, ease: "easeOut" }}
       whileHover={{ x: -3, transition: { duration: 0.12 } }}
       className={cn(
-        "flex items-center gap-3 relative overflow-hidden border-l-[6px] border-brand-lime",
+        "flex items-stretch gap-0 relative overflow-hidden border-l-[6px] border-brand-lime",
         party
-          ? "bg-black border-r border-r-brand-lime/20 py-2.5 pr-3"
-          : "bg-white border-4 border-l-[6px] border-brand-blue py-2.5 pr-3 shadow-[4px_4px_0px_var(--color-brand-lime)]",
+          ? "bg-black border-r border-r-brand-lime/20"
+          : "bg-white border-4 border-l-[6px] border-brand-blue shadow-[4px_4px_0px_var(--color-brand-lime)]",
       )}
     >
-      {/* Rank badge */}
+      {/* Rank column */}
       <div className={cn(
-        "flex-shrink-0 w-9 flex flex-col items-center justify-center self-stretch",
+        "flex-shrink-0 w-8 flex flex-col items-center justify-center",
         party ? "bg-brand-lime/10" : "bg-brand-lime/15",
       )}>
         <span className={cn(
-          "font-display text-2xl leading-none tracking-tighter",
+          "font-display text-xl leading-none tracking-tighter",
           party ? "text-brand-lime neon-text" : "text-brand-blue",
-        )}>
-          {rank}
-        </span>
-        <span className={cn("font-display text-[10px] leading-none", party ? "text-brand-lime/60" : "text-brand-blue/50")}>º</span>
+        )}>{rank}º</span>
       </div>
 
       {/* Thumbnail */}
       <div className={cn(
-        "h-12 w-12 flex-shrink-0 overflow-hidden border-2",
-        party ? "border-brand-lime/40" : "border-brand-blue/40",
+        "h-16 w-16 flex-shrink-0 overflow-hidden border-r-2",
+        party ? "border-brand-lime/30" : "border-brand-blue/20",
       )}>
         {thumbnailUrl ? (
           <img src={thumbnailUrl} alt={title} className="h-full w-full object-cover" />
         ) : (
           <div className={cn("h-full w-full flex items-center justify-center", party ? "bg-black" : "bg-brand-blue/5")}>
-            <Music size={18} className={cn(party ? "text-brand-lime/70" : "text-brand-blue/40")} />
+            <Music size={20} className={cn(party ? "text-brand-lime/60" : "text-brand-blue/30")} />
           </div>
         )}
       </div>
 
-      {/* Track info */}
-      <div className="flex-1 overflow-hidden">
+      {/* Main info */}
+      <div className="flex-1 overflow-hidden px-2.5 py-1.5 flex flex-col justify-between">
+        {/* Title row */}
         <h4 className={cn(
-          "truncate text-base lg:text-lg font-display uppercase leading-none tracking-tighter",
+          "truncate text-sm lg:text-base font-display uppercase leading-none tracking-tighter",
           party ? "text-brand-lime" : "text-brand-blue",
         )}>
           {title}
         </h4>
-        <p className={cn(
-          "truncate font-body text-xs font-black uppercase italic tracking-tight mt-0.5",
-          party ? "text-brand-lime/75" : "text-brand-blue/70",
-        )}>
-          {artist}
-        </p>
+
+        {/* Artist + tags */}
+        <div className="flex items-center gap-1.5 overflow-hidden">
+          <p className={cn(
+            "truncate font-body text-[11px] font-black uppercase italic tracking-tight",
+            party ? "text-brand-lime/70" : "text-brand-blue/65",
+          )}>{artist}</p>
+          {tags && tags.length > 0 && (
+            <span className={cn(
+              "flex-shrink-0 font-body text-[9px] font-black uppercase px-1 py-0.5 border leading-none",
+              party ? "border-brand-lime/40 text-brand-lime/60" : "border-brand-blue/30 text-brand-blue/50",
+            )}>{tags[0]}</span>
+          )}
+        </div>
+
+        {/* Meta row: requester + estimated time */}
+        <div className="flex items-center gap-2 overflow-hidden">
+          <div className="flex items-center gap-1 overflow-hidden">
+            <User size={9} className={cn(party ? "text-brand-lime/50 flex-shrink-0" : "text-brand-blue/40 flex-shrink-0")} />
+            <span className={cn(
+              "font-body text-[10px] font-black uppercase truncate",
+              party ? "text-brand-lime/70" : "text-brand-blue/60",
+            )}>@{client}</span>
+          </div>
+          {estimatedMinutes !== undefined && (
+            <div className="flex items-center gap-0.5 flex-shrink-0">
+              <Clock size={9} className={cn(party ? "text-brand-lime/50" : "text-brand-blue/40")} />
+              <span className={cn(
+                "font-body text-[10px] font-black uppercase",
+                party ? "text-brand-lime/70" : "text-brand-blue/60",
+              )}>~{estimatedMinutes}min</span>
+            </div>
+          )}
+        </div>
+
+        {/* Dedication */}
         {dedicationTo && (
-          <p className="font-body text-xs font-bold uppercase text-pink-400 italic truncate mt-0.5">❤️ {dedicationTo}</p>
+          <p className="font-body text-[10px] font-bold uppercase text-pink-400 italic truncate flex items-center gap-0.5">
+            <Heart size={9} className="flex-shrink-0 fill-pink-400 text-pink-400" />
+            {dedicationTo}
+          </p>
         )}
       </div>
 
-      {/* Requester */}
+      {/* Right stats column */}
       <div className={cn(
-        "flex-shrink-0 text-right border-l-2 pl-2",
-        party ? "border-brand-lime/30" : "border-brand-blue/20",
+        "flex-shrink-0 flex flex-col items-center justify-center gap-1.5 px-2 border-l-2",
+        party ? "border-brand-lime/20" : "border-brand-blue/15",
       )}>
-        <span className={cn(
-          "font-body text-[9px] font-black uppercase leading-none block tracking-widest",
-          party ? "text-brand-lime/55" : "text-brand-blue/55",
-        )}>@</span>
-        <p className={cn(
-          "font-display text-sm leading-tight max-w-[80px] truncate",
-          party ? "text-brand-lime neon-text" : "text-brand-blue",
+        {/* Score / votes */}
+        <div className={cn(
+          "flex flex-col items-center gap-0.5 px-1.5 py-1 border",
+          isSuperVoted
+            ? party
+              ? "border-yellow-400 bg-yellow-400/10"
+              : "border-yellow-500 bg-yellow-50"
+            : party
+              ? "border-brand-lime/30 bg-transparent"
+              : "border-brand-blue/20 bg-transparent",
         )}>
-          {client}
-        </p>
+          <TrendingUp
+            size={12}
+            className={cn(isSuperVoted ? "text-yellow-400" : party ? "text-brand-lime/70" : "text-brand-blue/60")}
+          />
+          <span className={cn(
+            "font-display text-sm leading-none",
+            isSuperVoted ? "text-yellow-400" : party ? "text-brand-lime neon-text" : "text-brand-blue",
+          )}>{score ?? 0}</span>
+        </div>
+
+        {/* Reactions */}
+        {hasReactions && (
+          <div className="flex flex-col items-center gap-0.5">
+            {fire > 0 && (
+              <div className="flex items-center gap-0.5">
+                <Flame size={10} className="text-orange-400" />
+                <span className={cn("font-display text-xs leading-none", party ? "text-orange-400" : "text-orange-500")}>{fire}</span>
+              </div>
+            )}
+            {heart > 0 && (
+              <div className="flex items-center gap-0.5">
+                <Heart size={10} className="text-pink-400" />
+                <span className={cn("font-display text-xs leading-none", party ? "text-pink-400" : "text-pink-500")}>{heart}</span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </motion.div>
   );
