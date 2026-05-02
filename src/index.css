@@ -13,9 +13,9 @@
   --color-on-primary:  #FFFFFF;
   --color-on-accent:   #1A1A1A;
 
-  --font-display: "Zilla Slab", "Georgia", serif;
-  --font-body:    "Karla", "Helvetica Neue", sans-serif;
-  --font-bento:   "Karla", "Helvetica Neue", sans-serif;
+  --font-display: "Epilogue", "Zilla Slab", "Georgia", serif;
+  --font-body:    "Work Sans", "Karla", "Helvetica Neue", sans-serif;
+  --font-bento:   "Work Sans", "Karla", "Helvetica Neue", sans-serif;
 
   --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   --animate-float: float 3s ease-in-out infinite;
@@ -34,20 +34,20 @@
   --color-on-accent:   #1A1A1A;
 
   --t-card-bg:               #FFFFFF;
-  --t-card-border:           2px dashed #00509D;
+  --t-card-border:           1.5px solid rgba(0, 80, 157, 0.18);
   --t-card-radius:           0px;
-  --t-card-shadow:           3px 3px 0px #1A1A1A;
-  --t-card-highlight-border: 8px solid #00509D;
+  --t-card-shadow:           0 2px 12px rgba(0, 80, 157, 0.08);
+  --t-card-highlight-border: 4px solid #00509D;
 
   --t-btn-radius:         0px;
-  --t-btn-border:         3px solid #1A1A1A;
-  --t-btn-shadow:         3px 3px 0px #1A1A1A;
-  --t-btn-hover-tx:       -1px;
+  --t-btn-border:         2px solid #00509D;
+  --t-btn-shadow:         none;
+  --t-btn-hover-tx:       0px;
   --t-btn-hover-ty:       -1px;
-  --t-btn-hover-shadow:   4px 4px 0px #1A1A1A;
-  --t-btn-active-tx:      3px;
-  --t-btn-active-ty:      3px;
-  --t-btn-active-shadow:  0px 0px 0px transparent;
+  --t-btn-hover-shadow:   0 4px 16px rgba(0, 80, 157, 0.25);
+  --t-btn-active-tx:      0px;
+  --t-btn-active-ty:      1px;
+  --t-btn-active-shadow:  none;
 
   --t-input-border:       2px solid #00509D;
   --t-input-radius:       0px;
@@ -57,11 +57,11 @@
   --t-text-primary:       #1A1A1A;
   --t-text-muted:         #5A6A7A;
 
-  --font-display: "Zilla Slab", "Georgia", serif;
-  --font-body:    "Karla", "Helvetica Neue", sans-serif;
-  --font-bento:   "Karla", "Helvetica Neue", sans-serif;
+  --font-display: "Epilogue", "Zilla Slab", "Georgia", serif;
+  --font-body:    "Work Sans", "Karla", "Helvetica Neue", sans-serif;
+  --font-bento:   "Work Sans", "Karla", "Helvetica Neue", sans-serif;
   --t-heading-style: normal;
-  --t-page-border: 8px solid #00509D;
+  --t-page-border: 3px solid #00509D;
 }
 
 /* ── Bossa Nova ──────────────────────────────────────────────────────────────── */
@@ -215,6 +215,18 @@ h1, h2, h3, h4, .font-display {
   background-color: var(--color-brand-cream);
   min-height: 100vh;
   position: relative;
+  box-sizing: border-box;
+}
+
+/* Charcoal hard shadow utility */
+.shadow-hard {
+  box-shadow: 0 4px 16px rgba(0, 80, 157, 0.15);
+}
+.shadow-hard-sm {
+  box-shadow: 0 2px 8px rgba(0, 80, 157, 0.12);
+}
+.shadow-hard-lime {
+  box-shadow: 0 4px 16px rgba(230, 170, 34, 0.3);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
@@ -468,7 +480,8 @@ h1, h2, h3, h4, .font-display {
 
 /* ── card-bento: borda superior mais forte no estilo painel de azulejo ───── */
 [data-theme="boteco"] .card-bento {
-  border-top: 4px solid #00509D;
+  border-top: 3px solid #00509D;
+  box-shadow: 0 2px 12px rgba(0, 80, 157, 0.08);
 }
 
 /* ── Tile-strip: faixa decorativa horizontal de azulejo ──────────────────── */

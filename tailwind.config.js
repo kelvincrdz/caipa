@@ -26,9 +26,16 @@ export default {
         },
       },
       fontFamily: {
-        'display': ['Zilla Slab', 'Fraunces', 'Cormorant Garamond', 'Alice', 'serif'],
-        'body': ['Karla', 'Outfit', 'Helvetica Neue', 'sans-serif'],
-        'label': ['Karla', 'sans-serif'],
+        'display': ['Epilogue', 'Zilla Slab', 'Fraunces', 'Cormorant Garamond', 'Alice', 'serif'],
+        'body': ['Work Sans', 'Karla', 'Outfit', 'Helvetica Neue', 'sans-serif'],
+        'label': ['Work Sans', 'Karla', 'sans-serif'],
+      },
+      colors: {
+        'charcoal': '#1A1A1A',
+        'muted-steel': '#5A6A7A',
+        'brand-blue': '#00509D',
+        'brand-lime': '#E6AA22',
+        'brand-cream': '#FCF8F2',
       },
       fontSize: {
         'hero-desktop': '96px',

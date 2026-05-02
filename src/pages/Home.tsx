@@ -62,26 +62,26 @@ function LiveBarCard({ bar, nowPlaying, queueCount }: {
   return (
     <Link to={`/${bar.slug}`} className="block flex-shrink-0 w-72">
       <motion.div
-        whileHover={{ y: -4 }}
-        className="card-bento bg-white p-5 h-full cursor-pointer"
+        whileHover={{ y: -4, transition: { duration: 0.1 } }}
+        className="bg-white border border-brand-blue/25 border-t-[6px] border-t-brand-blue shadow-[0_2px_8px_rgba(0,80,157,0.08)] p-4 flex flex-col gap-4 cursor-pointer"
       >
-        <div className="flex items-center gap-2 mb-3">
-          <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_red]" />
-          <span className="font-display text-sm uppercase text-red-600 tracking-widest">AO VIVO</span>
+        <div className="flex justify-between items-start">
+          <div>
+            <h3 className="font-display text-xl font-black text-charcoal uppercase leading-tight">{bar.name}</h3>
+            {bar.address && (
+              <p className="font-body text-xs font-bold text-muted-steel flex items-center gap-1 truncate mt-0.5">
+                <MapPin size={10} />
+                {bar.address.split(",").slice(-2).join(",").trim()}
+              </p>
+            )}
+          </div>
+          <span className="bg-brand-lime text-charcoal font-body font-black px-2 py-1 border-2 border-brand-blue/20 shadow-[0_1px_6px_rgba(0,80,157,0.08)] text-xs uppercase whitespace-nowrap">
+            {queueCount} FILA
+          </span>
         </div>
 
-        <h3 className="font-display text-3xl uppercase leading-none tracking-tighter text-brand-blue mb-1 truncate">
-          {bar.name}
-        </h3>
-        {bar.address && (
-          <p className="font-body text-xs font-bold uppercase opacity-50 italic mb-3 flex items-center gap-1 truncate">
-            <MapPin size={10} />
-            {bar.address.split(",").slice(-2).join(",").trim()}
-          </p>
-        )}
-
         {nowPlaying ? (
-          <div className="flex items-center gap-3 border-4 border-brand-blue p-3 bg-brand-cream/40">
+          <div className="flex items-center gap-3 bg-brand-cream/40 p-2 border-2 border-brand-blue/20 shadow-[0_1px_6px_rgba(0,80,157,0.08)]">
             {nowPlaying.thumbnail_url ? (
               <img
                 src={nowPlaying.thumbnail_url}
@@ -90,27 +90,29 @@ function LiveBarCard({ bar, nowPlaying, queueCount }: {
               />
             ) : (
               <div className="h-10 w-10 flex items-center justify-center bg-brand-blue flex-shrink-0">
-                <Disc size={20} className="text-brand-lime" />
+                <Disc size={18} className="text-brand-lime" />
               </div>
             )}
             <div className="min-w-0">
+              <p className="font-body text-[10px] font-black uppercase text-brand-blue mb-0.5">TOCANDO AGORA</p>
               <OverflowMarquee
                 text={nowPlaying.title}
-                className="font-display text-base leading-none uppercase"
+                className="font-display text-sm font-black leading-none uppercase"
               />
-              <p className="font-body text-xs font-bold uppercase opacity-60 italic truncate">{nowPlaying.artist}</p>
+              <p className="font-body text-xs font-bold text-muted-steel truncate">{nowPlaying.artist}</p>
             </div>
           </div>
         ) : (
-          <div className="border-4 border-dashed border-brand-blue/30 p-3 text-center">
-            <p className="font-body text-xs font-bold uppercase opacity-40">Nenhuma música tocando</p>
+          <div className="border border-brand-blue/25/30 p-3 text-center">
+            <p className="font-body text-xs font-bold uppercase text-muted-steel/60">Nenhuma música tocando</p>
           </div>
         )}
 
-        <div className="mt-3 flex items-center justify-between">
-          <span className="bg-brand-lime text-brand-blue border-2 border-brand-blue px-2 py-0.5 font-display text-sm uppercase">
-            {queueCount} na fila
-          </span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+            <span className="font-display text-sm font-black uppercase text-red-600 tracking-widest">AO VIVO</span>
+          </div>
           <ArrowRight size={16} className="text-brand-blue/40" />
         </div>
       </motion.div>
@@ -125,23 +127,23 @@ function CarouselCard({ item }: { item: any }) {
       initial={{ opacity: 0, x: 40 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -40 }}
-      className="flex-shrink-0 w-52 card-bento bg-white p-4"
+      className="flex-shrink-0 w-48 bg-white border border-brand-blue/25 shadow-[0_2px_8px_rgba(0,80,157,0.08)] p-4"
     >
       {item.thumbnail_url ? (
         <img
           src={item.thumbnail_url}
           alt={item.title}
-          className="w-full aspect-square object-cover border-4 border-brand-blue mb-3"
+          className="w-full aspect-square object-cover border-2 border-brand-blue/20 mb-3"
         />
       ) : (
         <div className="w-full aspect-square bg-brand-blue flex items-center justify-center mb-3">
-          <Music size={32} className="text-brand-lime" />
+          <Music size={28} className="text-brand-lime" />
         </div>
       )}
-      <p className="font-display text-base leading-none uppercase truncate">{item.title}</p>
-      <p className="font-body text-xs font-bold uppercase opacity-60 italic truncate">{item.artist}</p>
+      <p className="font-display text-sm font-black leading-none uppercase truncate">{item.title}</p>
+      <p className="font-body text-xs font-bold text-muted-steel truncate">{item.artist}</p>
       {item.bar_name && (
-        <p className="font-body text-[10px] font-bold uppercase mt-1 opacity-40 truncate flex items-center gap-1">
+        <p className="font-body text-[10px] font-bold uppercase mt-1 text-muted-steel/60 truncate flex items-center gap-1">
           <Radio size={8} />
           {item.bar_name}
         </p>
@@ -349,69 +351,89 @@ export default function Home() {
 
   return (
     <main className="flex flex-col items-center">
-      {/* Hero */}
-      <section className="relative flex w-full flex-col items-center justify-center border-b-8 border-brand-blue bg-white px-6 py-24 text-center">
+      {/* TopAppBar */}
+      <header className="bg-white border-b border-brand-blue/15 shadow-[0_2px_8px_rgba(0,0,0,0.06)] flex justify-between items-center w-full px-6 py-4 sticky top-0 z-50">
+        <div className="flex items-center gap-4">
+          <span className="font-display text-2xl font-black text-brand-blue tracking-wider uppercase">TOCAÍ</span>
+        </div>
+        <nav className="hidden md:flex gap-6">
+          <a className="font-display font-black uppercase tracking-tight text-brand-blue border-b-4 border-brand-blue hover:bg-zinc-100 transition-all duration-75 px-2 py-1" href="#">INÍCIO</a>
+          <Link className="font-display font-black uppercase tracking-tight text-zinc-500 hover:bg-zinc-100 transition-all duration-75 px-2 py-1" to="/cadastro">CADASTRAR BAR</Link>
+        </nav>
+      </header>
+
+      {/* Hero Section */}
+      <section className="bg-azulejo w-full min-h-[600px] flex flex-col items-center justify-center px-5 md:px-10 py-16 relative overflow-hidden border-b border-brand-blue/15">
+        <div className="absolute inset-0 bg-white/40" />
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="max-w-4xl"
+          transition={{ duration: 0.5 }}
+          className="relative z-10 flex flex-col items-center text-center max-w-4xl mx-auto space-y-6 bg-white/95 p-8 border-2 border-brand-blue shadow-[0_4px_20px_rgba(0,80,157,0.12)]"
         >
-          <div className="bg-brand-blue px-6 py-2 inline-block mb-4 shadow-[6px_6px_0px_var(--color-brand-lime)]">
-            <span className="text-brand-lime font-display text-2xl tracking-widest uppercase">TOCA AÍ, MERMÃO!</span>
-          </div>
-          <h1 className="mb-6 text-8xl md:text-[10rem] font-display text-brand-blue leading-none tracking-tighter">
-            TOCA<span className="text-brand-lime text-stroke-blue">Í</span>
+          <h1 className="font-display text-[80px] md:text-[120px] leading-none font-black text-brand-blue tracking-tighter">
+            TOCAÍ
           </h1>
-          <p className="mb-10 font-body text-2xl md:text-4xl font-black leading-none uppercase text-brand-blue/80 italic tracking-tight">
-            A trilha sonora do seu bar, <br />
-            comandada pela <span className="bg-brand-lime px-3 shadow-[4px_4px_0px_var(--color-brand-blue)]">galera do balcão.</span>
+          <p className="font-display text-2xl md:text-4xl font-black text-charcoal max-w-2xl bg-brand-lime px-4 py-3 border border-brand-blue/20 shadow-[0_2px_12px_rgba(0,80,157,0.10)] uppercase leading-tight">
+            A MÚSICA É SUA.<br />O BOTECO TAMBÉM.
           </p>
-          <div className="flex flex-col items-center justify-center gap-6 sm:flex-row">
-            <Link to="/cadastro" className="btn-bento flex items-center gap-3 text-3xl">
-              ABRIR MEU BAR <ArrowRight size={32} strokeWidth={3} />
+          <div className="pt-4">
+            <Link
+              to="/cadastro"
+              className="btn-bento flex items-center gap-3 text-xl md:text-2xl px-8 py-4"
+            >
+              ABRIR MEU BAR <ArrowRight size={28} strokeWidth={3} />
             </Link>
-          </div>
-          <div className="mt-12 flex justify-center gap-8 opacity-40">
-            <div className="w-12 h-12 border-4 border-brand-blue rounded-full flex items-center justify-center text-2xl">🎵</div>
-            <div className="w-12 h-12 border-4 border-brand-blue rounded-full flex items-center justify-center text-2xl">🍻</div>
-            <div className="w-12 h-12 border-4 border-brand-blue rounded-full flex items-center justify-center text-2xl">🔥</div>
           </div>
         </motion.div>
       </section>
 
-      {/* Contadores animados */}
-      {statsLoaded && (
-        <section className="w-full border-b-8 border-brand-blue bg-brand-blue py-12 px-6">
-          <div className="mx-auto grid max-w-4xl grid-cols-3 gap-6">
-            <StatCard label="bares na rede" value={stats.bars} icon={<Beer size={36} strokeWidth={2.5} />} />
-            <StatCard label="pedidos hoje" value={stats.todayRequests} icon={<Music size={36} strokeWidth={2.5} />} />
-            <StatCard label="ao vivo agora" value={stats.liveNow} icon={<Radio size={36} strokeWidth={2.5} />} />
-          </div>
-        </section>
-      )}
+      {/* Stat Strip Marquee */}
+      <section className="w-full bg-brand-blue border-y-4 border-brand-blue/20 py-4 overflow-hidden flex whitespace-nowrap">
+        <div className="flex gap-16 px-8 marquee-content">
+          {statsLoaded && (<>
+            <div className="flex items-center gap-4">
+              <Beer size={28} className="text-brand-lime flex-shrink-0" strokeWidth={2.5} />
+              <span className="font-display text-white text-2xl uppercase tracking-tighter font-bold">{stats.bars.toLocaleString("pt-BR")} BARES NA REDE</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <Music size={28} className="text-brand-lime flex-shrink-0" strokeWidth={2.5} />
+              <span className="font-display text-white text-2xl uppercase tracking-tighter font-bold">{stats.todayRequests.toLocaleString("pt-BR")} PEDIDOS HOJE</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <Radio size={28} className="text-brand-lime flex-shrink-0" strokeWidth={2.5} />
+              <span className="font-display text-white text-2xl uppercase tracking-tighter font-bold">{stats.liveNow} AO VIVO AGORA</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <Beer size={28} className="text-brand-lime flex-shrink-0" strokeWidth={2.5} />
+              <span className="font-display text-white text-2xl uppercase tracking-tighter font-bold">{stats.bars.toLocaleString("pt-BR")} BARES NA REDE</span>
+            </div>
+          </>)}
+          {!statsLoaded && (
+            <span className="font-display text-white text-2xl uppercase tracking-tighter font-bold opacity-40">CARREGANDO...</span>
+          )}
+        </div>
+      </section>
 
       {/* Ao Vivo Agora */}
       {liveBars.length > 0 && (
-        <section className="w-full border-b-8 border-brand-blue bg-brand-cream py-12 px-6">
-          <div className="mx-auto max-w-7xl">
-            <div className="mb-6 flex items-center gap-4">
-              <div className="w-4 h-4 rounded-full bg-red-500 animate-pulse shadow-[0_0_12px_red]" />
-              <h2 className="font-display text-5xl md:text-6xl text-brand-blue uppercase leading-none tracking-tighter">
-                AO VIVO AGORA
-              </h2>
-              <span className="bg-brand-blue text-brand-lime font-display text-lg px-3 py-1 uppercase">
-                {liveBars.length} {liveBars.length === 1 ? "bar" : "bares"}
-              </span>
-            </div>
-            <div className="flex gap-5 overflow-x-auto pb-4" style={{ scrollbarWidth: "none" }}>
-              {liveBars.map(({ bar, nowPlaying, queueCount }) => (
-                <LiveBarCard
-                  key={bar.slug}
-                  bar={bar}
-                  nowPlaying={nowPlaying}
-                  queueCount={queueCount}
-                />
-              ))}
+        <section className="w-full bg-brand-cream bg-azulejo py-12 px-5 md:px-10 border-b border-brand-blue/15">
+          <div className="max-w-7xl mx-auto">
+            <div className="bg-white p-8 border-2 border-brand-blue shadow-[0_4px_20px_rgba(0,80,157,0.12)]">
+              <div className="flex items-center gap-4 mb-8">
+                <h2 className="font-display font-black text-4xl md:text-5xl text-charcoal uppercase bg-brand-lime px-4 py-2 border border-brand-blue/20 shadow-[0_2px_12px_rgba(0,80,157,0.10)] inline-block leading-none">AO VIVO AGORA</h2>
+                <div className="h-4 w-4 bg-red-500 rounded-full animate-pulse border-2 border-charcoal" />
+              </div>
+              <div className="flex gap-5 overflow-x-auto pb-4" style={{ scrollbarWidth: "none" }}>
+                {liveBars.map(({ bar, nowPlaying, queueCount }) => (
+                  <LiveBarCard
+                    key={bar.slug}
+                    bar={bar}
+                    nowPlaying={nowPlaying}
+                    queueCount={queueCount}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -419,18 +441,18 @@ export default function Home() {
 
       {/* O que está tocando — carousel */}
       {carousel.length > 0 && (
-        <section className="w-full border-b-8 border-brand-blue bg-white py-10 overflow-hidden">
-          <div className="mx-auto max-w-7xl px-6 mb-5">
-            <h2 className="font-display text-4xl md:text-5xl text-brand-blue uppercase leading-none tracking-tighter">
+        <section className="w-full bg-white border-b border-brand-blue/15 py-10 overflow-hidden">
+          <div className="mx-auto max-w-7xl px-5 md:px-10 mb-5">
+            <h2 className="font-display text-3xl md:text-5xl text-brand-blue font-black uppercase leading-none tracking-tighter">
               O QUE ESTÁ TOCANDO
             </h2>
-            <p className="font-body text-sm font-bold uppercase opacity-50 italic mt-1">
+            <p className="font-body text-sm font-bold uppercase text-muted-steel mt-1">
               Pedidos em tempo real em toda a rede TocaÍ
             </p>
           </div>
           <div
             ref={carouselRef}
-            className="flex gap-5 overflow-x-auto px-6 pb-4"
+            className="flex gap-5 overflow-x-auto px-5 md:px-10 pb-4"
             style={{ scrollbarWidth: "none" }}
           >
             <AnimatePresence mode="popLayout">
@@ -444,46 +466,60 @@ export default function Home() {
 
       {/* Mapa interativo */}
       {mapBars.length > 0 && (
-        <section className="w-full border-b-8 border-brand-blue">
-          <div className="border-b-4 border-brand-blue bg-white px-6 py-6 flex items-center gap-4">
-            <MapPin size={28} className="text-brand-blue" />
-            <div>
-              <h2 className="font-display text-4xl md:text-5xl text-brand-blue uppercase leading-none tracking-tighter">
-                BARES NO MAPA
-              </h2>
-              <p className="font-body text-xs font-bold uppercase opacity-50 italic">
-                Pins amarelos = ao vivo agora · Clique para ver o bar
-              </p>
+        <section className="w-full bg-brand-cream bg-azulejo border-b border-brand-blue/15 py-12 px-5 md:px-10">
+          <div className="max-w-7xl mx-auto">
+            <div className="bg-white p-8 border-2 border-brand-blue shadow-[0_4px_20px_rgba(0,80,157,0.12)]">
+              <div className="flex flex-col lg:flex-row gap-8">
+                <div className="lg:w-1/3 flex flex-col justify-center space-y-4">
+                  <h2 className="font-display font-black text-4xl md:text-5xl text-charcoal uppercase leading-tight">
+                    ONDE TEM<br />
+                    <span className="text-brand-blue bg-brand-lime px-2 border border-brand-blue/20 shadow-[0_2px_12px_rgba(0,80,157,0.10)] inline-block mt-2">TOCAÍ</span>
+                  </h2>
+                  <p className="font-body text-base font-bold text-charcoal">
+                    Encontre o boteco mais próximo com fila aberta. Peça sua música antes mesmo de pedir a cerveja.
+                  </p>
+                  <div className="flex items-center gap-2 text-muted-steel text-sm font-body font-bold uppercase">
+                    <MapPin size={14} />
+                    <span>Pins amarelos = ao vivo agora</span>
+                  </div>
+                </div>
+                <div className="lg:w-2/3 border border-brand-blue/20 shadow-[0_2px_12px_rgba(0,80,157,0.10)] overflow-hidden">
+                  <LiveMap bars={mapBars} />
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="w-full">
-            <LiveMap bars={mapBars} />
           </div>
         </section>
       )}
 
       {/* Features */}
-      <section id="como-funciona" className="grid w-full max-w-7xl grid-cols-1 gap-10 px-6 py-28 md:grid-cols-3">
-        <FeatureCard
-          icon={<Music size={50} strokeWidth={3} />}
-          title="FILA INTELIGENTE"
-          description="Algoritmo que prioriza o tema da noite e quem mais frequenta a casa. Democracia de bar levada a sério."
-        />
-        <FeatureCard
-          icon={<Users size={50} strokeWidth={3} />}
-          title="VOTAÇÃO EM TEMPO REAL"
-          description="A galera vota nos próximos sucessos. O que o bar quer ouvir agora, toca primeiro!"
-        />
-        <FeatureCard
-          icon={<Beer size={50} strokeWidth={3} />}
-          title="ESTILO BENTO GRID"
-          description="Interface brutalista e informativa. Tudo o que importa num lance de olhos, direto no seu celular."
-        />
+      <section id="como-funciona" className="w-full bg-white border-b border-brand-blue/15 py-16 px-5 md:px-10">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+          <FeatureCard
+            icon={<Music size={40} strokeWidth={2.5} />}
+            title="FILA INTELIGENTE"
+            description="Algoritmo que prioriza o tema da noite e quem mais frequenta a casa. Democracia de bar levada a sério."
+          />
+          <FeatureCard
+            icon={<Users size={40} strokeWidth={2.5} />}
+            title="VOTAÇÃO EM TEMPO REAL"
+            description="A galera vota nos próximos sucessos. O que o bar quer ouvir agora, toca primeiro!"
+          />
+          <FeatureCard
+            icon={<Beer size={40} strokeWidth={2.5} />}
+            title="BRUTALISMO POPULAR"
+            description="Interface direta ao ponto. Tudo o que importa num lance de olhos, direto no celular da galera."
+          />
+        </div>
       </section>
 
       {/* Footer */}
-      <footer className="w-full border-t-4 border-brand-blue bg-white py-12 text-center">
-        <p className="font-display text-2xl">TOCAÍ © 2026 — MADE IN BRASIL 🇧🇷</p>
+      <footer className="w-full py-12 px-8 flex flex-col md:flex-row justify-between items-center bg-zinc-900 border-t-2 border-brand-blue">
+        <span className="font-display text-xl font-black text-white uppercase tracking-wider mb-4 md:mb-0">TOCAÍ</span>
+        <div className="flex gap-6 mb-4 md:mb-0">
+          <Link className="font-body font-bold text-xs uppercase tracking-widest text-zinc-400 hover:text-white transition-colors" to="/cadastro">Cadastrar Bar</Link>
+        </div>
+        <span className="font-body font-bold text-xs uppercase tracking-widest text-zinc-400 text-center">© 2026 TOCAÍ — MADE IN BRASIL 🇧🇷</span>
       </footer>
     </main>
   );
@@ -492,12 +528,12 @@ export default function Home() {
 function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
     <motion.div
-      whileHover={{ scale: 1.02 }}
+      whileHover={{ y: -4, transition: { duration: 0.1 } }}
       className="card-bento flex flex-col p-8 bg-white"
     >
-      <div className="mb-6 text-brand-blue drop-shadow-[3px_3px_0px_var(--color-brand-lime)]">{icon}</div>
-      <h3 className="mb-4 text-4xl font-display uppercase italic tracking-tighter leading-none">{title}</h3>
-      <p className="font-body text-xl leading-tight font-bold opacity-70">{description}</p>
+      <div className="mb-5 text-brand-blue">{icon}</div>
+      <h3 className="mb-3 text-2xl font-display font-black uppercase tracking-tight leading-none">{title}</h3>
+      <p className="font-body text-base font-bold text-charcoal/70">{description}</p>
     </motion.div>
   );
 }

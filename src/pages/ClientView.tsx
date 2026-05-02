@@ -533,7 +533,7 @@ export default function ClientView() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="flex min-h-screen flex-col bg-brand-cream p-4 pb-28 md:pb-6 lg:p-8"
+      className="flex min-h-screen flex-col bg-brand-cream pb-28 md:pb-6"
     >
       {/* Notification Toast */}
       <AnimatePresence>
@@ -573,45 +573,43 @@ export default function ClientView() {
         initial={{ y: -24, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 max-[399px]:mb-4 border-b-8 border-brand-blue pb-5"
+        className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white border-b border-brand-blue/15 shadow-[0_2px_8px_rgba(0,0,0,0.06)] px-5 py-4 sticky top-0 z-50"
       >
-        <div>
+        <div className="flex items-center gap-4">
           {barLogo ? (
-            <img src={barLogo} alt={slug} className="h-14 sm:h-20 lg:h-24 object-contain max-w-[200px] sm:max-w-[280px] mb-1" />
+            <img src={barLogo} alt={slug} className="h-10 sm:h-14 object-contain max-w-[160px]" />
           ) : (
-            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-display uppercase tracking-tighter leading-none text-brand-blue">
-              TOCA<span className="text-brand-lime text-stroke-blue">Í</span>
-            </h1>
+            <span className="font-display text-2xl font-black text-brand-blue tracking-wider uppercase">TOCAÍ</span>
           )}
-          <p className="text-sm sm:text-xl font-body font-bold italic uppercase opacity-85">
-            tocai.com/{slug}
-          </p>
+          {barName && (
+            <span className="hidden sm:inline font-body text-sm font-bold uppercase text-muted-steel">/ {barName}</span>
+          )}
         </div>
         <motion.div
           initial={{ x: 24, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
-          className="text-left md:text-right mt-4 md:mt-0 flex flex-col items-start md:items-end gap-2"
+          className="flex items-center gap-3 mt-3 md:mt-0"
         >
           {session.queue_locked && (
-            <div className="px-4 py-1 border-4 border-red-600 bg-red-900/40 inline-block shadow-[4px_4px_0px_rgba(220,38,38,1)]">
-              <span className="text-sm font-bold uppercase tracking-widest text-red-400">🔒 Fila Fechada</span>
+            <div className="px-3 py-1 border-2 border-red-600 bg-red-900/20 inline-block">
+              <span className="text-xs font-bold uppercase tracking-widest text-red-500">🔒 Fila Fechada</span>
             </div>
           )}
-          {barName && (
-            <p className="font-body text-xs font-bold uppercase opacity-75 tracking-widest">{barName}</p>
+          {session.theme && (
+            <div className={cn("px-3 py-1 border-2 border-brand-blue/20 shadow-[0_1px_6px_rgba(0,80,157,0.08)] inline-block", themeAccent.badge)}>
+              <span className="text-xs font-display font-black uppercase tracking-widest text-brand-lime">{session.theme}</span>
+            </div>
           )}
-          <div className={cn("px-4 py-1 border-4 border-brand-blue inline-block mb-2 shadow-[4px_4px_0px_var(--color-brand-blue)]", themeAccent.badge)}>
-            <span className="text-sm font-bold uppercase tracking-widest text-brand-lime">Tema da Noite</span>
-          </div>
-          <h2 className={cn("text-2xl sm:text-4xl lg:text-5xl font-display uppercase tracking-tight leading-none", themeAccent.title)}>
-            {session.theme}
-          </h2>
+          <p className="font-body text-xs font-bold text-muted-steel uppercase">tocai.com/{slug}</p>
         </motion.div>
       </motion.header>
 
+      {/* Tile strip */}
+      <div className="w-full tile-strip" />
+
       {/* Bento Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 max-[399px]:gap-4 flex-grow relative">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-5 max-[399px]:gap-4 flex-grow relative px-4 py-5 md:px-6 lg:px-8">
 
         {/* Search Results Overlay */}
         <AnimatePresence>
@@ -767,9 +765,9 @@ export default function ClientView() {
 
         {/* NOW PLAYING card */}
         <motion.div layout initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
-          className="md:col-span-7 md:row-span-4 border-4 border-brand-blue bg-brand-blue shadow-[8px_8px_0px_var(--color-brand-blue)] text-brand-cream p-6 lg:p-10 max-[399px]:p-4 flex flex-col relative overflow-hidden group"
+          className="md:col-span-7 md:row-span-4 border-2 border-brand-blue bg-brand-blue shadow-[0_4px_20px_rgba(0,80,157,0.12)] text-brand-cream p-6 lg:p-10 max-[399px]:p-4 flex flex-col relative overflow-hidden"
         >
-          <div className="absolute top-0 right-0 bg-brand-lime text-brand-cream font-display px-3 py-1 sm:px-6 sm:py-2 text-base sm:text-2xl lg:text-3xl tracking-tighter shadow-[-4px_4px_0px_var(--color-brand-blue)] z-10">
+          <div className="absolute top-0 right-0 bg-brand-lime text-charcoal font-display font-black px-3 py-1 sm:px-5 sm:py-2 text-sm sm:text-xl tracking-tighter border-l-[6px] border-b-[6px] border-brand-blue/20 z-10">
             NO AR AGORA
           </div>
           {nowPlaying ? (
@@ -843,7 +841,7 @@ export default function ClientView() {
 
         {/* Queue Card — with tabs */}
         <motion.div initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.25 }}
-          className="md:col-span-5 md:row-span-6 card-bento p-6 lg:p-8 max-[399px]:p-4 max-[399px]:max-h-[50vh] flex flex-col bg-white"
+          className="md:col-span-5 md:row-span-6 border-2 border-brand-blue shadow-[0_4px_20px_rgba(0,80,157,0.12)] p-5 lg:p-7 max-[399px]:p-4 max-[399px]:max-h-[50vh] flex flex-col bg-white"
         >
           {/* Tabs */}
           <div className="flex gap-2 mb-4 border-b-4 border-brand-blue pb-3">
@@ -976,7 +974,7 @@ export default function ClientView() {
 
         {/* Identity Card */}
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4, delay: 0.3 }}
-          className="md:col-span-3 md:row-span-2 card-bento-lime p-5 flex flex-col justify-between group"
+          className="md:col-span-3 md:row-span-2 border-2 border-brand-blue/30 bg-brand-lime shadow-[0_4px_20px_rgba(0,80,157,0.12)] p-5 flex flex-col justify-between"
         >
           <div className="flex justify-between items-start">
             <span className="text-[10px] font-bold uppercase tracking-widest text-brand-cream/60 group-hover:text-brand-cream transition-colors">Sua Identidade</span>
@@ -1008,7 +1006,7 @@ export default function ClientView() {
           className="md:col-span-4 md:row-span-2 flex max-[399px]:flex-col gap-3"
         >
           {/* Tempo Estimado */}
-          <div className="flex-1 border-4 border-brand-blue p-4 flex flex-col justify-center items-center text-center bg-brand-cream shadow-[8px_8px_0px_var(--color-brand-blue)] relative overflow-hidden">
+          <div className="flex-1 border-2 border-brand-blue/30 p-4 flex flex-col justify-center items-center text-center bg-brand-cream shadow-[0_4px_20px_rgba(0,80,157,0.12)] relative overflow-hidden">
             {approvedPhotos.length > 0 && (
               <AnimatePresence mode="wait">
                 <motion.div key={approvedPhotos[carouselIdx % approvedPhotos.length]?.id}
@@ -1032,7 +1030,7 @@ export default function ClientView() {
           {/* Photo upload button */}
           {phone && (
             <button onClick={() => setShowPhotoModal(true)}
-              className="flex flex-col items-center justify-center gap-2 border-4 border-brand-blue bg-white shadow-[8px_8px_0px_var(--color-brand-blue)] px-4 py-4 hover:bg-brand-cream transition-colors group min-w-[80px] max-[399px]:min-h-[120px]"
+              className="flex flex-col items-center justify-center gap-2 border-2 border-brand-blue/30 bg-white shadow-[0_4px_20px_rgba(0,80,157,0.12)] px-4 py-4 hover:bg-brand-cream transition-colors group min-w-[80px] max-[399px]:min-h-[120px] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none"
             >
               <Camera size={28} className="text-brand-blue group-hover:scale-110 transition-transform" strokeWidth={2.5} />
               <span className="text-[10px] font-black uppercase tracking-widest text-brand-blue text-center leading-tight">FOTO<br />PRO<br />TELÃO</span>
@@ -1044,7 +1042,7 @@ export default function ClientView() {
 
       {/* Footer */}
       <motion.footer initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.5 }}
-        className="mt-10 md:mt-12 flex flex-col md:flex-row justify-between items-center gap-6 border-t-8 border-brand-blue pt-6 md:pt-8"
+        className="mt-10 md:mt-12 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-brand-blue/15 pt-6 md:pt-8 px-4 md:px-6 lg:px-8"
       >
         <div className="flex flex-wrap justify-center md:justify-start gap-4">
           <span className="text-xs font-bold border-4 border-brand-blue bg-white px-3 py-2 uppercase shadow-[4px_4px_0px_var(--color-brand-blue)]">tocai.com/{slug}</span>
@@ -1071,7 +1069,7 @@ export default function ClientView() {
       </motion.footer>
 
       {/* Mobile fixed search */}
-      <div className="fixed bottom-0 left-0 right-0 z-[140] p-3 md:hidden bg-brand-cream/95 backdrop-blur-md border-t-4 border-brand-blue">
+      <div className="fixed bottom-0 left-0 right-0 z-[140] p-3 md:hidden bg-white border-t border-brand-blue/15 shadow-[0_-2px_8px_rgba(0,0,0,0.06)]">
         {session.queue_locked ? (
           <div className="border-4 border-red-600 bg-red-900/30 p-2 text-center">
             <p className="font-display text-lg uppercase text-red-400">🔒 Fila Fechada</p>
@@ -1151,7 +1149,7 @@ export default function ClientView() {
                       <button onClick={() => { setPhotoFile(null); setPhotoPreview(null); }} className="absolute top-2 right-2 bg-white border-2 border-brand-blue p-1 hover:bg-red-50"><X size={14} /></button>
                     </div>
                   ) : (
-                    <button onClick={() => photoInputRef.current?.click()} className="w-full border-4 border-dashed border-brand-blue p-10 text-center mb-4 hover:bg-brand-cream/40 transition-colors">
+                    <button onClick={() => photoInputRef.current?.click()} className="w-full border-4 border-brand-blue/30 p-10 text-center mb-4 hover:bg-brand-cream/40 transition-colors">
                       <Camera size={36} className="mx-auto mb-2 text-brand-blue/40" />
                       <p className="font-display text-xl uppercase opacity-60">Tirar foto ou escolher da galeria</p>
                     </button>

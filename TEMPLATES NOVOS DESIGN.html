@@ -1,0 +1,1700 @@
+<!-- Design System -->
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TOCAÍ - BRUTALISMO POPULAR BRASILEIRO</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&amp;family=Work+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "amber-wood": "#2A2421",
+                        "on-tertiary-container": "#ffb28a",
+                        "outline": "#727782",
+                        "secondary-fixed-dim": "#fbbc36",
+                        "inverse-on-surface": "#f0f0f7",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#883901",
+                        "surface-container-low": "#f3f3fa",
+                        "on-tertiary-fixed-variant": "#783100",
+                        "primary": "#003974",
+                        "on-primary-fixed": "#001b3d",
+                        "on-primary-fixed-variant": "#00468b",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#00509d",
+                        "on-surface-variant": "#424751",
+                        "secondary": "#7c5800",
+                        "bossa-forest": "#2A4B3C",
+                        "surface": "#f9f9ff",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#febf38",
+                        "amber-gold": "#D4AF37",
+                        "surface-tint": "#1f5eac",
+                        "brand-lime": "#E6AA22",
+                        "coast-sand": "#EADDD7",
+                        "outline-variant": "#c2c6d3",
+                        "tertiary-fixed": "#ffdbcb",
+                        "bossa-caju": "#D97746",
+                        "tertiary": "#642800",
+                        "coast-clay": "#B65C3A",
+                        "secondary-fixed": "#ffdea6",
+                        "brand-cream": "#FCF8F2",
+                        "inverse-primary": "#a9c7ff",
+                        "on-primary-container": "#a4c5ff",
+                        "on-secondary-fixed-variant": "#5e4200",
+                        "on-surface": "#191c21",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "inverse-surface": "#2e3036",
+                        "on-error": "#ffffff",
+                        "brand-blue": "#00509D",
+                        "primary-fixed": "#d6e3ff",
+                        "error-container": "#ffdad6",
+                        "surface-container": "#ededf5",
+                        "background": "#f9f9ff",
+                        "surface-dim": "#d9d9e1",
+                        "on-background": "#191c21",
+                        "surface-container-highest": "#e1e2e9",
+                        "surface-variant": "#e1e2e9",
+                        "surface-container-high": "#e7e8ef",
+                        "charcoal": "#1A1A1A",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed": "#341100",
+                        "on-secondary-container": "#6f4f00",
+                        "on-secondary-fixed": "#271900",
+                        "muted-steel": "#5A6A7A",
+                        "surface-bright": "#f9f9ff",
+                        "tertiary-fixed-dim": "#ffb691"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "40px",
+                        "gutter": "16px",
+                        "unit": "8px",
+                        "margin-mobile": "20px",
+                        "bento-gap": "12px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["epilogue"],
+                        "label-caps": ["workSans"],
+                        "body-md": ["workSans"],
+                        "display-xl": ["epilogue"],
+                        "body-lg": ["workSans"],
+                        "headline-lg": ["epilogue"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "display-xl": ["96px", {"lineHeight": "1.0", "letterSpacing": "-0.04em", "fontWeight": "800"}],
+                        "body-lg": ["18px", {"lineHeight": "1.5", "fontWeight": "600"}],
+                        "headline-lg": ["48px", {"lineHeight": "1.1", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .texture-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+            opacity: 0.03;
+        }
+        .hard-shadow {
+            box-shadow: 3px 3px 0px 0px #1A1A1A;
+        }
+        .hard-shadow-active:active {
+            box-shadow: 0px 0px 0px 0px #1A1A1A;
+            transform: translate(3px, 3px);
+        }
+        .azulejo-pattern {
+            background-color: #FCF8F2;
+            background-image: 
+                linear-gradient(135deg, rgba(0, 80, 157, 0.05) 25%, transparent 25%), 
+                linear-gradient(225deg, rgba(0, 80, 157, 0.05) 25%, transparent 25%), 
+                linear-gradient(45deg, rgba(0, 80, 157, 0.05) 25%, transparent 25%), 
+                linear-gradient(315deg, rgba(0, 80, 157, 0.05) 25%, transparent 25%);
+            background-position:  16px 0, 16px 0, 0 0, 0 0;
+            background-size: 32px 32px;
+            background-repeat: repeat;
+        }
+        .azulejo-strip {
+            height: 24px;
+            background-color: #ffffff;
+            background-image: 
+                linear-gradient(45deg, #00509D 25%, transparent 25%, transparent 75%, #00509D 75%, #00509D), 
+                linear-gradient(45deg, #00509D 25%, transparent 25%, transparent 75%, #00509D 75%, #00509D);
+            background-size: 24px 24px;
+            background-position: 0 0, 12px 12px;
+            border-top: 4px solid #1A1A1A;
+            border-bottom: 4px solid #1A1A1A;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen flex flex-col border-[8px] border-brand-blue">
+<div class="texture-overlay"></div>
+<!-- TopAppBar -->
+<header class="bg-white dark:bg-zinc-900 border-b-4 border-zinc-900 dark:border-white shadow-[0px_4px_0px_0px_#1A1A1A] flex justify-between items-center w-full px-6 py-4 sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<span class="font-['Epilogue'] text-2xl font-black text-[#00509D] dark:text-[#4A90E2] tracking-[1px] uppercase">TOCAÍ</span>
+</div>
+<nav class="hidden md:flex gap-6">
+<a class="font-['Epilogue'] font-black uppercase tracking-tighter text-[#00509D] border-b-4 border-[#00509D] hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-75 px-2 py-1" href="#">INÍCIO</a>
+<a class="font-['Epilogue'] font-black uppercase tracking-tighter text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-75 px-2 py-1" href="#">SOBRE</a>
+<a class="font-['Epilogue'] font-black uppercase tracking-tighter text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-75 px-2 py-1" href="#">PLANOS</a>
+</nav>
+<div class="flex items-center gap-4 text-[#00509D] dark:text-[#4A90E2]">
+<span class="material-symbols-outlined cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 p-2 rounded-DEFAULT transition-all duration-75" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 p-2 rounded-DEFAULT transition-all duration-75" data-icon="account_circle">account_circle</span>
+</div>
+</header>
+<main class="flex-grow flex flex-col">
+<!-- Hero Section -->
+<section class="azulejo-pattern w-full min-h-[716px] flex flex-col items-center justify-center p-margin-mobile md:p-margin-desktop relative overflow-hidden border-b-4 border-charcoal">
+<div class="absolute inset-0 bg-white/40"></div>
+<div class="relative z-10 flex flex-col items-center text-center max-w-4xl mx-auto space-y-8 bg-white/90 p-8 border-[8px] border-brand-blue hard-shadow">
+<h1 class="font-display-xl text-display-xl text-brand-blue drop-shadow-[4px_4px_0px_#1A1A1A] transform -rotate-2">
+                    TOCAÍ
+                </h1>
+<p class="font-headline-md text-headline-md text-charcoal max-w-2xl bg-brand-lime p-4 border-4 border-charcoal hard-shadow transform rotate-1">
+                    A MÚSICA É SUA.<br/>O BOTECO TAMBÉM.
+                </p>
+<div class="pt-8">
+<button class="bg-brand-blue text-white font-label-caps text-label-caps px-8 py-4 border-4 border-charcoal hard-shadow hard-shadow-active text-lg tracking-widest uppercase">
+                        ABRIR MEU BAR
+                    </button>
+</div>
+</div>
+</section>
+<!-- Azulejo Strip Decoration -->
+<div class="w-full azulejo-strip"></div>
+<!-- Stat Strip -->
+<section class="w-full bg-brand-blue border-y-4 border-charcoal py-4 overflow-hidden flex whitespace-nowrap">
+<div class="flex gap-16 px-8 animate-marquee">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-brand-lime text-3xl" data-icon="storefront" data-weight="fill">storefront</span>
+<span class="font-headline-md text-white text-2xl uppercase tracking-tighter">1.204 BARES NA REDE</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-brand-lime text-3xl" data-icon="music_note" data-weight="fill">music_note</span>
+<span class="font-headline-md text-white text-2xl uppercase tracking-tighter">45.892 PEDIDOS HOJE</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-brand-lime text-3xl" data-icon="local_fire_department" data-weight="fill">local_fire_department</span>
+<span class="font-headline-md text-white text-2xl uppercase tracking-tighter">8.940 NA FILA AGORA</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-brand-lime text-3xl" data-icon="storefront" data-weight="fill">storefront</span>
+<span class="font-headline-md text-white text-2xl uppercase tracking-tighter">1.204 BARES NA REDE</span>
+</div>
+</div>
+</section>
+<!-- Ao Vivo Agora (Bento Grid Style) -->
+<section class="w-full bg-brand-cream azulejo-pattern p-margin-mobile md:p-margin-desktop border-b-4 border-charcoal">
+<div class="max-w-7xl mx-auto relative z-10 bg-white p-8 border-[8px] border-brand-blue hard-shadow">
+<div class="flex items-center gap-4 mb-8">
+<h2 class="font-headline-lg text-headline-lg text-charcoal uppercase bg-brand-lime px-4 py-2 border-4 border-charcoal hard-shadow inline-block transform -rotate-1">AO VIVO AGORA</h2>
+<div class="h-4 w-4 bg-error rounded-full animate-pulse border-2 border-charcoal"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-bento-gap">
+<!-- Bar Card 1 -->
+<div class="bg-white border-2 border-dashed border-brand-blue border-t-[8px] border-t-brand-blue hard-shadow p-4 flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-xl text-charcoal uppercase">Bar do Zeca</h3>
+<p class="font-body-md text-muted-steel text-sm">Lapa, RJ</p>
+</div>
+<span class="bg-brand-lime text-charcoal font-label-caps px-2 py-1 border-2 border-charcoal hard-shadow text-xs">8 FILA</span>
+</div>
+<div class="flex items-center gap-4 bg-surface p-2 border-2 border-charcoal hard-shadow">
+<div class="w-16 h-16 bg-charcoal border-2 border-charcoal relative overflow-hidden">
+<img alt="Album Art" class="w-full h-full object-cover" data-alt="A close up shot of a vibrant, textured vinyl record spinning on a vintage turntable. The lighting is warm and moody, creating a nostalgic, retro aesthetic common in classic boteco environments. The colors feature deep blacks, warm ambers, and subtle hints of blue reflections." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-eKY5t6Sc0LHwZ2440kP-PYWspCSEJWOYF4WROKomSZfA5DYRa3LHDgCEhRBnn1etMaZ8NHbBQXsQJ7D1xZe5uRfTQ0oEQEeRp8ohpy3bCmPbvItGa-Rm9hBrB88Fa5hTzl4Z5B8lMdcJ9GgZjmfiEGtv6sKJSdCeIPXKQg9lxprDmilPFIoQErJgER4cCz5nVwR8o1NQKbt-iAbJmjJbs8-2wrj-vu0iPwbPy25RVxDdz3AGL59DC_Tv_1RdbWSWiWhWkKso4lc"/>
+</div>
+<div class="flex-grow overflow-hidden">
+<p class="font-label-caps text-xs text-brand-blue uppercase mb-1">TOCANDO AGORA</p>
+<p class="font-headline-md text-lg text-charcoal truncate">Deixa Acontecer</p>
+<p class="font-body-md text-muted-steel text-sm truncate">Grupo Revelação</p>
+</div>
+</div>
+</div>
+<!-- Bar Card 2 -->
+<div class="bg-white border-2 border-dashed border-brand-blue border-t-[8px] border-t-brand-blue hard-shadow p-4 flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-xl text-charcoal uppercase">Boteco São Jorge</h3>
+<p class="font-body-md text-muted-steel text-sm">Vila Madalena, SP</p>
+</div>
+<span class="bg-brand-lime text-charcoal font-label-caps px-2 py-1 border-2 border-charcoal hard-shadow text-xs">15 FILA</span>
+</div>
+<div class="flex items-center gap-4 bg-surface p-2 border-2 border-charcoal hard-shadow">
+<div class="w-16 h-16 bg-charcoal border-2 border-charcoal relative overflow-hidden">
+<img alt="Album Art" class="w-full h-full object-cover" data-alt="A macro shot of a brightly lit stage light shining against a dark background, capturing the raw energy of live music. The light is a brilliant, harsh white with a subtle blue halo, contrasting sharply with the deep, textured shadows. The mood is electric and high-energy, characteristic of a lively Brazilian concert venue." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAESaIn-RcCE5FJlq8iIHXetfFbQm6qktz5xjxr57YIIMy3ttI1T9hjKC45tKQWPi1zWCXopBoYx7ZbJGU6pE7ZF00foLClOjzREsAF9Il-f2DdU1G9rMx0W1ePdm-p-O7We0EkqwRRd5058znplCxpDIrF30cLaf6WrRG3gbqM2rKklw2_vC7zuQ-WSMqtkIpX72HHMaYVl4Ri9Qd7peDS6K38RB3otqH3PZmNFAJHBPDzLB2yMxUQZaXVUJdVrB9vvx4X8WZhd_c"/>
+</div>
+<div class="flex-grow overflow-hidden">
+<p class="font-label-caps text-xs text-brand-blue uppercase mb-1">TOCANDO AGORA</p>
+<p class="font-headline-md text-lg text-charcoal truncate">Não Deixe o Samba Morrer</p>
+<p class="font-body-md text-muted-steel text-sm truncate">Alcione</p>
+</div>
+</div>
+</div>
+<!-- Bar Card 3 -->
+<div class="bg-white border-2 border-dashed border-brand-blue border-t-[8px] border-t-brand-blue hard-shadow p-4 flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-xl text-charcoal uppercase">Armazém Cultural</h3>
+<p class="font-body-md text-muted-steel text-sm">Pelourinho, BA</p>
+</div>
+<span class="bg-brand-lime text-charcoal font-label-caps px-2 py-1 border-2 border-charcoal hard-shadow text-xs">5 FILA</span>
+</div>
+<div class="flex items-center gap-4 bg-surface p-2 border-2 border-charcoal hard-shadow">
+<div class="w-16 h-16 bg-charcoal border-2 border-charcoal relative overflow-hidden">
+<img alt="Album Art" class="w-full h-full object-cover" data-alt="A close-up view of an acoustic guitar leaning against a textured, peeling yellow wall. The lighting is bright and natural, casting harsh, dramatic shadows that emphasize the rough texture of the wall. The scene evokes a rustic, artisanal coastal vibe, with warm, earthy colors and a relaxed, tactile feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWG_d28bLz0oTtp7pCq9VCA8VaF2cM3cn85cqMRf8WLgMAaHTIK4na0SUr8ZbZ8-UDX9xsZFnmJ21WawhxOYIjjOPLEpBMaeSLkCBkRifPcX50s4JyfevRQ47YSDjlO_nP8cdPgJ_Zz_fZsjbhzD6zHc1PK8YP1RHBXNx4wdJ-8QPvHGhE_jrC5WMeLO8XaQP3zZg1j7eSRZ5icOOpCpeqQTtf-hQB-hggV29m5czoucsM6sOS9ClmHCNjUkmyrSqQBWNHuOGqVNg"/>
+</div>
+<div class="flex-grow overflow-hidden">
+<p class="font-label-caps text-xs text-brand-blue uppercase mb-1">TOCANDO AGORA</p>
+<p class="font-headline-md text-lg text-charcoal truncate">Anunciação</p>
+<p class="font-body-md text-muted-steel text-sm truncate">Alceu Valença</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Azulejo Strip Decoration -->
+<div class="w-full azulejo-strip"></div>
+<!-- Interactive Map Section -->
+<section class="w-full bg-brand-cream azulejo-pattern border-t-4 border-charcoal p-margin-mobile md:p-margin-desktop">
+<div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 bg-white p-8 border-[8px] border-brand-blue hard-shadow relative z-10">
+<div class="lg:w-1/3 flex flex-col justify-center space-y-6">
+<h2 class="font-headline-lg text-headline-lg text-charcoal uppercase leading-tight">
+                        ONDE TEM<br/>
+<span class="text-brand-blue bg-brand-lime px-2 border-4 border-charcoal hard-shadow inline-block transform -rotate-1 mt-2">TOCAÍ</span>
+</h2>
+<p class="font-body-lg text-charcoal">
+                        Encontre o boteco mais próximo com fila aberta. Peça sua música antes mesmo de pedir a cerveja.
+                    </p>
+<div class="flex gap-4">
+<input class="flex-grow border-4 border-charcoal p-3 font-label-caps text-sm uppercase focus:ring-0 focus:outline-none hard-shadow bg-white" placeholder="BUSCAR CIDADE..." type="text"/>
+<button class="bg-charcoal text-white p-3 border-4 border-charcoal hard-shadow hard-shadow-active">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+</div>
+</div>
+<div class="lg:w-2/3 h-[400px] border-4 border-charcoal hard-shadow bg-surface-dim relative overflow-hidden">
+<img alt="Map View" class="w-full h-full object-cover opacity-80 mix-blend-multiply" data-alt="A stylized, top-down view of a map showing a dense urban grid, rendered in a high-contrast, brutalist aesthetic. The map features stark black lines on an off-white background, with vibrant yellow and blue geometric markers scattered across the streets. The lighting is flat and graphic, emphasizing the raw, unpolished, and tactile nature of the Brazilian Boteco design system." data-location="Brasil" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJJZvdfDMqERxp0xS1y67v3if0DcitooT_O4Bi23NXD0uD02kA_ehuFwGh1_9D6C4Rr-docQaLMvcN20JKBMcb8pcJquIaIXmIioQPTWSYXhmVpKwlN7xIyT-u276LH7_tDPvRdFUyoujMNyTzDdwDQN9-Js2cGSAEUbzLz-fDP69G_d9X1s8ff4XOCnQDKe7jE0ZjkYdrjk-_xlQXWcm7y9MFVoyhFzQdsEjvx8xsaR3TLlh8hk1k_3yEl72hPnb4KlLJijmsA1M"/>
+<!-- Map Markers -->
+<div class="absolute top-1/4 left-1/3 bg-brand-lime border-2 border-charcoal w-6 h-6 rounded-full hard-shadow animate-bounce"></div>
+<div class="absolute top-1/2 left-1/2 bg-brand-blue border-2 border-charcoal w-8 h-8 rounded-full hard-shadow flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-sm" data-icon="music_note">music_note</span>
+</div>
+<div class="absolute bottom-1/3 right-1/4 bg-brand-lime border-2 border-charcoal w-6 h-6 rounded-full hard-shadow"></div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 px-8 flex flex-col md:flex-row justify-between items-center bg-zinc-900 border-t-[8px] border-brand-blue mt-auto">
+<span class="font-['Epilogue'] text-lg font-black text-white uppercase tracking-[1px] mb-4 md:mb-0">TOCAÍ</span>
+<div class="flex gap-6 mb-4 md:mb-0">
+<a class="font-['Epilogue'] font-medium text-xs uppercase tracking-widest text-zinc-400 hover:text-white transition-colors opacity-80 hover:opacity-100" href="#">Sobre</a>
+<a class="font-['Epilogue'] font-medium text-xs uppercase tracking-widest text-zinc-400 hover:text-white transition-colors opacity-80 hover:opacity-100" href="#">Termos</a>
+<a class="font-['Epilogue'] font-medium text-xs uppercase tracking-widest text-zinc-400 hover:text-white transition-colors opacity-80 hover:opacity-100" href="#">Privacidade</a>
+<a class="font-['Epilogue'] font-medium text-xs uppercase tracking-widest text-zinc-400 hover:text-white transition-colors opacity-80 hover:opacity-100" href="#">Contato</a>
+</div>
+<span class="font-['Epilogue'] font-medium text-xs uppercase tracking-widest text-zinc-400 text-center">© 2024 TOCAÍ - BRUTALISMO POPULAR BRASILEIRO</span>
+</footer>
+</body></html>
+
+<!-- Tocaí - Landing Page (Refined Boteco Style) -->
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>TOCAÍ - Boteco do Zé</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@700;800&amp;family=Work+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "amber-wood": "#2A2421",
+                        "on-tertiary-container": "#ffb28a",
+                        "outline": "#727782",
+                        "secondary-fixed-dim": "#fbbc36",
+                        "inverse-on-surface": "#f0f0f7",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#883901",
+                        "surface-container-low": "#f3f3fa",
+                        "on-tertiary-fixed-variant": "#783100",
+                        "primary": "#003974",
+                        "on-primary-fixed": "#001b3d",
+                        "on-primary-fixed-variant": "#00468b",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#00509d",
+                        "on-surface-variant": "#424751",
+                        "secondary": "#7c5800",
+                        "bossa-forest": "#2A4B3C",
+                        "surface": "#f9f9ff",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#febf38",
+                        "amber-gold": "#D4AF37",
+                        "surface-tint": "#1f5eac",
+                        "brand-lime": "#E6AA22",
+                        "coast-sand": "#EADDD7",
+                        "outline-variant": "#c2c6d3",
+                        "tertiary-fixed": "#ffdbcb",
+                        "bossa-caju": "#D97746",
+                        "tertiary": "#642800",
+                        "coast-clay": "#B65C3A",
+                        "secondary-fixed": "#ffdea6",
+                        "brand-cream": "#FCF8F2",
+                        "inverse-primary": "#a9c7ff",
+                        "on-primary-container": "#a4c5ff",
+                        "on-secondary-fixed-variant": "#5e4200",
+                        "on-surface": "#191c21",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "inverse-surface": "#2e3036",
+                        "on-error": "#ffffff",
+                        "brand-blue": "#00509D",
+                        "primary-fixed": "#d6e3ff",
+                        "error-container": "#ffdad6",
+                        "surface-container": "#ededf5",
+                        "background": "#f9f9ff",
+                        "surface-dim": "#d9d9e1",
+                        "on-background": "#191c21",
+                        "surface-container-highest": "#e1e2e9",
+                        "surface-variant": "#e1e2e9",
+                        "surface-container-high": "#e7e8ef",
+                        "charcoal": "#1A1A1A",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed": "#341100",
+                        "on-secondary-container": "#6f4f00",
+                        "on-secondary-fixed": "#271900",
+                        "muted-steel": "#5A6A7A",
+                        "surface-bright": "#f9f9ff",
+                        "tertiary-fixed-dim": "#ffb691"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "margin-desktop": "40px",
+                        "gutter": "16px",
+                        "unit": "8px",
+                        "margin-mobile": "20px",
+                        "bento-gap": "12px"
+                    },
+                    fontFamily: {
+                        "headline-md": ["epilogue"],
+                        "label-caps": ["workSans"],
+                        "body-md": ["workSans"],
+                        "display-xl": ["epilogue"],
+                        "body-lg": ["workSans"],
+                        "headline-lg": ["epilogue"]
+                    },
+                    fontSize: {
+                        "headline-md": ["32px", { lineHeight: "1.2", fontWeight: "700" }],
+                        "label-caps": ["12px", { lineHeight: "1.0", letterSpacing: "0.1em", fontWeight: "700" }],
+                        "body-md": ["16px", { lineHeight: "1.6", fontWeight: "400" }],
+                        "display-xl": ["96px", { lineHeight: "1.0", letterSpacing: "-0.04em", fontWeight: "800" }],
+                        "body-lg": ["18px", { lineHeight: "1.5", fontWeight: "600" }],
+                        "headline-lg": ["48px", { lineHeight: "1.1", fontWeight: "700" }]
+                    },
+                    backgroundImage: {
+                        'azulejo': "url('data:image/svg+xml,%3Csvg width=\\'40\\' height=\\'40\\' viewBox=\\'0 0 40 40\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cpath d=\\'M20 20.5V18H0v-2h20v-2h2v2h18v2H22v2.5h18v2H22v2h18v2H22v2h18v2H22v2h18v2H22v2h18v2H22v2h-2v-2H0v-2h20v-2H0v-2h20v-2H0v-2h20v-2H0v-2h20v-2H0v-2h20v-2.5z\\' fill=\\'%2300509d\\' fill-opacity=\\'0.08\\' fill-rule=\\'evenodd\\'/%3E%3C/svg%3E')"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            /* Fallback background if azulejo doesn't load */
+            background-color: #FCF8F2; /* brand-cream */
+            /* Applying the grid grain overlay conceptually via css */
+        }
+        .grain-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            background: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.03"/%3E%3C/svg%3E');
+            z-index: 9999;
+        }
+        /* Shared components specific active state structural rules applied manually where required */
+        .bottom-nav-active {
+            border: 2px solid #1A1A1A;
+            background-color: #00509D;
+            color: #ffffff;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-brand-cream bg-azulejo pb-[100px] text-on-surface min-h-screen relative overflow-x-hidden selection:bg-brand-blue selection:text-white border-[8px] border-brand-blue border-solid box-border">
+<div class="grain-overlay"></div>
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-6 py-4 sticky top-0 z-50 bg-brand-cream border-b-4 border-charcoal shadow-[0px_4px_0px_0px_#1A1A1A]">
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md uppercase tracking-tighter text-brand-blue">TOCAÍ</span>
+<span class="font-label-caps text-label-caps text-charcoal">tocai.com/boteco-do-ze</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-1 bg-brand-lime border-2 border-charcoal font-label-caps text-label-caps text-charcoal shadow-[3px_3px_0px_0px_#1A1A1A]">FORRÓ</span>
+<div class="flex gap-4 ml-4">
+<span class="material-symbols-outlined text-brand-blue cursor-pointer hover:bg-zinc-100 p-1">notifications</span>
+<span class="material-symbols-outlined text-brand-blue cursor-pointer hover:bg-zinc-100 p-1">account_circle</span>
+</div>
+</div>
+</header>
+<!-- Tile Strip Separator -->
+<div class="w-full h-4 bg-[url('data:image/svg+xml,%3Csvg width=\\'20\\' height=\\'20\\' viewBox=\\'0 0 20 20\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cpath d=\\'M0 0h10v10H0V0zm10 10h10v10H10V10z\\' fill=\\'%2300509D\\' fill-opacity=\\'1\\'/%3E%3Cpath d=\\'M10 0h10v10H10V0zM0 10h10v10H0V10z\\' fill=\\'%23EADDD7\\' fill-opacity=\\'1\\'/%3E%3C/svg%3E')] border-b-4 border-charcoal shadow-[0px_3px_0px_0px_#1A1A1A] relative z-40"></div>
+<main class="p-margin-mobile flex flex-col gap-bento-gap max-w-[390px] mx-auto w-full pt-6">
+<!-- NOW PLAYING BENTO CARD -->
+<section class="bg-brand-blue border-2 border-charcoal shadow-[4px_4px_0px_0px_#E6AA22] p-4 flex flex-col gap-4 relative">
+<!-- Pulsing requester indicator -->
+<div class="absolute top-4 right-4 flex items-center gap-2 bg-charcoal px-2 py-1 border-2 border-brand-lime shadow-[3px_3px_0px_0px_#1A1A1A]">
+<div class="w-2 h-2 rounded-full bg-error"></div>
+<span class="font-label-caps text-label-caps text-white">PEDIDO POR JOÃO</span>
+</div>
+<div class="font-label-caps text-label-caps text-brand-lime">TOCANDO AGORA</div>
+<div class="flex items-center justify-center w-full aspect-square border-4 border-dashed border-brand-blue bg-charcoal relative shadow-[8px_8px_0px_0px_#E6AA22] mb-2">
+<img alt="Album Art" class="w-[90%] h-[90%] object-cover border-2 border-charcoal" data-alt="A vintage vinyl record sleeve showing a classic Brazilian Forró scene. Warm sepia tones with vibrant red and yellow accents. Rustic wood texture background. The mood is nostalgic, lively, and culturally rich, fitting a traditional boteco aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0zVpKcnThJagkJe2F1GtPcFJ4PHQ0YzCsFCw6KWb1BNlqeE61o6tUzuKDHxGnDqzeJKbNUApZugrlZFh14CDp8k4orYYHdLxNUe3ofiER97NBAzwdnWeDVliM3xVd2THKxMpJDbPPcXpqZY0u2oJ2QOracmlnK4i729Cfx3Remihi-FySc1-fbEKW1Eg4BHY1fHv94B9-0jbJgeRSznqkMe4ShaU63Vyr1FYKmo2o39BbAW6G15Mn2QH5bWqWASU2q6FFZlIrwn0"/>
+</div>
+<div class="flex flex-col items-center text-center mt-2">
+<h2 class="font-headline-md text-headline-md text-white w-full overflow-hidden whitespace-nowrap text-ellipsis">Asa Branca</h2>
+<p class="font-body-lg text-body-lg text-brand-lime uppercase">Luiz Gonzaga</p>
+</div>
+<!-- Fake EqBars Visualizer -->
+<div class="flex justify-center items-end h-8 gap-1 mt-2">
+<div class="w-2 bg-brand-lime h-[40%]"></div>
+<div class="w-2 bg-brand-lime h-[80%]"></div>
+<div class="w-2 bg-brand-lime h-[100%]"></div>
+<div class="w-2 bg-brand-lime h-[60%]"></div>
+<div class="w-2 bg-brand-lime h-[30%]"></div>
+</div>
+</section>
+<!-- IDENTIDADE (USER CARD) -->
+<section class="bg-brand-lime border-2 border-charcoal shadow-[3px_3px_0px_0px_#1A1A1A] p-4 flex items-center justify-between mt-2">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 bg-white border-2 border-charcoal flex items-center justify-center shadow-[3px_3px_0px_0px_#1A1A1A]">
+<span class="material-symbols-outlined text-charcoal text-3xl">face</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-[20px] font-bold text-charcoal uppercase tracking-tight">João do Forró</span>
+<span class="font-label-caps text-label-caps text-charcoal opacity-80">NÍVEL 3 - CLIENTE FIEL</span>
+</div>
+</div>
+<!-- Progress dots -->
+<div class="flex gap-1">
+<div class="w-3 h-3 bg-charcoal"></div>
+<div class="w-3 h-3 bg-charcoal"></div>
+<div class="w-3 h-3 bg-white border border-charcoal"></div>
+</div>
+</section><!-- FOTOS DA NOITE BENTO CARD -->
+<section class="mt-4 border-2 border-dashed border-brand-blue bg-brand-cream p-4 shadow-[3px_3px_0px_0px_#1A1A1A] flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<div class="font-label-caps text-label-caps text-brand-blue">FOTOS DA NOITE</div>
+<button class="flex items-center gap-2 bg-brand-lime border-2 border-charcoal px-3 py-1 shadow-[2px_2px_0px_0px_#1A1A1A] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_#1A1A1A] transition-all">
+<span class="material-symbols-outlined text-[18px]">photo_camera</span>
+<span class="font-label-caps text-[10px] text-charcoal">ENVIAR FOTO</span>
+</button>
+</div>
+<!-- Masonry-style Grid -->
+<div class="grid grid-cols-2 gap-2">
+<div class="flex flex-col gap-2">
+<div class="h-32 bg-surface-dim border-2 border-charcoal shadow-[2px_2px_0px_0px_#1A1A1A] overflow-hidden">
+<img alt="Photo 1" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAibscp4U2I9sGMf20gtKPqEcyJx6GnZamNepWi5xO9YtLbLfpXllLB_DXf6lHz7_Hy8cYvU4q84afUUFgL0S629tN5vQ-iMAArcQY2QDTQeweYQRckaNo7RHx5zEuI1FmIQ9hqWkVHLFyKS95iqfXAuaBFrwvZ7cnFhMYCyYmqG6BO9Mdhqe-to8MEmiv-14JiFhdA-N56spEls3hL6MR0Dmh9T-mrb1K9_pvZbHa-pMHruIGWRGaA9bI7Qi7OTbvrWOxBwYAhkoA"/>
+</div>
+<div class="h-24 bg-surface-dim border-2 border-charcoal shadow-[2px_2px_0px_0px_#1A1A1A] overflow-hidden">
+<img alt="Photo 2" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXIUvj83G9ZRUWBZS4YMmGcUa42-hcWYVL6eTzoMJAcVsZYQAdhv3hWuQtM4-bCiqqM7g3T0S8TBGJuTyTvEXZXTqsq8kzi60TwcPoSAe9VOxdr7NFykNvhcgZkv2ErQRpJ3oFBsPkPz0_KLhPVAxYunG0evZ3z5DiWkw6MxAwlJaUA_MsDw8pBdv7HRfqQe68LNalfmA0sr7plGY-p6c_FUdxWfotfH8gP3rhBRVj5BzzYn6IyUDYigWIHPwv2ilgND2LTEpu42M"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="h-24 bg-surface-dim border-2 border-charcoal shadow-[2px_2px_0px_0px_#1A1A1A] overflow-hidden">
+<img alt="Photo 3" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0zVpKcnThJagkJe2F1GtPcFJ4PHQ0YzCsFCw6KWb1BNlqeE61o6tUzuKDHxGnDqzeJKbNUApZugrlZFh14CDp8k4orYYHdLxNUe3ofiER97NBAzwdnWeDVliM3xVd2THKxMpJDbPPcXpqZY0u2oJ2QOracmlnK4i729Cfx3Remihi-FySc1-fbEKW1Eg4BHY1fHv94B9-0jbJgeRSznqkMe4ShaU63Vyr1FYKmo2o39BbAW6G15Mn2QH5bWqWASU2q6FFZlIrwn0"/>
+</div>
+<div class="h-32 bg-surface-dim border-2 border-charcoal shadow-[2px_2px_0px_0px_#1A1A1A] overflow-hidden">
+<img alt="Photo 4" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAibscp4U2I9sGMf20gtKPqEcyJx6GnZamNepWi5xO9YtLbLfpXllLB_DXf6lHz7_Hy8cYvU4q84afUUFgL0S629tN5vQ-iMAArcQY2QDTQeweYQRckaNo7RHx5zEuI1FmIQ9hqWkVHLFyKS95iqfXAuaBFrwvZ7cnFhMYCyYmqG6BO9Mdhqe-to8MEmiv-14JiFhdA-N56spEls3hL6MR0Dmh9T-mrb1K9_pvZbHa-pMHruIGWRGaA9bI7Qi7OTbvrWOxBwYAhkoA"/>
+</div>
+</div>
+</div>
+</section>
+<!-- QUEUE TABS -->
+<section class="mt-4 border-2 border-dashed border-brand-blue bg-brand-cream p-2 shadow-[3px_3px_0px_0px_#1A1A1A]">
+<div class="flex border-b-4 border-brand-blue pb-2 mb-2">
+<button class="flex-1 font-label-caps text-label-caps text-brand-blue bg-white border-2 border-brand-blue py-2 text-center shadow-[3px_3px_0px_0px_#00509D]">FILA</button>
+<button class="flex-1 font-label-caps text-label-caps text-muted-steel py-2 text-center hover:bg-surface-container">FAVORITOS</button>
+<button class="flex-1 font-label-caps text-label-caps text-muted-steel py-2 text-center hover:bg-surface-container">HISTÓRICO</button>
+</div>
+<!-- Queue Items -->
+<div class="flex flex-col gap-2">
+<!-- Item 1 -->
+<div class="flex items-center p-2 border-2 border-dashed border-brand-blue bg-surface-container-low shadow-[3px_3px_0px_0px_#1A1A1A]">
+<span class="font-headline-md text-headline-md text-brand-blue w-8">1</span>
+<div class="w-10 h-10 border border-charcoal bg-surface-dim shrink-0 overflow-hidden ml-2 shadow-[3px_3px_0px_0px_#1A1A1A]">
+<img alt="Track Thumbnail" class="w-full h-full object-cover" data-alt="A close up of a retro microphone on a dark stage with warm amber spotlight. The mood is intimate and live performance focused. High contrast boteco aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXIUvj83G9ZRUWBZS4YMmGcUa42-hcWYVL6eTzoMJAcVsZYQAdhv3hWuQtM4-bCiqqM7g3T0S8TBGJuTyTvEXZXTqsq8kzi60TwcPoSAe9VOxdr7NFykNvhcgZkv2ErQRpJ3oFBsPkPz0_KLhPVAxYunG0evZ3z5DiWkw6MxAwlJaUA_MsDw8pBdv7HRfqQe68LNalfmA0sr7plGY-p6c_FUdxWfotfH8gP3rhBRVj5BzzYn6IyUDYigWIHPwv2ilgND2LTEpu42M"/>
+</div>
+<div class="flex flex-col ml-3 flex-1 overflow-hidden">
+<span class="font-body-lg text-[14px] font-bold text-charcoal truncate">Anunciação</span>
+<span class="font-label-caps text-[10px] text-muted-steel truncate">Alceu Valença</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex flex-col items-end">
+<span class="font-headline-md text-[18px] text-charcoal">+42</span>
+<span class="font-label-caps text-[8px] text-muted-steel">VOTOS</span>
+</div>
+<button class="p-1 border-2 border-charcoal bg-brand-lime shadow-[3px_3px_0px_0px_#1A1A1A] active:translate-y-[1px] active:translate-x-[1px] active:shadow-none transition-all">
+<span class="material-symbols-outlined text-[16px] text-charcoal">arrow_upward</span>
+</button>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex items-center p-2 border-2 border-dashed border-brand-blue bg-surface-container-low shadow-[3px_3px_0px_0px_#1A1A1A]">
+<span class="font-headline-md text-headline-md text-charcoal w-8">2</span>
+<div class="w-10 h-10 border border-charcoal bg-surface-dim shrink-0 overflow-hidden ml-2 shadow-[3px_3px_0px_0px_#1A1A1A]">
+<img alt="Track Thumbnail" class="w-full h-full object-cover" data-alt="A lively concert crowd seen from behind, hands in the air, illuminated by bright blue and yellow stage lights. Energetic boteco party vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAibscp4U2I9sGMf20gtKPqEcyJx6GnZamNepWi5xO9YtLbLfpXllLB_DXf6lHz7_Hy8cYvU4q84afUUFgL0S629tN5vQ-iMAArcQY2QDTQeweYQRckaNo7RHx5zEuI1FmIQ9hqWkVHLFyKS95iqfXAuaBFrwvZ7cnFhMYCyYmqG6BO9Mdhqe-to8MEmiv-14JiFhdA-N56spEls3hL6MR0Dmh9T-mrb1K9_pvZbHa-pMHruIGWRGaA9bI7Qi7OTbvrWOxBwYAhkoA"/>
+</div>
+<div class="flex flex-col ml-3 flex-1 overflow-hidden">
+<span class="font-body-lg text-[14px] font-bold text-charcoal truncate">Frevo Mulher</span>
+<span class="font-label-caps text-[10px] text-muted-steel truncate">Zé Ramalho</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex flex-col items-end">
+<span class="font-headline-md text-[18px] text-charcoal">+28</span>
+<span class="font-label-caps text-[8px] text-muted-steel">VOTOS</span>
+</div>
+<button class="p-1 border-2 border-charcoal bg-surface hover:bg-brand-lime shadow-[3px_3px_0px_0px_#1A1A1A] active:translate-y-[1px] active:translate-x-[1px] active:shadow-none transition-all">
+<span class="material-symbols-outlined text-[16px] text-charcoal">arrow_upward</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- SEARCH STICKY BAR (Specific request overlay) -->
+<div class="fixed bottom-[70px] left-0 w-full px-margin-mobile z-40">
+<div class="w-full max-w-[390px] mx-auto flex items-center bg-brand-blue border-2 border-charcoal shadow-[3px_3px_0px_0px_#1A1A1A] p-2">
+<span class="material-symbols-outlined text-brand-lime mr-2">search</span>
+<input class="w-full bg-transparent border-none outline-none font-headline-md text-[16px] text-white placeholder:text-primary-fixed-dim uppercase focus:ring-0" placeholder="QUER OUVIR O QUÊ?" type="text"/>
+</div>
+</div>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-brand-cream border-t-4 border-charcoal shadow-[0px_-4px_0px_0px_#1A1A1A]">
+<button class="flex flex-col items-center justify-center bg-brand-blue text-white rounded-none p-2 border-2 border-charcoal font-['Epilogue'] font-bold text-[10px] uppercase shadow-[3px_3px_0px_0px_#1A1A1A] active:translate-y-[2px] active:translate-x-[2px] active:shadow-none transition-all w-16">
+<span class="material-symbols-outlined mb-1">queue_music</span>
+<span>FILA</span>
+</button>
+<button class="flex flex-col items-center justify-center text-charcoal hover:bg-zinc-200 p-2 font-['Epilogue'] font-bold text-[10px] uppercase transition-transform active:scale-95 w-16">
+<span class="material-symbols-outlined mb-1">add_circle</span>
+<span>PEDIR</span>
+</button>
+<button class="flex flex-col items-center justify-center text-charcoal hover:bg-zinc-200 p-2 font-['Epilogue'] font-bold text-[10px] uppercase transition-transform active:scale-95 w-16">
+<span class="material-symbols-outlined mb-1">favorite</span>
+<span>VOTOS</span>
+</button>
+<button class="flex flex-col items-center justify-center text-charcoal hover:bg-zinc-200 p-2 font-['Epilogue'] font-bold text-[10px] uppercase transition-transform active:scale-95 w-16">
+<span class="material-symbols-outlined mb-1">person</span>
+<span>PERFIL</span>
+</button>
+</nav>
+</body></html>
+
+<!-- Client View - Photos Updated -->
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Boteco do Zé - Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@700;800&amp;family=Work+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "amber-wood": "#2A2421",
+                        "on-tertiary-container": "#ffb28a",
+                        "outline": "#727782",
+                        "secondary-fixed-dim": "#fbbc36",
+                        "inverse-on-surface": "#f0f0f7",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#883901",
+                        "surface-container-low": "#f3f3fa",
+                        "on-tertiary-fixed-variant": "#783100",
+                        "primary": "#003974",
+                        "on-primary-fixed": "#001b3d",
+                        "on-primary-fixed-variant": "#00468b",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#00509d",
+                        "on-surface-variant": "#424751",
+                        "secondary": "#7c5800",
+                        "bossa-forest": "#2A4B3C",
+                        "surface": "#f9f9ff",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#febf38",
+                        "amber-gold": "#D4AF37",
+                        "surface-tint": "#1f5eac",
+                        "brand-lime": "#E6AA22",
+                        "coast-sand": "#EADDD7",
+                        "outline-variant": "#c2c6d3",
+                        "tertiary-fixed": "#ffdbcb",
+                        "bossa-caju": "#D97746",
+                        "tertiary": "#642800",
+                        "coast-clay": "#B65C3A",
+                        "secondary-fixed": "#ffdea6",
+                        "brand-cream": "#FCF8F2",
+                        "inverse-primary": "#a9c7ff",
+                        "on-primary-container": "#a4c5ff",
+                        "on-secondary-fixed-variant": "#5e4200",
+                        "on-surface": "#191c21",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "inverse-surface": "#2e3036",
+                        "on-error": "#ffffff",
+                        "brand-blue": "#00509D",
+                        "primary-fixed": "#d6e3ff",
+                        "error-container": "#ffdad6",
+                        "surface-container": "#ededf5",
+                        "background": "#f9f9ff",
+                        "surface-dim": "#d9d9e1",
+                        "on-background": "#191c21",
+                        "surface-container-highest": "#e1e2e9",
+                        "surface-variant": "#e1e2e9",
+                        "surface-container-high": "#e7e8ef",
+                        "charcoal": "#1A1A1A",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed": "#341100",
+                        "on-secondary-container": "#6f4f00",
+                        "on-secondary-fixed": "#271900",
+                        "muted-steel": "#5A6A7A",
+                        "surface-bright": "#f9f9ff",
+                        "tertiary-fixed-dim": "#ffb691"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "40px",
+                        "gutter": "16px",
+                        "unit": "8px",
+                        "margin-mobile": "20px",
+                        "bento-gap": "12px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["epilogue"],
+                        "label-caps": ["workSans"],
+                        "body-md": ["workSans"],
+                        "display-xl": ["epilogue"],
+                        "body-lg": ["workSans"],
+                        "headline-lg": ["epilogue"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-xl": ["96px", { "lineHeight": "1.0", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "body-lg": ["18px", { "lineHeight": "1.5", "fontWeight": "600" }],
+                        "headline-lg": ["48px", { "lineHeight": "1.1", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .hard-shadow { box-shadow: 4px 4px 0px 0px #1A1A1A; }
+        .hard-shadow-active { box-shadow: 2px 2px 0px 0px #1A1A1A; }
+        .hard-shadow-hover:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px 0px #1A1A1A; }
+        .hard-shadow-active:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px 0px #1A1A1A; }
+        
+        .hard-shadow-yellow { box-shadow: 4px 4px 0px 0px #E6AA22; }
+        
+        /* Grain Overlay */
+        .grain-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .bg-azulejo {
+            background-color: #FCF8F2;
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20c0-11.046 8.954-20 20-20v40c-11.046 0-20-8.954-20-20z' fill='%2300509D' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="bg-azulejo text-on-background antialiased flex">
+<div class="grain-overlay"></div>
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-screen w-64 flex flex-col p-6 space-y-4 bg-brand-cream border-r-[6px] border-brand-blue shadow-[4px_0px_0px_0px_#1A1A1A] z-40 hidden md:flex">
+<div class="mb-8">
+<h1 class="text-xl font-black text-[#00509D] font-headline-md">TOCAÍ ADMIN</h1>
+<p class="text-sm font-body-md text-muted-steel">Painel do Bar</p>
+</div>
+<div class="flex flex-col space-y-2 flex-grow">
+<!-- Active Tab -->
+<a class="flex items-center space-x-3 p-3 bg-brand-cream text-[#00509D] border-2 border-dashed border-[#00509D] hard-shadow-yellow font-['Epilogue'] font-bold uppercase transition-all duration-75 active:translate-x-1 active:shadow-none" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center space-x-3 p-3 text-[#00509D] font-['Epilogue'] font-bold uppercase hover:bg-zinc-200/50 hover:translate-x-1 transition-all duration-75" href="#">
+<span class="material-symbols-outlined">playlist_play</span>
+<span>Gestão de Fila</span>
+</a>
+<a class="flex items-center space-x-3 p-3 text-[#00509D] font-['Epilogue'] font-bold uppercase hover:bg-zinc-200/50 hover:translate-x-1 transition-all duration-75" href="#">
+<span class="material-symbols-outlined">restaurant_menu</span>
+<span>Cardápio</span>
+</a>
+<a class="flex items-center space-x-3 p-3 text-[#00509D] font-['Epilogue'] font-bold uppercase hover:bg-zinc-200/50 hover:translate-x-1 transition-all duration-75" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>Analíticos</span>
+</a>
+<a class="flex items-center space-x-3 p-3 text-[#00509D] font-['Epilogue'] font-bold uppercase hover:bg-zinc-200/50 hover:translate-x-1 transition-all duration-75" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Configurações</span>
+</a>
+</div>
+<div class="mt-auto flex items-center space-x-3 border-t-2 border-dashed border-brand-blue pt-4">
+<img alt="Admin Avatar" class="w-10 h-10 rounded-full border-2 border-brand-blue hard-shadow" data-alt="A small, circular avatar portrait of a confident male bar manager. The background is slightly blurred showing a warm, amber-lit interior. The man is wearing a simple black t-shirt. The lighting highlights his face with a warm, inviting glow, consistent with a high-energy Brazilian boteco environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjMc_E7m1NW1us6aTBAde8ZL8sr6rlDRZ3foZDZoOmebbv-EIVmHHpRc1pALRetu8LcNH5SZOegAs8JPII5kpp9DeZ67o5nAsR-hOYzPrd4Ghfsqn8X6OgBfB1xhKa8RgwdoGFjXxKlcCIEZl8v8O_AW476ABspdJkcykE_cTtbmH_ty2QBx1qPpi-89sJqPHop6_DN4V7z45R-_bnS8fRb1m8gOBEBJMnR_ZQpu4tCzJpixoQYeBRH_m1GIXN-ob6-GIpzXXsVlc"/>
+<div>
+<p class="font-label-caps text-brand-blue">ADMIN ZÉ</p>
+<p class="text-xs text-brand-blue/70 font-body-md">Sessão Ativa</p>
+</div>
+</div>
+</nav>
+<!-- Mobile TopBar (Hidden on Desktop) -->
+<header class="md:hidden flex justify-between items-center w-full px-6 py-4 sticky top-0 z-50 bg-brand-cream border-b-[4px] border-brand-blue shadow-[0px_4px_0px_0px_#1A1A1A]">
+<h1 class="text-2xl font-black text-[#00509D] font-headline-md tracking-[1px]">TOCAÍ</h1>
+<div class="flex space-x-4">
+<button class="text-[#00509D] hover:bg-zinc-100 p-2 rounded-none transition-all duration-75 active:translate-y-1">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-[#00509D] hover:bg-zinc-100 p-2 rounded-none transition-all duration-75 active:translate-y-1">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 p-margin-mobile md:p-margin-desktop min-h-screen">
+<div class="max-w-7xl mx-auto space-y-gutter">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 border-b-2 border-dashed border-brand-blue pb-4">
+<div>
+<h2 class="font-headline-lg text-[#00509D] uppercase">Painel de Controle</h2>
+<p class="font-body-lg text-[#00509D]/70">Gerencie a fila musical e as interações do salão.</p>
+</div>
+<div class="mt-4 md:mt-0 flex space-x-3">
+<button class="bg-brand-blue text-brand-cream font-label-caps py-2 px-4 border-2 border-dashed border-[#00509D] hard-shadow-yellow hard-shadow-hover hard-shadow-active transition-all flex items-center space-x-2">
+<span class="material-symbols-outlined text-sm">pause</span>
+<span>PAUSAR FILA</span>
+</button>
+<button class="bg-brand-lime text-brand-blue font-label-caps py-2 px-4 border-2 border-dashed border-[#00509D] hard-shadow hard-shadow-hover hard-shadow-active transition-all flex items-center space-x-2">
+<span class="material-symbols-outlined text-sm">add</span>
+<span>ADMIN ESCOLHE</span>
+</button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-bento-gap">
+<!-- Left Column: Now Playing & Controls (4 Cols) -->
+<div class="lg:col-span-4 flex flex-col space-y-bento-gap">
+<!-- Now Playing Card -->
+<div class="bg-brand-blue border-2 border-dashed border-brand-blue hard-shadow-yellow p-4 relative overflow-hidden group">
+<div class="absolute top-2 right-2 bg-brand-lime text-[#00509D] font-label-caps px-2 py-1 border-2 border-dashed border-[#00509D] text-[10px] shadow-[2px_2px_0px_0px_#1A1A1A]">AO VIVO</div>
+<h3 class="font-label-caps text-brand-cream mb-4 flex items-center">
+<span class="material-symbols-outlined text-sm mr-1">volume_up</span> TOCANDO AGORA
+                        </h3>
+<div class="flex flex-col items-center text-center space-y-4">
+<!-- Album Art with floating effect -->
+<div class="relative w-48 h-48 group-hover:-translate-y-2 transition-transform duration-500 ease-out">
+<div class="absolute inset-0 border-2 border-dashed border-brand-lime rounded-full animate-[spin_10s_linear_infinite] opacity-30 scale-110"></div>
+<img alt="Album Cover" class="w-full h-full object-cover border-4 border-brand-lime shadow-[4px_4px_0px_0px_#E6AA22] rounded-full" data-alt="A close-up shot of a vintage vinyl record label featuring warm, retro typography on a faded yellow background. The lighting is soft and directional, highlighting the physical grooves of the vinyl record. The overall aesthetic feels analog, raw, and deeply nostalgic, perfectly fitting a traditional boteco atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZ7w8kw9zLeWAe0oep3rGBMNJW99NhIth1yzDasy6WadrFyZMR0KPySIHsVy4YpeFPnAnQJ1kPis6Insf3fw5NR1XS250jQsPxybKnBq2x9_kE9xYiTfGC9q8vHDCscQX6nkz4SGpc6oIGN0E6kRuoPVXeUKkxUY3LywcF-2PtiLWcAcHhtckbC-sqnXiz5AZUiA0e_FhOHOJClv6fgTrhbjWrk9pIs7FlSPWc-bsy0rcQgyvNZLZY5OoEI9VQ2PaEE2xsr4oxg28"/>
+</div>
+<div class="w-full overflow-hidden">
+<h4 class="font-headline-md text-brand-lime truncate">Evidências</h4>
+<p class="font-body-md text-brand-cream">Chitãozinho &amp; Xororó</p>
+</div>
+<!-- Playback Controls -->
+<div class="flex items-center justify-center space-x-4 w-full pt-4 border-t-2 border-dashed border-brand-cream/30">
+<button class="w-10 h-10 flex items-center justify-center bg-brand-cream border-2 border-dashed border-brand-blue shadow-[2px_2px_0px_0px_#E6AA22] active:translate-y-[2px] active:translate-x-[2px] active:shadow-none transition-all rounded-full text-brand-blue">
+<span class="material-symbols-outlined">skip_previous</span>
+</button>
+<button class="w-14 h-14 flex items-center justify-center bg-brand-lime text-brand-blue border-2 border-dashed border-brand-blue shadow-[4px_4px_0px_0px_#E6AA22] active:translate-y-[4px] active:translate-x-[4px] active:shadow-none transition-all rounded-full">
+<span class="material-symbols-outlined text-2xl">pause</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center bg-brand-cream border-2 border-dashed border-brand-blue shadow-[2px_2px_0px_0px_#E6AA22] active:translate-y-[2px] active:translate-x-[2px] active:shadow-none transition-all rounded-full text-brand-blue">
+<span class="material-symbols-outlined">skip_next</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Quick Stats Bento -->
+<div class="grid grid-cols-2 gap-bento-gap">
+<div class="bg-brand-cream border-2 border-dashed border-brand-blue hard-shadow p-3 flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-brand-blue mb-1">group</span>
+<span class="font-headline-md text-brand-blue text-2xl">42</span>
+<span class="font-label-caps text-brand-blue/70 text-[10px]">NA FILA</span>
+</div>
+<div class="bg-brand-lime border-2 border-dashed border-brand-blue hard-shadow p-3 flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-brand-blue mb-1">attach_money</span>
+<span class="font-headline-md text-brand-blue text-2xl">18</span>
+<span class="font-label-caps text-brand-blue/70 text-[10px]">VOTOS PAGOS</span>
+</div>
+</div>
+</div>
+<!-- Right Column: Queue List (8 Cols) -->
+<div class="lg:col-span-8 bg-brand-cream border-2 border-dashed border-brand-blue hard-shadow flex flex-col">
+<div class="p-4 border-b-2 border-dashed border-brand-blue flex justify-between items-center bg-brand-cream/80">
+<h3 class="font-headline-md text-xl text-[#00509D] flex items-center">
+<span class="material-symbols-outlined mr-2">queue_music</span> PRÓXIMOS DA FILA
+                        </h3>
+<div class="flex space-x-2">
+<span class="px-2 py-1 bg-brand-lime border-2 border-dashed border-brand-blue font-label-caps text-[10px] text-brand-blue">ORDEM POR VOTOS</span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-3">
+<!-- Queue Item 1 -->
+<div class="flex items-center p-3 border-2 border-dashed border-brand-blue bg-white hard-shadow relative group">
+<div class="absolute left-0 top-0 bottom-0 w-2 bg-brand-blue"></div>
+<div class="w-8 font-headline-md text-xl text-brand-blue text-center ml-2">1</div>
+<img alt="Album Thumbnail" class="w-12 h-12 object-cover border-2 border-brand-blue ml-3" data-alt="A small, gritty thumbnail image of a live band performing on a small, dimly lit stage. Red and amber stage lights cut through a slightly hazy atmosphere. The scene captures the raw, energetic, and tactile feel of a late-night show in a bustling, traditional bar setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDeME53DPzZfQcKFS828PyTbEhMKBkz3LHN0QnnKsgPByyp_fEbtujkCinTU23ymhapjE2qzE7zmMrfhBXZ_6Zjfy4B7ZjT9ohFqrVFaLWSVo4BTZdcmjnaMeBKj2hhlVUAzuOYCFDViFbIsLZdsum3-OtVvZZ2VQh32PUejTrIZvdxhIMxpvGaRJrqi_gcnD38JOIDaetd4tBCzESzQVK2fiFB4p15jQFh8zdfm9fnZLzc08qyEkENUTHJBKsisB8KXNaPiwvdIs"/>
+<div class="ml-4 flex-1">
+<h5 class="font-body-lg text-brand-blue leading-tight">Cheia de Manias</h5>
+<p class="font-body-md text-sm text-brand-blue/70">Raça Negra</p>
+</div>
+<div class="flex items-center space-x-4">
+<div class="flex flex-col items-end mr-4">
+<span class="font-headline-md text-lg text-brand-blue flex items-center">
+<span class="material-symbols-outlined text-sm mr-1">thumb_up</span> 124
+                                    </span>
+<span class="font-label-caps text-brand-blue/70 text-[10px]">PEDIDO POR: JOÃO P.</span>
+</div>
+<div class="flex space-x-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+<button class="p-2 bg-brand-cream text-brand-blue border-2 border-dashed border-brand-blue hover:bg-brand-lime transition-colors" title="Veto">
+<span class="material-symbols-outlined text-sm">block</span>
+</button>
+<button class="p-2 bg-brand-cream text-brand-blue border-2 border-dashed border-brand-blue hover:bg-brand-lime transition-colors" title="Remover">
+<span class="material-symbols-outlined text-sm">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Queue Item 2 -->
+<div class="flex items-center p-3 border-2 border-dashed border-brand-blue bg-white relative group">
+<div class="w-8 font-headline-md text-xl text-brand-blue text-center ml-2">2</div>
+<div class="w-12 h-12 bg-brand-cream border-2 border-dashed border-brand-blue ml-3 flex items-center justify-center text-brand-blue">
+<span class="material-symbols-outlined">music_note</span>
+</div>
+<div class="ml-4 flex-1">
+<h5 class="font-body-lg text-brand-blue leading-tight">Boate Azul</h5>
+<p class="font-body-md text-sm text-brand-blue/70">Bruno &amp; Marrone</p>
+</div>
+<div class="flex items-center space-x-4">
+<div class="flex flex-col items-end mr-4">
+<span class="font-headline-md text-lg text-brand-blue flex items-center">
+<span class="material-symbols-outlined text-sm mr-1">thumb_up</span> 89
+                                    </span>
+<span class="font-label-caps text-brand-blue/70 text-[10px]">PEDIDO POR: MARIA C.</span>
+</div>
+<div class="flex space-x-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+<button class="p-2 bg-brand-cream text-brand-blue border-2 border-dashed border-brand-blue hover:bg-brand-lime transition-colors" title="Veto">
+<span class="material-symbols-outlined text-sm">block</span>
+</button>
+<button class="p-2 bg-brand-cream text-brand-blue border-2 border-dashed border-brand-blue hover:bg-brand-lime transition-colors" title="Remover">
+<span class="material-symbols-outlined text-sm">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Queue Item 3 -->
+<div class="flex items-center p-3 border-2 border-dashed border-[#00509D]/50 bg-brand-cream relative group opacity-70">
+<div class="w-8 font-headline-md text-xl text-brand-blue/50 text-center ml-2">3</div>
+<div class="w-12 h-12 bg-brand-cream border-2 border-dashed border-[#00509D]/50 ml-3 flex items-center justify-center text-brand-blue/50">
+<span class="material-symbols-outlined">music_note</span>
+</div>
+<div class="ml-4 flex-1">
+<h5 class="font-body-lg text-brand-blue/70 leading-tight">Trem das Onze</h5>
+<p class="font-body-md text-sm text-brand-blue/50">Adoniran Barbosa</p>
+</div>
+<div class="flex items-center space-x-4">
+<div class="flex flex-col items-end mr-4">
+<span class="font-headline-md text-lg text-brand-blue/50 flex items-center">
+<span class="material-symbols-outlined text-sm mr-1">thumb_up</span> 45
+                                    </span>
+</div>
+<div class="flex space-x-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+<button class="p-2 bg-brand-cream text-brand-blue border-2 border-dashed border-brand-blue hover:bg-brand-lime transition-colors" title="Veto">
+<span class="material-symbols-outlined text-sm">block</span>
+</button>
+<button class="p-2 bg-brand-cream text-brand-blue border-2 border-dashed border-brand-blue hover:bg-brand-lime transition-colors" title="Remover">
+<span class="material-symbols-outlined text-sm">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 border-t-2 border-dashed border-brand-blue bg-brand-cream/80 text-center">
+<button class="font-label-caps text-brand-blue hover:underline">CARREGAR MAIS (39)</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-brand-cream border-t-[4px] border-brand-blue shadow-[0px_-4px_0px_0px_#1A1A1A]">
+<button class="flex flex-col items-center justify-center text-brand-blue p-2 hover:bg-zinc-200 transition-transform active:scale-95">
+<span class="material-symbols-outlined">queue_music</span>
+<span class="font-['Epilogue'] font-bold text-[10px] uppercase mt-1">FILA</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-brand-cream text-brand-blue rounded-none p-2 border-2 border-dashed border-brand-blue hard-shadow-yellow transition-transform active:translate-y-[2px] active:translate-x-[2px] active:shadow-none">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-['Epilogue'] font-bold text-[10px] uppercase mt-1">ADMIN</span>
+</button>
+<button class="flex flex-col items-center justify-center text-brand-blue p-2 hover:bg-zinc-200 transition-transform active:scale-95">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-['Epilogue'] font-bold text-[10px] uppercase mt-1">CONFIG</span>
+</button>
+</nav>
+</body></html>
+
+<!-- Admin Dashboard (Refined Boteco) -->
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TOCAÍ - Visão do Cliente</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700;800;900&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary-fixed-variant": "#00468b",
+                        "on-primary-fixed": "#001b3d",
+                        "surface-bright": "#f9f9ff",
+                        "outline": "#727782",
+                        "muted-steel": "#5A6A7A",
+                        "surface-container-low": "#f3f3fa",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#e1e2e9",
+                        "on-secondary-container": "#6f4f00",
+                        "on-surface-variant": "#424751",
+                        "on-tertiary-fixed": "#341100",
+                        "amber-wood": "#2A2421",
+                        "tertiary": "#642800",
+                        "on-secondary-fixed-variant": "#5e4200",
+                        "on-surface": "#191c21",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#d9d9e1",
+                        "surface-tint": "#1f5eac",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "primary-fixed": "#d6e3ff",
+                        "on-primary-container": "#a4c5ff",
+                        "bossa-forest": "#2A4B3C",
+                        "brand-lime": "#E6AA22",
+                        "amber-gold": "#D4AF37",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "charcoal": "#1A1A1A",
+                        "secondary-fixed": "#ffdea6",
+                        "secondary": "#7c5800",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#e7e8ef",
+                        "surface-container": "#ededf5",
+                        "secondary-fixed-dim": "#fbbc36",
+                        "coast-clay": "#B65C3A",
+                        "surface-container-highest": "#e1e2e9",
+                        "on-tertiary-container": "#ffb28a",
+                        "tertiary-fixed": "#ffdbcb",
+                        "primary": "#003974",
+                        "brand-cream": "#FCF8F2",
+                        "primary-container": "#00509d",
+                        "inverse-on-surface": "#f0f0f7",
+                        "inverse-primary": "#a9c7ff",
+                        "background": "#f9f9ff",
+                        "bossa-caju": "#D97746",
+                        "tertiary-container": "#883901",
+                        "outline-variant": "#c2c6d3",
+                        "coast-sand": "#EADDD7",
+                        "surface": "#f9f9ff",
+                        "inverse-surface": "#2e3036",
+                        "brand-blue": "#00509D",
+                        "secondary-container": "#febf38",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed": "#271900",
+                        "on-tertiary-fixed-variant": "#783100",
+                        "on-background": "#191c21",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "on-secondary": "#ffffff"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "0px"
+                    },
+                    spacing: {
+                        "unit": "8px",
+                        "bento-gap": "16px",
+                        "margin-mobile": "20px",
+                        "gutter": "16px",
+                        "margin-desktop": "40px"
+                    },
+                    fontFamily: {
+                        "headline-md": ["epilogue"],
+                        "display-xl": ["epilogue"],
+                        "body-md": ["workSans"],
+                        "label-caps": ["workSans"],
+                        "headline-lg": ["epilogue"],
+                        "body-lg": ["workSans"]
+                    },
+                    fontSize: {
+                        "headline-md": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "display-xl": ["96px", { "lineHeight": "1.0", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "headline-lg": ["48px", { "lineHeight": "1.1", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.5", "fontWeight": "600" }]
+                    },
+                    boxShadow: {
+                        'brutal': '4px 4px 0px 0px #1A1A1A',
+                        'brutal-lg': '8px 8px 0px 0px #1A1A1A',
+                        'brutal-active': '0px 0px 0px 0px #1A1A1A',
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .azulejo-bg {
+            background-color: #FCF8F2;
+            background-image: radial-gradient(#00509D 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .grain-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('data:image/svg+xml;utf8,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%220.05%22/%3E%3C/svg%3E');
+            pointer-events: none;
+            z-index: 9999;
+        }
+        /* Custom border for bento cards */
+        .bento-card {
+            border: 2px dashed #00509D;
+            border-top: 4px solid #00509D;
+        }
+        .bento-card-primary {
+            border: 3px solid #1A1A1A;
+        }
+    </style>
+</head>
+<body class="bg-brand-cream text-charcoal font-body-md antialiased min-h-screen relative overflow-x-hidden selection:bg-brand-lime selection:text-charcoal azulejo-bg">
+<div class="grain-overlay"></div>
+<!-- TopAppBar -->
+<nav class="flex justify-between items-center w-full px-6 py-4 sticky top-0 z-50 bg-white border-b-4 border-zinc-900 shadow-[0px_4px_0px_0px_#1A1A1A]">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md text-brand-blue tracking-[1px] uppercase">TOCAÍ</span>
+<span class="text-zinc-500 font-label-caps text-label-caps hidden md:inline-block">/ BAR DO ZECA</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-12 h-12 flex items-center justify-center border-2 border-charcoal bg-white shadow-brutal hover:bg-zinc-100 active:translate-y-1 active:shadow-brutal-active transition-all duration-75">
+<span class="material-symbols-outlined text-charcoal">search</span>
+</button>
+<div class="hidden md:flex gap-4">
+<button class="w-12 h-12 flex items-center justify-center border-2 border-charcoal bg-white shadow-brutal hover:bg-zinc-100 active:translate-y-1 active:shadow-brutal-active transition-all duration-75 text-zinc-500">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-12 h-12 flex items-center justify-center border-2 border-charcoal bg-white shadow-brutal hover:bg-zinc-100 active:translate-y-1 active:shadow-brutal-active transition-all duration-75 text-zinc-500">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- Main Bento Grid -->
+<main class="max-w-[1440px] mx-auto p-margin-mobile md:p-margin-desktop grid grid-cols-1 lg:grid-cols-12 gap-bento-gap">
+<!-- NOW PLAYING (Left Column) -->
+<section class="lg:col-span-7 bg-brand-blue border-4 border-charcoal shadow-brutal-lg p-6 md:p-10 flex flex-col justify-between min-h-[600px] relative overflow-hidden group">
+<!-- Top Metadata -->
+<div class="flex justify-between items-start z-10">
+<div class="bg-brand-lime border-2 border-charcoal shadow-brutal px-3 py-1 flex items-center gap-2">
+<span class="w-2 h-2 bg-error rounded-full animate-pulse block"></span>
+<span class="font-label-caps text-label-caps text-charcoal uppercase">TOCANDO AGORA</span>
+</div>
+<div class="bg-white border-2 border-charcoal px-3 py-1 shadow-brutal">
+<span class="font-label-caps text-label-caps text-charcoal uppercase">FORRÓ</span>
+</div>
+</div>
+<!-- Main Display -->
+<div class="flex flex-col md:flex-row items-center gap-8 my-8 z-10 flex-grow justify-center">
+<!-- Rotating Cover Art -->
+<div class="relative w-48 h-48 md:w-64 md:h-64 flex-shrink-0">
+<div class="absolute inset-0 border-4 border-dashed border-white rounded-full opacity-50 animate-[spin_10s_linear_infinite]"></div>
+<div class="absolute inset-2 border-4 border-charcoal bg-white overflow-hidden shadow-brutal z-10">
+<img alt="Album cover showing a lively Brazilian music scene" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" data-alt="A vibrant, high-contrast album cover depicting a lively Brazilian street party. The scene is illuminated by warm, festive string lights under a night sky, casting deep shadows and glowing highlights. The style is reminiscent of popular brutalism, with rich, saturated colors dominated by cobalt blue and energetic yellow accents. The mood is communal, raw, and celebratory." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-HoIvmiJxCEOiHUs3PZQsZ0NX_OGF_TdI4XF9ofiYcC9kUqJShOOZNpr-jgPTFF9K1WmOfdPWNtjdLy6FKF2jIh0Ppd7C98XJN3-tauuI8FkVib-kEv7CWiyLieu0yT_zGRsVItpyzctZa3NT_89Qi8V9DEiWa79d7gnDjjE3CN12FrBkNzXZ6aTnx-_sIvJOCLs4TpqTNxU_hLHm0rJc81MMAeCP6ky_W3Tnxk67EnpEfm1Qlbxc3xSZ98HVZmhWT396qehBUjk"/>
+</div>
+</div>
+<!-- Typography -->
+<div class="text-center md:text-left flex flex-col justify-center">
+<h1 class="font-headline-lg text-headline-lg text-white uppercase tracking-tighter mb-2 leading-none break-words max-w-full">
+                        ASA BRANCA
+                    </h1>
+<p class="font-headline-md text-headline-md text-brand-lime uppercase mb-4">LUIZ GONZAGA</p>
+<div class="flex items-center justify-center md:justify-start gap-2 mt-4">
+<span class="font-label-caps text-label-caps text-white/80">REQUISITADO POR:</span>
+<div class="flex items-center gap-2 bg-white/10 px-2 py-1 border border-white/20">
+<span class="material-symbols-outlined text-white text-sm" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-body-md text-body-md text-white font-bold">MARIA S.</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Audio Visualizer Mock -->
+<div class="flex items-end justify-center gap-1 h-16 z-10 opacity-50">
+<div class="w-4 bg-brand-lime h-full"></div>
+<div class="w-4 bg-brand-lime h-3/4"></div>
+<div class="w-4 bg-brand-lime h-1/2"></div>
+<div class="w-4 bg-brand-lime h-5/6"></div>
+<div class="w-4 bg-brand-lime h-full"></div>
+<div class="w-4 bg-brand-lime h-2/3"></div>
+<div class="w-4 bg-brand-lime h-1/4"></div>
+</div>
+<!-- Decorative Elements -->
+<div class="absolute -bottom-10 -right-10 text-[200px] text-white/5 font-black leading-none pointer-events-none uppercase">
+                TOCAÍ
+            </div>
+</section>
+<!-- RIGHT COLUMN -->
+<div class="lg:col-span-5 flex flex-col gap-bento-gap">
+<!-- QUEUE & TABS -->
+<section class="bg-white bento-card shadow-brutal flex-grow flex flex-col p-6 min-h-[400px]">
+<!-- Tabs -->
+<div class="flex border-b-4 border-charcoal mb-6">
+<button class="flex-1 py-3 bg-brand-blue text-white font-headline-md text-body-lg uppercase border-r-4 border-charcoal border-t-4 border-l-4">FILA</button>
+<button class="flex-1 py-3 bg-zinc-100 text-zinc-500 font-headline-md text-body-lg uppercase border-r-4 border-t-4 border-charcoal hover:bg-zinc-200 transition-colors">FAVORITOS</button>
+<button class="flex-1 py-3 bg-zinc-100 text-zinc-500 font-headline-md text-body-lg uppercase border-r-4 border-t-4 border-charcoal hover:bg-zinc-200 transition-colors">HISTÓRICO</button>
+</div>
+<!-- Search Input in Queue -->
+<div class="flex mb-6 relative">
+<input class="w-full border-4 border-charcoal p-3 font-body-lg text-body-lg uppercase placeholder-zinc-400 focus:outline-none focus:ring-0 focus:border-brand-blue shadow-[inset_2px_2px_0px_rgba(0,0,0,0.1)]" placeholder="BUSCAR MÚSICA..." type="text"/>
+<button class="absolute right-0 top-0 bottom-0 px-4 bg-brand-lime border-l-4 border-charcoal flex items-center justify-center hover:bg-brand-lime/80 transition-colors">
+<span class="material-symbols-outlined text-charcoal font-bold">search</span>
+</button>
+</div>
+<!-- Queue List -->
+<div class="flex flex-col gap-3 overflow-y-auto pr-2" style="max-height: 400px;">
+<!-- Item 1 -->
+<div class="flex items-center gap-3 p-3 border-2 border-charcoal bg-zinc-50 hover:bg-white transition-colors group">
+<span class="font-headline-md text-headline-md text-zinc-300 w-8 text-center">1</span>
+<img alt="Thumbnail" class="w-12 h-12 object-cover border-2 border-charcoal" data-alt="A small, gritty thumbnail showing a vintage microphone against a dark, textured background. The lighting is low-key, highlighting the metallic reflections on the microphone grill. The aesthetic is raw and analog, fitting a classic bar setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPU3w2pHYBeQ9Z2Pkwqg0kwLG4diVnWhv3ORSP-mb0Wmf3AjzIWAKQP3lHaDvVa-F7Y1DWyrR_XS5mtwbOuAjH-qHzr9xck7VKUN0y4BzMx-OvXOD7NW9rvRfBCAGCbNZv6PCtRUJuiKEHAYHeqa2KkrjgmwbwlR_QvwlI9peRqhXe69Ur15aP6hDBjjZXxir2CggSWtDz-KW6ABJVQWSp42E0_Or7LvgSR_1vPMFFRHeLW6SqpCnCRf_eyPPF3gRndPafdF94do0"/>
+<div class="flex-grow min-w-0">
+<h3 class="font-headline-md text-body-lg uppercase truncate leading-tight">EVIDÊNCIAS</h3>
+<p class="font-body-md text-sm text-zinc-500 uppercase truncate">CHITÃOZINHO &amp; XORORÓ</p>
+</div>
+<div class="flex flex-col items-end gap-1">
+<div class="flex gap-1">
+<button class="w-8 h-8 flex items-center justify-center bg-white border-2 border-charcoal hover:bg-brand-lime shadow-[2px_2px_0px_#1A1A1A] active:translate-y-px active:shadow-none transition-all">
+<span class="material-symbols-outlined text-[16px] text-charcoal" style="font-variation-settings: 'FILL' 1;">thumb_up</span>
+</button>
+</div>
+<span class="font-label-caps text-[10px] text-brand-blue font-bold">+45 VOTOS</span>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex items-center gap-3 p-3 border-2 border-charcoal bg-zinc-50 hover:bg-white transition-colors group">
+<span class="font-headline-md text-headline-md text-zinc-300 w-8 text-center">2</span>
+<div class="w-12 h-12 bg-brand-blue border-2 border-charcoal flex items-center justify-center text-white">
+<span class="material-symbols-outlined">music_note</span>
+</div>
+<div class="flex-grow min-w-0">
+<h3 class="font-headline-md text-body-lg uppercase truncate leading-tight">CHEVETTE</h3>
+<p class="font-body-md text-sm text-zinc-500 uppercase truncate">TIÃO CARREIRO</p>
+</div>
+<div class="flex flex-col items-end gap-1">
+<div class="flex gap-1">
+<button class="w-8 h-8 flex items-center justify-center bg-white border-2 border-charcoal hover:bg-brand-lime shadow-[2px_2px_0px_#1A1A1A] active:translate-y-px active:shadow-none transition-all">
+<span class="material-symbols-outlined text-[16px] text-charcoal">thumb_up</span>
+</button>
+</div>
+<span class="font-label-caps text-[10px] text-zinc-500 font-bold">+12 VOTOS</span>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="flex items-center gap-3 p-3 border-2 border-charcoal bg-zinc-50 hover:bg-white transition-colors group">
+<span class="font-headline-md text-headline-md text-zinc-300 w-8 text-center">3</span>
+<div class="w-12 h-12 bg-bossa-caju border-2 border-charcoal flex items-center justify-center text-white">
+<span class="material-symbols-outlined">music_note</span>
+</div>
+<div class="flex-grow min-w-0">
+<h3 class="font-headline-md text-body-lg uppercase truncate leading-tight">BOATE AZUL</h3>
+<p class="font-body-md text-sm text-zinc-500 uppercase truncate">JOÃO MINEIRO</p>
+</div>
+<div class="flex flex-col items-end gap-1">
+<div class="flex gap-1">
+<button class="w-8 h-8 flex items-center justify-center bg-white border-2 border-charcoal hover:bg-brand-lime shadow-[2px_2px_0px_#1A1A1A] active:translate-y-px active:shadow-none transition-all">
+<span class="material-symbols-outlined text-[16px] text-charcoal">thumb_up</span>
+</button>
+</div>
+<span class="font-label-caps text-[10px] text-zinc-500 font-bold">+8 VOTOS</span>
+</div>
+</div>
+</div>
+<!-- Action Button -->
+<button class="mt-auto pt-4 w-full bg-brand-blue text-white font-headline-md text-body-lg uppercase py-4 border-2 border-charcoal shadow-brutal hover:bg-brand-blue/90 active:translate-y-1 active:shadow-brutal-active transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add_circle</span>
+                    PEDIR MÚSICA
+                </button>
+</section>
+</div>
+<!-- BOTTOM ROW -->
+<!-- PHOTOS OF THE NIGHT (Bottom Left) -->
+<section class="lg:col-span-8 bg-white bento-card shadow-brutal p-6 flex flex-col md:flex-row gap-6 items-center border-t-[8px] border-t-bossa-caju">
+<div class="flex-1 w-full">
+<div class="flex items-center justify-between mb-4">
+<h2 class="font-headline-md text-headline-md text-charcoal uppercase">MURAL DO BAR</h2>
+<span class="bg-zinc-100 text-zinc-600 font-label-caps px-2 py-1 border border-zinc-300">FOTOS DA NOITE</span>
+</div>
+<!-- Mini Gallery -->
+<div class="grid grid-cols-3 gap-2">
+<div class="aspect-square border-2 border-charcoal overflow-hidden bg-zinc-200">
+<img alt="Bar photo" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all" data-alt="A candid photo of patrons cheering with beer glasses in a crowded, dimly lit bar. The atmosphere is warm and jovial, captured with a slightly grainy, high-contrast flash aesthetic typical of party photography. Yellow and amber tones dominate the scene." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoeu8_JW9IbeZdRoeo7Z3CiP5gZRuuWSo6c9E6T95mvpanNg_XHJv-A6sTE3uS9I8sCnKpqortTQM0EKeoXQOBDopP87jauRYEUyfCRWlsuyOVHwdi4Y-g5iLa_WViW0pdpeuW-PgL3SV9dhekFzBQJSxTqKtA1elzHCaJZul4oiww7209TvBRgub1TcAwe0NRaeoLvIyBNtI4pFk6oky-bOWGs7okIlgL-sq8hA6IO5jzdRjHUM8iddDytl1N11IEPTINKLagDQw"/>
+</div>
+<div class="aspect-square border-2 border-charcoal overflow-hidden bg-zinc-200">
+<img alt="Live music" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all" data-alt="A close-up shot of a guitar being played live. The lighting is dramatic, casting deep shadows against the wooden instrument. The texture is gritty, emphasizing the raw, live performance aspect of a local gig." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTcl8r_jR32X4ggie6xWPULEeqlNQAADw-JJJpHDvSW3vtqqFHHi6XCupbOnKbZBWbDOp-625aZx0s5ssjn5ftnE2cM228bYa4ot1R_qUqqcm0zMG3q9Tn2aqwJzFVElpHPZ14daBceRXdpHFYKm8uvl_B7Mv5uikeO9CdQidNd2FG23qRdCLvzJ9Za9BEZeZ6c1sTsd3hP8jAoak3yitOatHMoFf7da0y1yPaIlgrGey3h-z_QOPDpFXOiAfVoDCKZlbQV8Tp_pM"/>
+</div>
+<div class="aspect-square border-2 border-charcoal overflow-hidden bg-brand-blue flex items-center justify-center relative group cursor-pointer">
+<div class="absolute inset-0 bg-brand-blue/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="font-label-caps text-white">VER TODAS</span>
+</div>
+<span class="material-symbols-outlined text-white text-3xl">photo_library</span>
+</div>
+</div>
+</div>
+<div class="flex-shrink-0 w-full md:w-auto flex flex-col justify-center">
+<button class="w-full md:w-auto bg-brand-lime text-charcoal font-headline-md text-body-lg uppercase py-4 px-8 border-4 border-charcoal shadow-brutal hover:bg-brand-lime/90 active:translate-y-1 active:shadow-brutal-active transition-all flex items-center justify-center gap-3">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">photo_camera</span>
+                    ENVIAR FOTO
+                </button>
+</div>
+</section>
+<!-- USER PROFILE & STATS (Bottom Right) -->
+<section class="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-bento-gap">
+<!-- Profile Card -->
+<div class="flex-1 bg-white bento-card shadow-brutal p-4 border-t-[8px] border-t-coast-clay flex items-center gap-4">
+<div class="w-16 h-16 rounded-full border-4 border-charcoal overflow-hidden flex-shrink-0 bg-zinc-200">
+<img alt="User avatar" class="w-full h-full object-cover grayscale" data-alt="A close-up portrait of a smiling person, used as a profile avatar. The background is a solid, bright color. The lighting is even, emphasizing a friendly, approachable demeanor. The image has a slight halftone texture applied to fit the brutalist aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIOYvl1h2xfKwRhjCONkPcjVuuyEDlIxMqMiyzxB-W5pYQj8Zzm0EWcl8jpJUbjOjlOLQvKaKgS5zh58j3drgp9HwjwZppdp8EvSu0l67I9asrFZce3EscADKyA2X-vilym8gsomGR4s4iNbHuH8b8BblpYEAmcsNxJTOK-aXsSfknKQ0SZSsjwKebYMbNSRZFmuFQicEpNSvKyNZpJJt_LvM3VuATVW1jiW-gkVhHoedLr1i0UYvcsUES89yfZ1SPFA0nA69Mg3s"/>
+</div>
+<div class="flex-grow">
+<h3 class="font-headline-md text-body-lg uppercase leading-none mb-1 text-charcoal">ZÉ DA SILVA</h3>
+<div class="flex items-center gap-2">
+<span class="font-label-caps text-xs text-brand-blue bg-blue-50 px-2 py-0.5 border border-brand-blue/20">NÍVEL 4</span>
+<span class="font-label-caps text-[10px] text-zinc-500">CLIENTE VIP</span>
+</div>
+</div>
+</div>
+<!-- Stats/Wait Time Card -->
+<div class="flex-1 bg-charcoal text-white border-4 border-charcoal shadow-[4px_4px_0px_0px_#E6AA22] p-6 flex flex-col justify-center relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-[100px]">timer</span>
+</div>
+<span class="font-label-caps text-brand-lime uppercase mb-2 block relative z-10">TEMPO ESTIMADO</span>
+<div class="flex items-baseline gap-2 relative z-10">
+<span class="font-display-xl text-[64px] leading-none text-white tracking-tighter">14</span>
+<span class="font-headline-md text-body-lg text-white/70 uppercase">MIN</span>
+</div>
+<p class="font-body-md text-sm text-zinc-400 mt-2 relative z-10 uppercase">PARA SUA MÚSICA TOCAR</p>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-white border-t-4 border-zinc-900 shadow-[0px_-4px_0px_0px_#1A1A1A] md:hidden">
+<button class="flex flex-col items-center justify-center text-zinc-900 p-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">queue_music</span>
+<span class="font-label-caps text-[10px] uppercase mt-1">FILA</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-brand-blue text-white p-2 border-2 border-black active:scale-95 transition-transform transform -translate-y-2 shadow-brutal">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-label-caps text-[10px] uppercase mt-1">PEDIR</span>
+</button>
+<button class="flex flex-col items-center justify-center text-zinc-900 p-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">favorite</span>
+<span class="font-label-caps text-[10px] uppercase mt-1">VOTOS</span>
+</button>
+<button class="flex flex-col items-center justify-center text-zinc-900 p-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-caps text-[10px] uppercase mt-1">PERFIL</span>
+</button>
+</nav>
+</body></html>
+
+<!-- Client View - Desktop (Boteco do Zé) -->
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TOCAÍ - Queue TV</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;600;700&amp;family=Epilogue:wght@400;700;800&amp;family=Work+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "amber-wood": "#2A2421",
+                        "on-tertiary-container": "#ffb28a",
+                        "outline": "#727782",
+                        "secondary-fixed-dim": "#fbbc36",
+                        "inverse-on-surface": "#f0f0f7",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#883901",
+                        "surface-container-low": "#f3f3fa",
+                        "on-tertiary-fixed-variant": "#783100",
+                        "primary": "#003974",
+                        "on-primary-fixed": "#001b3d",
+                        "on-primary-fixed-variant": "#00468b",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#00509d",
+                        "on-surface-variant": "#424751",
+                        "secondary": "#7c5800",
+                        "bossa-forest": "#2A4B3C",
+                        "surface": "#f9f9ff",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#febf38",
+                        "amber-gold": "#D4AF37",
+                        "surface-tint": "#1f5eac",
+                        "brand-lime": "#E6AA22",
+                        "coast-sand": "#EADDD7",
+                        "outline-variant": "#c2c6d3",
+                        "tertiary-fixed": "#ffdbcb",
+                        "bossa-caju": "#D97746",
+                        "tertiary": "#642800",
+                        "coast-clay": "#B65C3A",
+                        "secondary-fixed": "#ffdea6",
+                        "brand-cream": "#FCF8F2",
+                        "inverse-primary": "#a9c7ff",
+                        "on-primary-container": "#a4c5ff",
+                        "on-secondary-fixed-variant": "#5e4200",
+                        "on-surface": "#191c21",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "inverse-surface": "#2e3036",
+                        "on-error": "#ffffff",
+                        "brand-blue": "#00509D",
+                        "primary-fixed": "#d6e3ff",
+                        "error-container": "#ffdad6",
+                        "surface-container": "#ededf5",
+                        "background": "#f9f9ff",
+                        "surface-dim": "#d9d9e1",
+                        "on-background": "#191c21",
+                        "surface-container-highest": "#e1e2e9",
+                        "surface-variant": "#e1e2e9",
+                        "surface-container-high": "#e7e8ef",
+                        "charcoal": "#1A1A1A",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed": "#341100",
+                        "on-secondary-container": "#6f4f00",
+                        "on-secondary-fixed": "#271900",
+                        "muted-steel": "#5A6A7A",
+                        "surface-bright": "#f9f9ff",
+                        "tertiary-fixed-dim": "#ffb691"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "40px",
+                        "gutter": "16px",
+                        "unit": "8px",
+                        "margin-mobile": "20px",
+                        "bento-gap": "12px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["epilogue"],
+                        "label-caps": ["workSans"],
+                        "body-md": ["workSans"],
+                        "display-xl": ["epilogue"],
+                        "body-lg": ["workSans"],
+                        "headline-lg": ["epilogue"],
+                        "zilla": ["'Zilla Slab'", "serif"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-xl": ["96px", { "lineHeight": "1.0", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "body-lg": ["18px", { "lineHeight": "1.5", "fontWeight": "600" }],
+                        "headline-lg": ["48px", { "lineHeight": "1.1", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            /* Faint azulejo pattern simulation */
+            background-image: 
+                linear-gradient(45deg, rgba(0, 80, 157, 0.05) 25%, transparent 25%, transparent 75%, rgba(0, 80, 157, 0.05) 75%, rgba(0, 80, 157, 0.05)), 
+                linear-gradient(45deg, rgba(0, 80, 157, 0.05) 25%, transparent 25%, transparent 75%, rgba(0, 80, 157, 0.05) 75%, rgba(0, 80, 157, 0.05));
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+        }
+        .bento-card {
+            border: 2px dashed var(--tw-colors-brand-blue);
+            box-shadow: 8px 8px 0px 0px #1A1A1A;
+            background-color: var(--tw-colors-surface-container-lowest);
+        }
+        .queue-item {
+            border: 2px dashed var(--tw-colors-brand-blue);
+            box-shadow: 8px 8px 0px 0px #1A1A1A;
+            background-color: var(--tw-colors-surface-container-lowest);
+        }
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 30s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .hard-shadow {
+            box-shadow: 8px 8px 0px 0px #1A1A1A;
+        }
+        .hard-shadow-lg {
+            box-shadow: 12px 12px 0px 0px var(--tw-colors-brand-lime);
+        }
+        .hard-shadow-cta {
+            box-shadow: 16px 16px 0px 0px #1A1A1A;
+        }
+        @keyframes eq {
+            0%, 100% { height: 40%; }
+            50% { height: 100%; }
+        }
+        .eq-bar {
+            animation: eq 1.2s ease-in-out infinite;
+        }
+        .eq-bar:nth-child(2) { animation-delay: 0.2s; animation-duration: 0.8s; }
+        .eq-bar:nth-child(3) { animation-delay: 0.4s; animation-duration: 1.5s; }
+        .eq-bar:nth-child(4) { animation-delay: 0.1s; animation-duration: 1s; }
+        .eq-bar:nth-child(5) { animation-delay: 0.5s; animation-duration: 0.9s; }
+        .eq-bar:nth-child(6) { animation-delay: 0.3s; animation-duration: 1.3s; }
+        .eq-bar:nth-child(7) { animation-delay: 0.6s; animation-duration: 1.1s; }
+    </style>
+</head>
+<body class="bg-brand-cream text-on-background h-screen w-screen overflow-hidden flex flex-col font-body-md border-[16px] border-brand-blue box-border relative">
+<!-- Global Grain Overlay -->
+<div class="absolute inset-0 pointer-events-none opacity-[0.03] z-50 bg-[url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E')]"></div>
+<!-- Main Content Area: 60/40 Split -->
+<main class="flex-1 flex flex-row overflow-hidden">
+<!-- LEFT PANEL (60%): Now Playing -->
+<section class="w-[60%] bg-brand-blue p-gutter flex flex-col justify-between border-r-4 border-charcoal relative">
+<!-- Header Area -->
+<div class="flex justify-between items-start mb-unit">
+<div class="bg-brand-lime text-charcoal px-6 py-3 border-4 dashed border-charcoal font-headline-md text-4xl hard-shadow uppercase font-black">
+                    TOCANDO AGORA
+                </div>
+<div class="bg-surface-container-lowest border-4 dashed border-charcoal px-6 py-3 font-headline-md text-brand-blue text-4xl hard-shadow flex items-center gap-2">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">volume_up</span>
+<span>100%</span>
+</div>
+</div>
+<!-- Central Artwork & Info -->
+<div class="flex-1 flex flex-col items-center justify-center relative mt-4">
+<!-- Decorative Ring -->
+<div class="absolute w-[650px] h-[650px] rounded-full border-[8px] border-dashed border-[#003974] opacity-50 z-0 flex items-center justify-center">
+<div class="w-[550px] h-[550px] rounded-full border-[6px] border-dashed border-brand-lime opacity-80"></div>
+</div>
+<!-- Album Art Container -->
+<div class="relative z-10 w-[500px] h-[500px] border-4 border-dashed border-charcoal bg-surface-container-lowest p-3 hard-shadow-lg mb-10 bg-white">
+<img alt="Vintage Brazilian vinyl record cover featuring a dusty, sun-baked landscape with a silhouette of a musician playing an accordion. The aesthetic is raw and textured, resembling old butcher paper and traditional woodblock printing techniques. The colors are dominated by warm, earthy tones like ochre, burnt sienna, and deep charcoal, matching a rustic 'boteco' brutalist vibe." class="w-full h-full object-cover border-4 border-charcoal" data-alt="Vintage Brazilian vinyl record cover featuring a dusty, sun-baked landscape with a silhouette of a musician playing an accordion. The aesthetic is raw and textured, resembling old butcher paper and traditional woodblock printing techniques. The colors are dominated by warm, earthy tones like ochre, burnt sienna, and deep charcoal, matching a rustic 'boteco' brutalist vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2AiADKcFkD0oYCpTrQPrDikd2teXazQLa7l8l2T3DjPXIlVVxZSEw_W2jXCy5rfabbc5yBJ4ID7j47G2CEi9onJDw_D49ibfTKqHNndj1RAZz2R5A1ITzf7q_ZVT404g5i1uDY2YFrz3MzwuF-x5hCcK8bmaak6gQ67H8u7Vv81_mb9yPw74qZAUo4WF8D46mQtcFEZJLV3uVyD4t8Envs47rBPxJRWbNKmDGkixe1JJtJWoMTQGuFgB4snWqhUkvo-MPxhoupB0"/>
+<!-- Requester Badge -->
+<div class="absolute -bottom-6 -right-6 bg-brand-cream border-4 border-dashed border-charcoal px-6 py-4 hard-shadow flex items-center gap-4">
+<div class="w-6 h-6 rounded-full bg-error border-2 border-charcoal relative">
+<div class="absolute inset-0 rounded-full border border-error"></div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-charcoal uppercase text-[16px]">Pedido por</span>
+<span class="font-headline-md text-charcoal text-[32px] font-black leading-none uppercase mt-1">João S.</span>
+</div>
+</div>
+</div>
+<!-- Track Info -->
+<div class="text-center z-10 bg-surface-container-lowest p-8 border-4 border-dashed border-charcoal hard-shadow w-[85%]">
+<h1 class="font-zilla text-7xl font-bold text-brand-blue uppercase truncate mb-4" title="ASA BRANCA">ASA BRANCA</h1>
+<h2 class="font-headline-lg text-5xl text-charcoal uppercase font-black">LUIZ GONZAGA</h2>
+</div>
+</div>
+<!-- Visualizer (EqBars) -->
+<div class="h-24 flex items-end justify-center gap-3 mt-12 mb-4 opacity-90">
+<div class="w-12 h-[60%] bg-brand-lime border-4 border-charcoal eq-bar"></div>
+<div class="w-12 h-[40%] bg-surface-container-lowest border-4 border-charcoal eq-bar"></div>
+<div class="w-12 h-[80%] bg-brand-lime border-4 border-charcoal eq-bar"></div>
+<div class="w-12 h-[50%] bg-surface-container-lowest border-4 border-charcoal eq-bar"></div>
+<div class="w-12 h-[100%] bg-brand-lime border-4 border-charcoal eq-bar"></div>
+<div class="w-12 h-[70%] bg-surface-container-lowest border-4 border-charcoal eq-bar"></div>
+<div class="w-12 h-[90%] bg-brand-lime border-4 border-charcoal eq-bar"></div>
+</div>
+</section>
+<!-- RIGHT PANEL (40%): Queue List -->
+<section class="w-[40%] p-gutter flex flex-col bg-brand-cream relative">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-headline-lg text-4xl text-charcoal uppercase font-black">PRÓXIMOS DA FILA</h2>
+<div class="bg-brand-blue text-white font-headline-md text-2xl px-4 py-2 border-4 border-dashed border-charcoal hard-shadow">
+                    12 MÚSICAS
+                </div>
+</div>
+<!-- Queue Container -->
+<div class="flex-1 overflow-hidden flex flex-col gap-6">
+<!-- Queue Item 1 -->
+<div class="queue-item flex items-center p-3 gap-4 bg-surface-container-lowest border-4 border-charcoal">
+<div class="w-16 h-16 flex items-center justify-center bg-brand-lime border-4 border-charcoal font-headline-md text-charcoal text-3xl font-black">
+                        1
+                    </div>
+<img alt="Abstract colorful album cover with swirling patterns of vibrant yellow, red, and blue. The style is reminiscent of 70s tropicalia music covers, with a slightly distressed, printed texture typical of old cardstock. The composition is dynamic and chaotic, perfectly suited for a lively bar setting." class="w-24 h-24 object-cover border-4 border-charcoal" data-alt="Abstract colorful album cover with swirling patterns of vibrant yellow, red, and blue. The style is reminiscent of 70s tropicalia music covers, with a slightly distressed, printed texture typical of old cardstock. The composition is dynamic and chaotic, perfectly suited for a lively bar setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCf1arKfCCnqNQp3GkKdLQS5EqvXVqeEATasUmTysodQRDXkzFpIcqSrynXQ-66zqnFpEm8S7KaL_wbj5kyW9hmEXRzEztJu51LrwZiYP_qL-LBGCMYLmHqDCkCUAOLtriU7Q6gvQfQOKJNLsDLCSEeF7XTrzLpjovq7NzfeiwwEX02NRBmKq-DtPVn1M2hkzH5Y7aPXh_jVRTVzh47OhQtqFxYO0NypPcojXcd0uyeuSPfH2dK5gjH878phGcwerT3ZfPajYze1TI"/>
+<div class="flex-1 overflow-hidden">
+<div class="font-headline-md text-3xl text-charcoal truncate uppercase font-bold">Cheia de Manias</div>
+<div class="font-body-md text-2xl text-outline truncate uppercase font-semibold mt-1">Raça Negra</div>
+</div>
+<div class="flex flex-col items-end gap-2 pr-4">
+<div class="font-headline-md text-brand-blue text-4xl font-black">450</div>
+<div class="flex gap-2">
+<span class="bg-surface-container border-2 border-charcoal px-2 py-1 text-lg">🔥</span>
+<span class="bg-surface-container border-2 border-charcoal px-2 py-1 text-lg">❤️</span>
+</div>
+</div>
+</div>
+<!-- Queue Item 2 -->
+<div class="queue-item flex items-center p-3 gap-4 bg-surface-container-lowest border-4 border-charcoal">
+<div class="w-16 h-16 flex items-center justify-center bg-surface-container border-4 border-charcoal font-headline-md text-charcoal text-3xl font-black">
+                        2
+                    </div>
+<img alt="Minimalist graphic poster style image showing a silhouette of a dancer against a stark red background. The image has a rough, halftone dot pattern overlay, giving it a gritty, underground club feel. The colors are strictly limited to deep black, stark white, and vibrant primary red." class="w-24 h-24 object-cover border-4 border-charcoal" data-alt="Minimalist graphic poster style image showing a silhouette of a dancer against a stark red background. The image has a rough, halftone dot pattern overlay, giving it a gritty, underground club feel. The colors are strictly limited to deep black, stark white, and vibrant primary red." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1VR4QRaCKc8u7vyNF-wQMixckhI3fahLGYSKftIQU4eRAfgjvO1OU-j2s6oixbOkt7zNqjHZUBisUe1RYvOCJD7D_wlIV4GOVc0zIVCF0qbsgWZkVWF2KMsMK86_cwLKvoHdVA4hREI-i-slytm8_UVknQQ5Hwt87kHYmwCzGyh5DfupRcPbhWSAG-9NqE5Xpli4oKuR-wTmJF0U-fuZMOyNaP3T9-SSSnS1LhEicXg9rbYVyapj6n-Cp491Oqc1eGKHRpmJWCF8"/>
+<div class="flex-1 overflow-hidden">
+<div class="font-headline-md text-3xl text-charcoal truncate uppercase font-bold">Evidências</div>
+<div class="font-body-md text-2xl text-outline truncate uppercase font-semibold mt-1">Chitãozinho &amp; Xororó</div>
+</div>
+<div class="flex flex-col items-end gap-2 pr-4">
+<div class="font-headline-md text-brand-blue text-4xl font-black">380</div>
+<div class="flex gap-2">
+<span class="bg-surface-container border-2 border-charcoal px-2 py-1 text-lg">🍻</span>
+</div>
+</div>
+</div>
+<!-- Queue Item 3 -->
+<div class="queue-item flex items-center p-3 gap-4 bg-surface-container-lowest border-4 border-charcoal">
+<div class="w-16 h-16 flex items-center justify-center bg-surface-container border-4 border-charcoal font-headline-md text-charcoal text-3xl font-black">
+                        3
+                    </div>
+<img alt="A close-up shot of acoustic guitar strings being played, styled with a high-contrast black and white filter. The image is grainy, evoking a documentary photography style from the 1960s bossa nova era. The lighting is moody and directional, emphasizing the texture of the guitar wood." class="w-24 h-24 object-cover border-4 border-charcoal" data-alt="A close-up shot of acoustic guitar strings being played, styled with a high-contrast black and white filter. The image is grainy, evoking a documentary photography style from the 1960s bossa nova era. The lighting is moody and directional, emphasizing the texture of the guitar wood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZJrEhQ2bpL3MqwpogguyAiNG9K4ZBUfHgER6BDOrmBH3f-4iNa1ksoDrbAZ_jBk5FLJ4P0npEg17OhJrfYyTboMds3zY87543QP6XRGdTormFSKXSQGF6dB0U-G2hJpc3yIt1xG92ESZU3qXS4KRP4Iipy3kLxqrK_dPMFTtXnv4fASyNHruE7rIB0XBZPEDwUFnVx5xX404redSeuapzdKHCcWa46yaFr39AnyKpMhlSREVaXRDPuDhR-6e72SbCCc7t6uZcoco"/>
+<div class="flex-1 overflow-hidden">
+<div class="font-headline-md text-3xl text-charcoal truncate uppercase font-bold">Garota de Ipanema</div>
+<div class="font-body-md text-2xl text-outline truncate uppercase font-semibold mt-1">Tom Jobim</div>
+</div>
+<div class="flex flex-col items-end gap-2 pr-4">
+<div class="font-headline-md text-brand-blue text-4xl font-black">315</div>
+<div class="flex gap-2">
+<span class="bg-surface-container border-2 border-charcoal px-2 py-1 text-lg">✨</span>
+</div>
+</div>
+</div>
+<!-- Queue Item 4 -->
+<div class="queue-item flex items-center p-3 gap-4 bg-surface-container-lowest opacity-70 border-4 border-charcoal">
+<div class="w-16 h-16 flex items-center justify-center bg-surface-container border-4 border-charcoal font-headline-md text-charcoal text-3xl font-black">
+                        4
+                    </div>
+<div class="w-24 h-24 bg-surface-variant border-4 border-charcoal flex items-center justify-center">
+<span class="material-symbols-outlined text-outline text-5xl">music_note</span>
+</div>
+<div class="flex-1 overflow-hidden">
+<div class="font-headline-md text-3xl text-charcoal truncate uppercase font-bold">Trem das Onze</div>
+<div class="font-body-md text-2xl text-outline truncate uppercase font-semibold mt-1">Adoniran Barbosa</div>
+</div>
+<div class="flex flex-col items-end gap-2 pr-4">
+<div class="font-headline-md text-charcoal text-4xl font-black">290</div>
+</div>
+</div>
+</div>
+<!-- Scan to request CTA -->
+<div class="mt-8 p-6 border-[6px] border-dashed border-charcoal bg-brand-lime hard-shadow-cta flex items-center justify-between mb-4">
+<div class="font-zilla text-charcoal uppercase leading-tight">
+<div class="text-5xl font-bold mb-2">PEÇA SUA MÚSICA</div>
+<div class="text-2xl font-body-md font-bold">ESCANEIE O QR CODE NA MESA</div>
+</div>
+<div class="w-32 h-32 bg-white border-4 border-charcoal flex items-center justify-center hard-shadow">
+<span class="material-symbols-outlined text-[80px]">qr_code_2</span>
+</div>
+</div>
+</section>
+</main>
+<!-- BOTTOM: Marquee Ticker -->
+<footer class="h-24 bg-brand-blue border-t-4 border-charcoal flex items-center text-brand-lime overflow-hidden whitespace-nowrap px-4 w-full">
+<div class="marquee-content font-headline-md uppercase text-[36px] font-bold tracking-wide flex items-center gap-12">
+<span>#1 CHEIA DE MANIAS - RAÇA NEGRA</span>
+<span class="text-white">•</span>
+<span>#2 EVIDÊNCIAS - CHITÃOZINHO &amp; XORORÓ</span>
+<span class="text-white">•</span>
+<span>#3 GAROTA DE IPANEMA - TOM JOBIM</span>
+<span class="text-white">•</span>
+<span>#4 TREM DAS ONZE - ADONIRAN BARBOSA</span>
+<span class="text-white">•</span>
+<span>BAIXE O APP TOCAÍ PARA PEDIR SUA MÚSICA</span>
+</div>
+</footer>
+</body></html>

@@ -384,7 +384,7 @@ export default function QueueTV() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
       className={cn(
-        "flex h-screen w-full flex-col overflow-hidden bg-brand-cream border-[16px] border-brand-blue selection:bg-brand-lime",
+        "flex h-screen w-full flex-col overflow-hidden bg-brand-cream border-[8px] border-brand-blue/20 shadow-[0_6px_24px_rgba(0,80,157,0.15)] selection:bg-brand-lime",
         partyMode && "party-mode",
       )}
     >
@@ -483,7 +483,7 @@ export default function QueueTV() {
       </AnimatePresence>
 
       {/* Top Banner */}
-      <header className="flex flex-shrink-0 items-center justify-between border-b-[8px] border-brand-blue bg-white px-6 py-3 lg:px-10 lg:py-4 text-brand-blue">
+      <header className="flex flex-shrink-0 items-center justify-between border-b border-brand-blue/15 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)] px-6 py-3 lg:px-10 lg:py-4 text-charcoal z-10">
         <div>
           {barLogo ? (
             <img
@@ -710,8 +710,8 @@ export default function QueueTV() {
 
         {/* Right: Up Next + QR */}
         <section className={cn(
-          "flex flex-1 flex-col border-l-8 border-brand-blue py-4 lg:py-6 min-h-0 overflow-hidden",
-          partyMode ? "bg-black" : "bg-white",
+          "flex flex-1 flex-col border-l border-brand-blue/15 shadow-[-2px_0_8px_rgba(0,0,0,0.06)] py-4 lg:py-6 min-h-0 overflow-hidden",
+          partyMode ? "bg-black" : "bg-brand-cream",
         )}>
           <div className="mb-4 px-8 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -898,10 +898,10 @@ export default function QueueTV() {
 
       {/* Marquee ticker */}
       <div className={cn(
-        "flex-shrink-0 border-t-4 border-brand-blue overflow-hidden py-2",
+        "flex-shrink-0 border-t border-brand-blue/15 shadow-[0_-2px_8px_rgba(0,0,0,0.06)] overflow-hidden py-2",
         partyMode ? "bg-black text-brand-lime" : "bg-brand-blue text-brand-lime",
       )}>
-        <div className="marquee-track whitespace-nowrap font-display text-sm lg:text-base uppercase tracking-wide">
+        <div className="marquee-track whitespace-nowrap font-display font-black text-sm lg:text-base uppercase tracking-wide">
           <span className="marquee-content">{tickerText}&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;{tickerText}</span>
         </div>
       </div>

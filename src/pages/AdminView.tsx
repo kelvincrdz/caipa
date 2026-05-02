@@ -529,10 +529,10 @@ export default function AdminView() {
   return (
     <div className="flex min-h-screen flex-col bg-brand-cream lg:flex-row">
       {/* Sidebar */}
-      <nav className="fixed bottom-0 z-50 flex h-20 w-full border-t-4 border-brand-blue bg-white lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-64 lg:flex-col lg:border-r-4 lg:border-t-0 p-4 shadow-2xl overflow-y-auto">
+      <nav className="fixed bottom-0 z-50 flex h-20 w-full border-t border-brand-blue/15 bg-white shadow-[0_-2px_8px_rgba(0,0,0,0.06)] lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-64 lg:flex-col lg:border-r-4 lg:border-t-0 p-4 overflow-y-auto">
         <div className="hidden lg:mb-8 lg:block">
-          <h1 className="text-5xl font-display text-brand-blue leading-none">TOCAÍ</h1>
-          <p className="font-body text-sm font-bold opacity-60 uppercase">DASHBOARD</p>
+          <h1 className="text-4xl font-display font-black text-brand-blue leading-none uppercase">TOCAÍ</h1>
+          <p className="font-body text-xs font-bold opacity-60 uppercase mt-1">ADMIN DASHBOARD</p>
         </div>
 
         <div className="flex w-full justify-around gap-2 lg:flex-col lg:justify-start">
@@ -642,11 +642,11 @@ export default function AdminView() {
       </nav>
 
       <main className="flex-1 p-4 pb-24 lg:p-8">
-        <header className="mb-8 flex items-center justify-between border-b-4 border-brand-blue pb-4">
+        <header className="mb-8 flex items-center justify-between border-b border-brand-blue/15 shadow-[0_2px_8px_rgba(0,0,0,0.06)] pb-5">
           <div>
-            <h2 className="text-5xl font-display text-brand-blue leading-none">{barName}</h2>
+            <h2 className="text-3xl md:text-5xl font-display font-black text-brand-blue leading-none uppercase">{barName}</h2>
             {config.queue_locked && (
-              <span className="inline-flex items-center gap-1 text-xs font-bold uppercase text-orange-600 bg-orange-50 border border-orange-300 px-2 py-0.5 mt-1">
+              <span className="inline-flex items-center gap-1 text-xs font-bold uppercase text-orange-600 bg-orange-50 border-2 border-orange-400 px-2 py-0.5 mt-1">
                 <LockIcon size={10} /> Fila Fechada
               </span>
             )}
@@ -704,18 +704,18 @@ export default function AdminView() {
         {activeTab === "queue" && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
             {/* Now Playing */}
-            <div className="card-bento bg-white p-6">
+            <div className="border-2 border-brand-blue bg-brand-blue shadow-[0_4px_20px_rgba(0,80,157,0.12)] text-brand-cream p-6">
               <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-4xl font-display leading-none underline decoration-brand-lime decoration-8 underline-offset-4">
+                <h3 className="text-3xl font-display font-black leading-none uppercase">
                   TOCANDO AGORA
                 </h3>
-                <span className="bg-brand-blue px-3 py-1 font-display text-2xl text-brand-lime animate-pulse shadow-[4px_4px_0px_var(--color-brand-lime)]">
+                <span className="bg-brand-lime text-charcoal border-2 border-brand-blue/20 px-3 py-1 font-display font-black text-lg uppercase animate-pulse shadow-[0_2px_8px_rgba(0,80,157,0.08)]">
                   LIVE
                 </span>
               </div>
 
               {nowPlaying ? (
-                <div className="flex items-center gap-6 border-4 border-brand-blue p-6 bg-brand-cream/20">
+                <div className="flex items-center gap-6 border-4 border-brand-cream/20 p-5 bg-brand-cream/10">
                   {nowPlaying.thumbnail_url ? (
                     <img
                       src={nowPlaying.thumbnail_url}
@@ -797,7 +797,7 @@ export default function AdminView() {
                   </div>
                 </div>
               ) : (
-                <div className="border-4 border-dashed border-brand-blue bg-white/50 p-12 text-center">
+                <div className="border-4 border-brand-blue/30 bg-white/50 p-12 text-center">
                   <p className="font-body text-2xl opacity-40 uppercase font-black">Fila vazia...</p>
                 </div>
               )}
@@ -895,7 +895,7 @@ export default function AdminView() {
                 />
               ))}
               {others.length === 0 && (
-                <p className="font-body text-2xl opacity-40 uppercase font-black py-20 text-center border-4 border-dashed border-brand-blue bg-white/50">
+                <p className="font-body text-2xl opacity-40 uppercase font-black py-20 text-center border-4 border-brand-blue/30 bg-white/50">
                   A fila está vazia...
                 </p>
               )}
@@ -914,7 +914,7 @@ export default function AdminView() {
                 <div className="h-10 w-10 animate-spin rounded-full border-4 border-brand-blue border-t-transparent" />
               </div>
             ) : playedHistory.length === 0 ? (
-              <div className="border-4 border-dashed border-brand-blue bg-white/50 p-20 text-center">
+              <div className="border-4 border-brand-blue/30 bg-white/50 p-20 text-center">
                 <p className="font-display text-3xl uppercase opacity-40">Nenhuma música tocada ainda</p>
               </div>
             ) : (
@@ -960,7 +960,7 @@ export default function AdminView() {
                 <div className="h-10 w-10 animate-spin rounded-full border-4 border-brand-blue border-t-transparent" />
               </div>
             ) : modLogs.length === 0 ? (
-              <div className="border-4 border-dashed border-brand-blue bg-white/50 p-20 text-center">
+              <div className="border-4 border-brand-blue/30 bg-white/50 p-20 text-center">
                 <p className="font-display text-3xl uppercase opacity-40">Nenhuma ação de moderação ainda</p>
               </div>
             ) : (
@@ -1050,7 +1050,7 @@ export default function AdminView() {
                 <div className="h-10 w-10 animate-spin rounded-full border-4 border-brand-blue border-t-transparent" />
               </div>
             ) : photos.length === 0 ? (
-              <div className="border-4 border-dashed border-brand-blue bg-white/50 p-20 text-center">
+              <div className="border-4 border-brand-blue/30 bg-white/50 p-20 text-center">
                 <Camera size={40} className="mx-auto mb-4 text-zinc-400" />
                 <p className="font-display text-3xl uppercase opacity-40">Nenhuma foto enviada ainda</p>
               </div>
@@ -1822,13 +1822,13 @@ function NavBtn({ active, icon, label, onClick }: { active: boolean; icon: React
     <button
       onClick={onClick}
       className={cn(
-        "flex flex-1 flex-col items-center gap-1 border-4 p-2 font-display transition-all lg:flex-row lg:gap-4 lg:p-4 lg:text-4xl lg:leading-none",
+        "flex flex-1 flex-col items-center gap-1 border-2 p-2 font-display font-black text-xs uppercase transition-all lg:flex-row lg:gap-4 lg:p-4 lg:text-xl lg:leading-none",
         active
-          ? "border-brand-blue bg-brand-lime shadow-[6px_6px_0px_var(--color-brand-blue)] translate-x-[-2px] translate-y-[-2px]"
-          : "border-transparent opacity-60",
+          ? "border-brand-blue/20 bg-brand-blue text-white shadow-[0_2px_12px_rgba(0,80,157,0.10)] translate-x-[-2px] translate-y-[-2px]"
+          : "border-transparent text-muted-steel hover:text-charcoal hover:border-charcoal/30",
       )}
     >
-      <span className={active ? "scale-110" : ""}>{icon}</span>
+      <span className={active ? "text-brand-lime" : ""}>{icon}</span>
       <span>{label}</span>
     </button>
   );
