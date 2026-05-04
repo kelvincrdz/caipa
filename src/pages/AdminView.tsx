@@ -1398,7 +1398,7 @@ export default function AdminView() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
                 <div className="flex flex-col gap-2">
                   <label className="font-body text-xs font-bold uppercase tracking-tight text-zinc-600">
-                    PEDIDOS INICIAIS POR PESSOA
+                    MÁXIMO DE MÚSICAS POR USUÁRIO
                   </label>
                   <input
                     type="number" min={1} max={20}
@@ -1407,20 +1407,20 @@ export default function AdminView() {
                     onChange={e => updateConfig({ max_initial_requests: Math.max(1, parseInt(e.target.value) || 5) })}
                     onBlur={e => updateConfig({ max_initial_requests: Math.max(1, parseInt(e.target.value) || 5) })}
                   />
-                  <p className="font-body text-xs font-bold uppercase opacity-50 italic">Pedidos sem espera (padrão: 5)</p>
+                  <p className="font-body text-xs font-bold uppercase opacity-50 italic">Limite de músicas ativas na fila por pessoa (padrão: 5)</p>
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="font-body text-xs font-bold uppercase tracking-tight text-zinc-600">
-                    COOLDOWN APÓS O LIMITE (MINUTOS)
+                    INTERVALO MÍNIMO ENTRE PEDIDOS (MIN)
                   </label>
                   <input
-                    type="number" min={1} max={60}
+                    type="number" min={0} max={120}
                     className="border-4 border-brand-blue p-4 font-display text-4xl text-center focus:outline-none bg-white"
                     value={config.request_cooldown_minutes}
-                    onChange={e => updateConfig({ request_cooldown_minutes: Math.max(1, parseInt(e.target.value) || 3) })}
-                    onBlur={e => updateConfig({ request_cooldown_minutes: Math.max(1, parseInt(e.target.value) || 3) })}
+                    onChange={e => updateConfig({ request_cooldown_minutes: Math.max(0, parseInt(e.target.value) || 0) })}
+                    onBlur={e => updateConfig({ request_cooldown_minutes: Math.max(0, parseInt(e.target.value) || 0) })}
                   />
-                  <p className="font-body text-xs font-bold uppercase opacity-50 italic">Espera entre pedidos extras (padrão: 3)</p>
+                  <p className="font-body text-xs font-bold uppercase opacity-50 italic">Tempo de espera antes de novo pedido (0 = sem espera)</p>
                 </div>
               </div>
 

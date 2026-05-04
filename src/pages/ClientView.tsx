@@ -38,23 +38,12 @@ function getThemeAccent(theme: string): ThemeAccent {
   return THEME_ACCENTS[theme?.toLowerCase?.()] ?? DEFAULT_ACCENT;
 }
 
-// ── Daily request count ──────────────────────────────────────────────────────
-function getRequestCount(slug: string, phone: string): number {
-  const today = new Date().toISOString().split("T")[0];
-  return parseInt(localStorage.getItem(`caipa_reqs_${slug}_${phone}_${today}`) || "0");
-}
-function incrementRequestCount(slug: string, phone: string) {
-  const today = new Date().toISOString().split("T")[0];
-  const key = `caipa_reqs_${slug}_${phone}_${today}`;
-  localStorage.setItem(key, String(parseInt(localStorage.getItem(key) || "0") + 1));
-}
+// ── Request cooldown helpers ─────────────────────────────────────────────────
 function getLastRequestTime(slug: string, phone: string): number {
-  const today = new Date().toISOString().split("T")[0];
-  return parseInt(localStorage.getItem(`caipa_last_req_${slug}_${phone}_${today}`) || "0");
+  return parseInt(localStorage.getItem(`caipa_last_req_${slug}_${phone}`) || "0");
 }
 function setLastRequestTime(slug: string, phone: string) {
-  const today = new Date().toISOString().split("T")[0];
-  localStorage.setItem(`caipa_last_req_${slug}_${phone}_${today}`, String(Date.now()));
+  localStorage.setItem(`caipa_last_req_${slug}_${phone}`, String(Date.now()));
 }
 
 // ── Persistent badge ─────────────────────────────────────────────────────────
@@ -273,7 +262,6 @@ export default function ClientView() {
   // ── Init user data ───────────────────────────────────────────────────────
   useEffect(() => {
     if (phone && slug) {
-      setRequestCount(getRequestCount(slug, phone));
       setTotalRequests(getTotalRequests(phone));
       setSuperVoteAvail(hasSuperVote(phone));
       setHistory(getHistory(phone));
@@ -281,7 +269,15 @@ export default function ClientView() {
       queue.forEach(item => { const r = getMyReaction(phone, item.id); if (r) map[item.id] = r; });
       setReactMap(map);
     }
-  }, [phone, slug]);
+  }, [phone, slug, queue]);
+
+  useEffect(() => {
+    if (!phone) {
+      setRequestCount(0);
+      return;
+    }
+    setRequestCount(queue.filter(item => item.client_id === phone).length);
+  }, [queue, phone]);
 
   // ── Update reactMap when queue changes ───────────────────────────────────
   useEffect(() => {
@@ -321,18 +317,27 @@ export default function ClientView() {
   // ── Cooldown timer ───────────────────────────────────────────────────────
   const maxInitial = session.max_initial_requests ?? 5;
   const cooldownMs = (session.request_cooldown_minutes ?? 3) * 60 * 1000;
+  const latestQueueRequestTime = phone
+    ? queue
+      .filter(item => item.client_id === phone)
+      .reduce((latest, item) => {
+        const t = new Date(item.requested_at).getTime();
+        return Number.isFinite(t) ? Math.max(latest, t) : latest;
+      }, 0)
+    : 0;
 
   useEffect(() => {
-    if (!phone || !slug || requestCount < maxInitial) { setCooldownSecondsLeft(0); return; }
+    if (!phone || !slug || cooldownMs <= 0) { setCooldownSecondsLeft(0); return; }
     const tick = () => {
-      const lastTime = getLastRequestTime(slug, phone);
+      const localLastTime = getLastRequestTime(slug, phone);
+      const lastTime = Math.max(localLastTime, latestQueueRequestTime);
       const elapsed = lastTime ? Date.now() - lastTime : cooldownMs;
       setCooldownSecondsLeft(Math.max(0, Math.ceil((cooldownMs - elapsed) / 1000)));
     };
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, [requestCount, maxInitial, cooldownMs, phone, slug]);
+  }, [cooldownMs, phone, slug, latestQueueRequestTime]);
 
   // ── Cleanup preview audio ────────────────────────────────────────────────
   useEffect(() => { return () => { previewAudioRef.current?.pause(); }; }, []);
@@ -370,7 +375,7 @@ export default function ClientView() {
   // ── Derived values ───────────────────────────────────────────────────────
   const themeAccent = getThemeAccent(session.theme ?? "");
   const freeLeft = Math.max(0, maxInitial - requestCount);
-  const canRequest = !session.queue_locked && (freeLeft > 0 || cooldownSecondsLeft === 0);
+  const canRequest = !session.queue_locked && freeLeft > 0 && cooldownSecondsLeft === 0;
   const waitMinutes = Math.round(upNext.length * 3.5);
 
   // ── Photo helpers ────────────────────────────────────────────────────────
@@ -470,7 +475,11 @@ export default function ClientView() {
 
   const handleRequest = async (music: any) => {
     if (session.queue_locked) { alert("A fila está fechada no momento. Aguarde o admin reabrir."); return; }
-    if (!canRequest) {
+    if (requestCount >= maxInitial) {
+      alert(`Você já tem ${requestCount} música(s) na fila. Aguarde tocar para pedir outra.`);
+      return;
+    }
+    if (cooldownSecondsLeft > 0) {
       const mins = Math.floor(cooldownSecondsLeft / 60);
       const secs = cooldownSecondsLeft % 60;
       alert(`Aguarde ${mins > 0 ? `${mins}min ` : ""}${secs}s antes do próximo pedido.`);
@@ -488,7 +497,7 @@ export default function ClientView() {
       await addMusic({ ...music, tags }, phone || "anon", clientName || "Cliente", session, dedicationTo);
       setShowSearch(false); setSearchQuery(""); setPendingTrack(null); setDedText(""); setOpenTagId(null); setShowSuccess(true);
       if (phone && slug) {
-        incrementRequestCount(slug, phone); setLastRequestTime(slug, phone); setRequestCount(c => c + 1);
+        setLastRequestTime(slug, phone); setRequestCount(c => c + 1);
         incrementTotalRequests(phone); setTotalRequests(t => t + 1);
         addToHistory(phone, music); setHistory(getHistory(phone));
       }
@@ -702,7 +711,7 @@ export default function ClientView() {
                         </div>
                         <button
                           onClick={() => handleRequest(item)}
-                          disabled={session.queue_locked}
+                          disabled={!canRequest}
                           className={cn("btn-bento w-full text-base py-2 flex items-center justify-center gap-2", isThemeMatch && "bg-brand-lime text-brand-cream border-brand-blue", session.queue_locked && "opacity-40 cursor-not-allowed")}
                         >
                           {session.queue_locked ? "🔒 FILA FECHADA" : isThemeMatch ? <><Tag size={14} /> PEDIR · +1</> : "PEDIR"}
@@ -926,7 +935,7 @@ export default function ClientView() {
                     <p className="font-body text-xs font-bold uppercase opacity-85 italic truncate">{track.artist}</p>
                   </div>
                   <div className="flex gap-2 flex-shrink-0">
-                    <button onClick={() => handleRequest(track)} disabled={session.queue_locked} className="btn-bento text-sm px-3 py-1 disabled:opacity-40">PEDIR</button>
+                    <button onClick={() => handleRequest(track)} disabled={!canRequest} className="btn-bento text-sm px-3 py-1 disabled:opacity-40">PEDIR</button>
                     <button onClick={() => handleToggleFavorite(track)} className="text-red-400 hover:text-red-300 p-1"><Star size={16} fill="currentColor" /></button>
                   </div>
                 </div>
@@ -946,7 +955,7 @@ export default function ClientView() {
                     <p className="font-body text-xs font-bold uppercase opacity-85 italic truncate">{track.artist}</p>
                     {track.requestedAt && (<p className="text-[9px] font-bold uppercase opacity-70 mt-0.5">{new Date(track.requestedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</p>)}
                   </div>
-                  <button onClick={() => handleRequest(track)} disabled={session.queue_locked} className="btn-bento text-sm px-3 py-1 flex-shrink-0 disabled:opacity-40">DE NOVO</button>
+                  <button onClick={() => handleRequest(track)} disabled={!canRequest} className="btn-bento text-sm px-3 py-1 flex-shrink-0 disabled:opacity-40">DE NOVO</button>
                 </div>
               ))}
             </div>
@@ -990,7 +999,11 @@ export default function ClientView() {
             ))}
           </div>
           <p className="text-[10px] font-bold uppercase text-brand-cream opacity-60 mt-2">
-            {cooldownSecondsLeft > 0 ? `Recarregando em ${Math.floor(cooldownSecondsLeft / 60)}:${String(cooldownSecondsLeft % 60).padStart(2, "0")}` : freeLeft > 0 ? `${freeLeft} pedido${freeLeft !== 1 ? "s" : ""} restante${freeLeft !== 1 ? "s" : ""} hoje` : "Pode pedir mais uma!"}
+            {requestCount >= maxInitial
+              ? `Limite de ${maxInitial} música${maxInitial !== 1 ? "s" : ""} na fila atingido`
+              : cooldownSecondsLeft > 0
+                ? `Novo pedido em ${Math.floor(cooldownSecondsLeft / 60)}:${String(cooldownSecondsLeft % 60).padStart(2, "0")}`
+                : `${freeLeft} vaga${freeLeft !== 1 ? "s" : ""} na fila`}
           </p>
           {superVoteAvail && (
             <div className="mt-2 flex items-center gap-1 bg-yellow-900/30 border-2 border-yellow-400 px-2 py-1">
@@ -1186,7 +1199,7 @@ export default function ClientView() {
                 localStorage.setItem(`caipa_name_${slug}`, name);
                 setPhone(p);
                 setClientName(name);
-                if (slug) setRequestCount(getRequestCount(slug, p));
+                setRequestCount(queue.filter(item => item.client_id === p).length);
                 setTotalRequests(getTotalRequests(p));
                 setSuperVoteAvail(hasSuperVote(p));
                 setHistory(getHistory(p));

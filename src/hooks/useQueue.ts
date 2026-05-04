@@ -100,6 +100,48 @@ export function useQueue(barSlug: string | undefined) {
 
     if (session.queue_locked) throw new Error('A fila está fechada no momento. Aguarde o admin reabrir.');
 
+    if (barSlug) {
+      const maxActiveRequests = Math.max(1, session.max_initial_requests ?? 5);
+      const minIntervalMinutes = Math.max(0, session.request_cooldown_minutes ?? 3);
+
+      const [activeReqRes, latestReqRes] = await Promise.all([
+        supabase
+          .from('queue_items')
+          .select('id', { count: 'exact', head: true })
+          .eq('bar_slug', barSlug)
+          .eq('client_id', clientId)
+          .in('status', ['pending', 'playing']),
+        supabase
+          .from('queue_items')
+          .select('requested_at')
+          .eq('bar_slug', barSlug)
+          .eq('client_id', clientId)
+          .order('requested_at', { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+      ]);
+
+      if (activeReqRes.error) throw activeReqRes.error;
+      if (latestReqRes.error) throw latestReqRes.error;
+
+      const activeCount = activeReqRes.count ?? 0;
+      if (activeCount >= maxActiveRequests) {
+        throw new Error(`Você já tem ${activeCount} música(s) na fila. Aguarde tocar para pedir outra.`);
+      }
+
+      const lastRequestedAt = latestReqRes.data?.requested_at;
+      if (lastRequestedAt && minIntervalMinutes > 0) {
+        const intervalMs = minIntervalMinutes * 60 * 1000;
+        const elapsedMs = Date.now() - new Date(lastRequestedAt).getTime();
+        if (elapsedMs < intervalMs) {
+          const secondsLeft = Math.max(1, Math.ceil((intervalMs - elapsedMs) / 1000));
+          const mins = Math.floor(secondsLeft / 60);
+          const secs = secondsLeft % 60;
+          throw new Error(`Aguarde ${mins > 0 ? `${mins}min ` : ''}${secs}s para pedir outra música.`);
+        }
+      }
+    }
+
     const tags: string[] = music.tags ?? [];
     const score = tagMatchesTheme(tags, session.theme ?? '') ? 1 : 0;
 
